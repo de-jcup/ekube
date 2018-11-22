@@ -17,7 +17,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="de.jcup.ekube.handlers.EKubeInfoHandler"
+            class="de.jcup.ekube.handlers.EKubeConnectionSelectionHandler"
             commandId="de.jcup.ekube.commands.sampleCommand">
       </handler>
    </extension>

@@ -1,0 +1,7 @@
+== Initial import into IDE
+- checkout from github
+- open console and enter
+- import external dependencies
+ . `./mvnw clean installf`
+ . `./mvnw dependency:copy-dependencies -Dclassifier=sources -pl external-dependencies` 
+ 

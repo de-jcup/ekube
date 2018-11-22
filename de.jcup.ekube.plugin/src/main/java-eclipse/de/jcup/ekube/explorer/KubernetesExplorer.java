@@ -52,7 +52,7 @@ public class KubernetesExplorer extends ViewPart {
 		viewer.setLabelProvider(new ViewLabelProvider(this));
 
 		// Create the help context id for the viewer's control
-		workbench.getHelpSystem().setHelp(viewer.getControl(), "de.jcup.ekube.viewer");
+//		workbench.getHelpSystem().setHelp(viewer.getControl(), "de.jcup.ekube.viewer");
 		getSite().setSelectionProvider(viewer);
 		makeActions();
 		hookContextMenu();
