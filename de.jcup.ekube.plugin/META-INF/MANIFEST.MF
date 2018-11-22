@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EKube Plugin
+Bundle-SymbolicName: de.jcup.ekube.plugin;singleton:=true
+Bundle-Version: 0.0.1.pre-alpha
+Bundle-Activator: de.jcup.ekube.Activator
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.ui,
+  org.eclipse.core.runtime
+Automatic-Module-Name: de.jcup.ekube
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: libs/external/,
+ .
