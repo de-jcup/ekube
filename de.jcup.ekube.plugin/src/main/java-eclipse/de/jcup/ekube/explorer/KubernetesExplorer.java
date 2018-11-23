@@ -1,15 +1,33 @@
 package de.jcup.ekube.explorer;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.*;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.*;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.SWT;
-
 import javax.inject.Inject;
+
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.DrillDownAdapter;
+import org.eclipse.ui.part.ViewPart;
+
+import de.jcup.ekube.core.access.Cluster;
+import de.jcup.ekube.core.access.EKubeObject;
+import de.jcup.ekube.core.access.KubernetesRegistry;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -42,17 +60,20 @@ public class KubernetesExplorer extends ViewPart {
 	private Action action2;
 	private Action doubleClickAction;
 
+	private KubernetesExplorerContentProvider contentPovider;
+
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
-
-		viewer.setContentProvider(new ViewContentProvider(this));
+		contentPovider = new KubernetesExplorerContentProvider(this);
+		viewer.setContentProvider(contentPovider);
 		viewer.setInput(getViewSite());
-		viewer.setLabelProvider(new ViewLabelProvider(this));
+		viewer.setLabelProvider(new KubernetesExplorerViewLabelProvider());
 
 		// Create the help context id for the viewer's control
-//		workbench.getHelpSystem().setHelp(viewer.getControl(), "de.jcup.ekube.viewer");
+		// workbench.getHelpSystem().setHelp(viewer.getControl(),
+		// "de.jcup.ekube.viewer");
 		getSite().setSelectionProvider(viewer);
 		makeActions();
 		hookContextMenu();
@@ -104,13 +125,15 @@ public class KubernetesExplorer extends ViewPart {
 	private void makeActions() {
 		action1 = new Action() {
 			public void run() {
-				showMessage("Action 1 executed");
+				KubernetesRegistry.get().reload();
+				KubernetesExplorer.this.contentPovider.initialize();
+				viewer.refresh();
 			}
 		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
+		action1.setText("Refresh");
+		action1.setToolTipText("Full refresh");
 		action1.setImageDescriptor(
-				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
 
 		action2 = new Action() {
 			public void run() {
@@ -119,14 +142,32 @@ public class KubernetesExplorer extends ViewPart {
 		};
 		action2.setText("Action 2");
 		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(workbench.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		action2.setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action() {
 			public void run() {
 				IStructuredSelection selection = viewer.getStructuredSelection();
 				Object obj = selection.getFirstElement();
-				showMessage("Double-click detected on " + obj.toString());
+				if (obj instanceof TreeObject) {
+					TreeObject to = (TreeObject) obj;
+					handleDoubleClickOn(to.getKubeObject());
+				} else {
+					showMessage("Double-click detected on " + obj.toString());
+				}
 			}
 		};
+	}
+
+	protected void handleDoubleClickOn(EKubeObject obj) {
+		if (obj instanceof Cluster) {
+			Cluster c = (Cluster) obj;
+			showMessage("Switching to cluster context:" + c.getName());
+			c.setAsCurrentContext();
+			KubernetesExplorer.this.contentPovider.initialize();
+	
+			Display.getCurrent().asyncExec(()->	viewer.refresh());
+		
+		}
 	}
 
 	private void hookDoubleClickAction() {

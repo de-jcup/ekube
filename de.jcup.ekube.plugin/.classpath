@@ -6,6 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/java-eclipse"/>
 	<classpathentry kind="lib" path="libs/external/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="libs/external/adal4j-1.6.0.jar"/>
@@ -15,8 +16,8 @@
 	<classpathentry kind="lib" path="libs/external/bcprov-jdk15on-1.59.jar"/>
 	<classpathentry kind="lib" path="libs/external/builder-annotations-0.9.2.jar"/>
 	<classpathentry kind="lib" path="libs/external/checker-qual-2.0.0.jar"/>
-	<classpathentry kind="lib" path="libs/external/client-java-3.0.0.jar"/>
-	<classpathentry kind="lib" path="libs/external/client-java-api-3.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/external/client-java-3.0.0.jar" sourcepath="C:/Users/ATRIGNA/AppData/Local/Temp/.org.sf.feeling.decompiler1542903741192/source/client-java-3.0.0-sources.jar"/>
+	<classpathentry kind="lib" path="libs/external/client-java-api-3.0.0.jar" sourcepath="C:/Users/ATRIGNA/AppData/Local/Temp/.org.sf.feeling.decompiler1542903741192/source/client-java-api-3.0.0-sources.jar"/>
 	<classpathentry kind="lib" path="libs/external/client-java-proto-3.0.0.jar"/>
 	<classpathentry kind="lib" path="libs/external/commons-codec-1.11.jar"/>
 	<classpathentry kind="lib" path="libs/external/commons-collections4-4.1.jar"/>

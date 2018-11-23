@@ -15,6 +15,8 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 
+	private ColorManager colorManager;
+
 	/**
 	 * The constructor
 	 */
@@ -29,7 +31,12 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		colorManager = new ColorManager();
 		plugin = this;
+	}
+	
+	public ColorManager getColorManager() {
+		return colorManager;
 	}
 
 	/*

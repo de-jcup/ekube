@@ -2,12 +2,14 @@ package de.jcup.ekube.explorer;
 
 import java.util.ArrayList;
 
-class TreeParent extends TreeObject {
-	private ArrayList children;
+import de.jcup.ekube.core.access.EKubeObject;
 
-	public TreeParent(String name) {
+class TreeParent extends TreeObject {
+	private ArrayList<TreeObject> children;
+
+	public TreeParent(EKubeObject name) {
 		super(name);
-		children = new ArrayList();
+		children = new ArrayList<>();
 	}
 
 	public void addChild(TreeObject child) {

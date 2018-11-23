@@ -2,16 +2,22 @@ package de.jcup.ekube.explorer;
 
 import org.eclipse.core.runtime.IAdaptable;
 
+import de.jcup.ekube.core.access.EKubeObject;
+
 class TreeObject implements IAdaptable {
-	private String name;
+	private EKubeObject kubeObject;
 	private TreeParent parent;
 
-	public TreeObject(String name) {
-		this.name = name;
+	public TreeObject(EKubeObject object) {
+		this.kubeObject = object;
 	}
 
 	public String getName() {
-		return name;
+		return kubeObject.getName();
+	}
+	
+	public EKubeObject getKubeObject() {
+		return kubeObject;
 	}
 
 	public void setParent(TreeParent parent) {

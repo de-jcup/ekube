@@ -1,6 +1,6 @@
 == About
 
-EKube is an eclipse plugin for Kubernetes.
+`EKube` is an eclipse plugin for Kubernetes.
 
 === Features
 . (ongoing) connect to existing kubernetes tenant
