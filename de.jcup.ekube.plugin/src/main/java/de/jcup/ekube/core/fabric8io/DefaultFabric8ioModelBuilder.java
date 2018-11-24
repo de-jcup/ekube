@@ -13,6 +13,8 @@ import de.jcup.ekube.core.model.EKubeModel;
 import de.jcup.ekube.core.model.EKubeModelToStringDumpConverter;
 import de.jcup.ekube.core.model.NamespaceContainer;
 import de.jcup.ekube.core.model.PodContainer;
+import de.jcup.ekube.core.model.PodsContainer;
+import de.jcup.ekube.core.model.ServiceContainer;
 import io.fabric8.kubernetes.api.model.Config;
 import io.fabric8.kubernetes.api.model.Context;
 import io.fabric8.kubernetes.api.model.DoneableNamespace;
@@ -21,6 +23,8 @@ import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceList;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
@@ -29,12 +33,13 @@ import io.fabric8.kubernetes.client.internal.KubeConfigUtils;
 
 public class DefaultFabric8ioModelBuilder {
 
-	public EKubeModel build(String currentContext, ErrorHandler handler){
+	public EKubeModel build(String currentContext, ErrorHandler handler) {
 		EKubeModel model = new EKubeModel(handler);
-		File cubeConfigFile  = new File(System.getProperty("user.home")+"/.kube/config");
-		System.setProperty(io.fabric8.kubernetes.client.Config.KUBERNETES_KUBECONFIG_FILE, cubeConfigFile.getAbsolutePath());
-		addConfiguratedContextsAndMarkupCurrentContext(handler, model,cubeConfigFile);
-		
+		File cubeConfigFile = new File(System.getProperty("user.home") + "/.kube/config");
+		System.setProperty(io.fabric8.kubernetes.client.Config.KUBERNETES_KUBECONFIG_FILE,
+				cubeConfigFile.getAbsolutePath());
+		addConfiguratedContextsAndMarkupCurrentContext(handler, model, cubeConfigFile);
+
 		/* @formatter:off*/
 		KubernetesClient client = new DefaultKubernetesClient();
 		/* build childcontent by using current context... if need more we must change the context and rebuild!*/
@@ -42,16 +47,33 @@ public class DefaultFabric8ioModelBuilder {
 
 		List<NamespaceContainer> namespaceContainers = model.getCurrentContext().getNamespaces();
 		for (NamespaceContainer namespaceContainer: namespaceContainers){
-			String namespaceName = namespaceContainer.getName();
-			PodList podList = client.pods().inNamespace(namespaceName).list();
-			for (Pod pod: podList.getItems()){
-				PodContainer podContainer = new PodContainer();
-				podContainer.setLabel(pod.getMetadata().getName());
-				namespaceContainer.getPodsContainer().add(podContainer);
-			}
+			addPodsFromNamespace(client, namespaceContainer);
+			addServicesFromNamespace(client, namespaceContainer);
 		}
 		return model;
 				
+	}
+
+	protected void addPodsFromNamespace(KubernetesClient client, NamespaceContainer namespaceContainer) {
+		String namespaceName = namespaceContainer.getName();
+		PodList podList = client.pods().inNamespace(namespaceName).list();
+		PodsContainer podsContainer = namespaceContainer.fetchPodsContainer();
+		for (Pod pod: podList.getItems()){
+			PodContainer podContainer = new PodContainer();
+			podContainer.setLabel(pod.getMetadata().getName());
+			podsContainer.add(podContainer);
+		}
+	}
+	
+	protected void addServicesFromNamespace(KubernetesClient client, NamespaceContainer namespaceContainer) {
+		String namespaceName = namespaceContainer.getName();
+		ServiceList serviceList = client.services().inNamespace(namespaceName).list();
+		List<Service> items = serviceList.getItems();
+		for (Service service: items){
+			ServiceContainer serviceContainer = new ServiceContainer();
+			serviceContainer.setLabel(service.getMetadata().getName());
+			namespaceContainer.fetchServicesContainer().add(serviceContainer);
+		}
 	}
 
 	protected void addNamespacesToCurrentContext(EKubeModel model, KubernetesClient client) {

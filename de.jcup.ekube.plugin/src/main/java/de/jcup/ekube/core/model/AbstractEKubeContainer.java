@@ -21,7 +21,7 @@ public abstract class AbstractEKubeContainer extends AbstractEKubeElement implem
 	protected <T> List<T> fetchAllChildrenOfType(Class<T> clazz){
 		List<T> list = new ArrayList<>();
 		for (EKubeElement element: children){
-			if (clazz.isAssignableFrom(clazz)){
+			if (clazz.isAssignableFrom(element.getClass())){
 				list.add((T) element);
 			}
 		}
