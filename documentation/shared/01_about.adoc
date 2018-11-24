@@ -2,6 +2,9 @@
 
 `EKube` is an eclipse plugin for Kubernetes.
 
+It shall not be a replacement for kubectl but bring some "quick wins".
+For Example to get a fast overview over the complete current context.
+
 === Features
 . (ongoing) connect to existing kubernetes tenant
 . (ongoing) tree structure in Kubernetes Explorer

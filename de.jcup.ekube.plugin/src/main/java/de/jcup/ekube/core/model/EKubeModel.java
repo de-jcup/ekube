@@ -1,9 +1,6 @@
 package de.jcup.ekube.core.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.jcup.ekube.core.access.ErrorHandler;
+import de.jcup.ekube.core.ErrorHandler;
 
 /**
  * Model containing relevant data usable for ui and information gathering. Will
@@ -16,7 +13,6 @@ import de.jcup.ekube.core.access.ErrorHandler;
 public class EKubeModel{
 
 	private ErrorHandler handler;
-	private List<ConfiguredContextContainer> configuredContexts = new ArrayList<>();
 	private CurrentContextContainer currentContextContainer;
 	private String currentContextName;
 	
@@ -26,10 +22,6 @@ public class EKubeModel{
 
 	public String getCurrentContextName() {
 		return currentContextName;
-	}
-	
-	public void add(ConfiguredContextContainer configuredContext){
-		configuredContexts.add(configuredContext);
 	}
 	
 	public void setCurrentContext(CurrentContextContainer currentContextContainer){

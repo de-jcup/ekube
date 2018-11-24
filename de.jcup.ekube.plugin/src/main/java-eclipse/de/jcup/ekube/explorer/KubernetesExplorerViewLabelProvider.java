@@ -1,29 +1,33 @@
 package de.jcup.ekube.explorer;
 
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.swing.text.html.parser.Element;
+
+import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
-import de.jcup.ekube.core.access.Cluster;
-import de.jcup.ekube.core.access.EKubeObject;
+import de.jcup.ekube.Activator;
+import de.jcup.ekube.core.model.EKubeContainer;
+import de.jcup.ekube.core.model.EKubeElement;
+import de.jcup.ekube.core.model.EKubeStatusElement;
 
 class KubernetesExplorerViewLabelProvider extends LabelProvider implements IStyledLabelProvider, IColorProvider {
 
-	public String getText(Object obj) {
-		return obj.toString();
-	}
-
 	public Image getImage(Object obj) {
 		String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-		if (obj instanceof TreeParent) {
+		if (obj instanceof EKubeContainer) {
 			imageKey = ISharedImages.IMG_OBJ_FOLDER;
 		}
 		IWorkbench workbench = PlatformUI.getWorkbench();
@@ -46,49 +50,25 @@ class KubernetesExplorerViewLabelProvider extends LabelProvider implements IStyl
 	public Color getBackground(Object element) {
 		return null;
 	}
-	private Styler clusterNotCurrentContextStyler = new Styler() {
+	private Styler statusStyler = new Styler() {
 
 		@Override
 		public void applyStyles(TextStyle textStyle) {
-			textStyle.strikeout=true;
+			textStyle.foreground=Activator.getDefault().getColorManager().getColor(new RGB(200,200,0));
 		}
 	};
 	
-	private Styler clusterIsCurrentContextStyler = new Styler() {
-
-		@Override
-		public void applyStyles(TextStyle textStyle) {
-			textStyle.strikeout=false;
-		}
-	};
 	@Override
 	public StyledString getStyledText(Object e) {
-		StyledString styled = new StyledString();
-		if (e == null) {
-			styled.append("null");
-			return styled;
+		if (! (e instanceof EKubeElement)){
+			return null;
 		}
-		
-		if (! (e instanceof TreeObject)) {
-			styled.append("<unknwon:"+e.getClass());
-			return styled;
+		EKubeElement element = (EKubeElement) e;
+		StyledString styledString = new StyledString(element.getLabel());
+		if (element instanceof EKubeStatusElement){
+			EKubeStatusElement cluster = (EKubeStatusElement) element;
+			styledString.append("  ["+cluster.getStatus()+"]", StyledString.COUNTER_STYLER);//statusStyler);
 		}
-		TreeObject to = (TreeObject) e;
-		EKubeObject element = to.getKubeObject();
-		if (element ==null){
-			styled.append("<null kube object>");
-			return styled;
-		}
-		if (element instanceof Cluster){
-			Cluster cluster = (Cluster) element;
-			if (cluster.isInCurrentContext()){
-				styled.append(cluster.getName(), clusterIsCurrentContextStyler);
-			}else{
-				styled.append(cluster.getName(), clusterNotCurrentContextStyler);
-			}
-		}else{
-			styled.append(element.getName());
-		}
-		return styled;
+		return styledString;
 	}
 }

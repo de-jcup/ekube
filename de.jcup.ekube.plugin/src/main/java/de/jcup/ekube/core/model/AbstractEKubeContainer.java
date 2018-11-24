@@ -5,8 +5,24 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractEKubeContainer extends AbstractEKubeElement implements EKubeContainer{
-	List<EKubeElement> children = new ArrayList<>();
+
+	private List<EKubeElement> children = new ArrayList<>();
 	
+	public AbstractEKubeContainer() {
+	}
+
+	/**
+	 * Adds kubeElement to children list. Will also set this as parent for the child.
+	 * @param kubeElement
+	 */
+	protected void addChild(EKubeElement kubeElement){
+		children.add(kubeElement);
+		if (kubeElement instanceof AbstractEKubeElement){
+			AbstractEKubeElement abstractElement= (AbstractEKubeElement) kubeElement;
+			abstractElement.parent=this;
+		}
+	}
+
 	@Override
 	public List<EKubeElement> getChildren() {
 		return Collections.unmodifiableList(children);
@@ -14,7 +30,7 @@ public abstract class AbstractEKubeContainer extends AbstractEKubeElement implem
 	
 	@Override
 	public boolean hasChildren() {
-		return children.isEmpty();
+		return !children.isEmpty();
 	}
 	
 	@SuppressWarnings("unchecked")

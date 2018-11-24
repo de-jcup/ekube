@@ -4,8 +4,8 @@ public class NamespaceContainer extends AbstractEKubeContainer {
 	private String name;
 
 	public NamespaceContainer(){
-		children.add(new ServicesContainer());
-		children.add(new PodsContainer());
+		addChild(new ServicesContainer());
+		addChild(new PodsContainer());
 	}
 	
 	public PodsContainer fetchPodsContainer(){

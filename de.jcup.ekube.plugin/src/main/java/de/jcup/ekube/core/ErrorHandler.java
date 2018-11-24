@@ -1,4 +1,4 @@
-package de.jcup.ekube.core.access;
+package de.jcup.ekube.core;
 
 public interface ErrorHandler {
 

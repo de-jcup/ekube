@@ -1,7 +1,7 @@
-package de.jcup.ekube.core.model;
+package de.jcup.ekube.core;
 
-public abstract class AbstractContextContainer extends AbstractEKubeContainer {
-
+public class EKubeConfigurationContext {
+	
 	private String name;
 	private String user;
 	private String cluster;
@@ -13,7 +13,6 @@ public abstract class AbstractContextContainer extends AbstractEKubeContainer {
 	public String getName() {
 		return name;
 	}
-
 
 	public void setUser(String user) {
 		this.user = user;
@@ -30,5 +29,4 @@ public abstract class AbstractContextContainer extends AbstractEKubeContainer {
 	public String getCluster() {
 		return cluster;
 	}
-
 }

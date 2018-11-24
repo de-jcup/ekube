@@ -7,6 +7,6 @@ public class ServicesContainer extends AbstractEKubeContainer{
 	}
 	
 	public void add(ServiceContainer serviceContainer){
-		children.add(serviceContainer);
+		addChild(serviceContainer);
 	}
 }

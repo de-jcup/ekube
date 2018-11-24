@@ -1,0 +1,21 @@
+== EKube Model
+
+The model is a complete separated from the used client technology for
+connecting with kubernetes!
+
+At the moment we will use https://github.com/fabric8io/kubernetes-client 
+which brings up a very good API and seems to be state of the art for
+connection.
+
+There exist model builders which know used technology and build 
+an ekube model. The model and its element do NOT know anything about
+the kuberenetes client apis etc.
+
+The model builder is able to register actions on each created 
+EKubeElement implementation by action identifiers. The element knows
+its action can trigger them. Inside the action there will be dedicated
+libary/client dependent code.
+
+So we got a full seperation between model and logic/tech stack.
+
+plantuml::ekube-model.puml[] 

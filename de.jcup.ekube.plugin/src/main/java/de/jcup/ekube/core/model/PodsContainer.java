@@ -7,6 +7,6 @@ public class PodsContainer extends AbstractEKubeContainer{
 	}
 	
 	public void add(PodContainer pod){
-		children.add(pod);
+		addChild(pod);
 	}
 }

@@ -5,7 +5,7 @@ import java.util.List;
 public class CurrentContextContainer extends AbstractContextContainer {
 	
 	public void add(NamespaceContainer namespaceContainer){
-		children.add(namespaceContainer);
+		addChild(namespaceContainer);
 	}
 
 	public List<NamespaceContainer> getNamespaces() {

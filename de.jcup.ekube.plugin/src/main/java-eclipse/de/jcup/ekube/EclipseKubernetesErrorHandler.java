@@ -3,7 +3,7 @@ package de.jcup.ekube;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import de.jcup.ekube.core.access.ErrorHandler;
+import de.jcup.ekube.core.ErrorHandler;
 
 public class EclipseKubernetesErrorHandler implements ErrorHandler {
 
