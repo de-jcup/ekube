@@ -10,9 +10,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import de.jcup.ekube.EclipseKubernetesErrorHandler;
-import de.jcup.ekube.core.access.Kubernetes;
-import de.jcup.ekube.core.access.KubernetesRegistry;
-import de.jcup.ekube.core.access.k8jc.FileConfigK8jcConnector;
+import de.jcup.ekube.core.fabric8io.DefaultFabric8ioModelBuilder;
+import de.jcup.ekube.core.model.EKubeModel;
+import de.jcup.ekube.core.model.EKubeModelToStringDumpConverter;
 
 public class EKubeConnectionSelectionHandler extends AbstractHandler {
 
@@ -23,9 +23,10 @@ public class EKubeConnectionSelectionHandler extends AbstractHandler {
 		String home = System.getProperty("user.home");
 		File file = new File(home + "/.kube/config");
 		MessageDialog.openInformation(window.getShell(), "Info", "Start connection to kubernetes as defined in\n "+file);
-		FileConfigK8jcConnector connector = new FileConfigK8jcConnector(file);
-		Kubernetes kubernetes = connector.connect(new EclipseKubernetesErrorHandler());
-		KubernetesRegistry.set(kubernetes);
+		EKubeModel model = new DefaultFabric8ioModelBuilder().build(null, new EclipseKubernetesErrorHandler());
+		System.out.println(new EKubeModelToStringDumpConverter().convert(model));
+//		Kubernetes kubernetes = connector.connect(new EclipseKubernetesErrorHandler());
+//		KubernetesRegistry.set(kubernetes);
 		return null;
 	}
 }
