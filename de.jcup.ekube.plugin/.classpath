@@ -65,5 +65,6 @@
 	<classpathentry kind="lib" path="libs/external/swagger-annotations-1.5.12.jar"/>
 	<classpathentry kind="lib" path="libs/external/validation-api-1.1.0.Final.jar"/>
 	<classpathentry kind="lib" path="libs/external/zjsonpatch-0.3.0.jar"/>
+	<classpathentry kind="lib" path="libs/de-jcup-eclipse-commons.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

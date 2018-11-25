@@ -1,5 +1,7 @@
 package de.jcup.ekube.explorer;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -17,7 +19,9 @@ import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -27,11 +31,12 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
+import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
-import de.jcup.ekube.EclipseKubernetesErrorHandler;
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.EKubeConfigurationContext;
 import de.jcup.ekube.core.fabric8io.Fabric8ioEKubeModelBuilder;
@@ -64,8 +69,12 @@ public class KubernetesExplorer extends ViewPart {
 	
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	private Action action1;
-	private Action action2;
+	private Action switchContextAction;
+	private Action infoAction;
+	
+	private Action expandAllAction;
+	private Action collapseAllAction;
+	
 	private Action doubleClickAction;
 
 	private KubernetesExplorerContentProvider contentPovider;
@@ -109,14 +118,21 @@ public class KubernetesExplorer extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
+		manager.add(switchContextAction);
 		manager.add(new Separator());
-		manager.add(action2);
+		manager.add(infoAction);
+		manager.add(new Separator());
+		manager.add(expandAllAction);
+		manager.add(collapseAllAction);
+
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(switchContextAction);
+		manager.add(infoAction);
+		manager.add(new Separator());
+		manager.add(expandAllAction);
+		manager.add(collapseAllAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -124,24 +140,62 @@ public class KubernetesExplorer extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(switchContextAction);
+		manager.add(infoAction);
 		manager.add(new Separator());
+		manager.add(expandAllAction);
+		manager.add(collapseAllAction);
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions() {
-		action1 = new Action() {
+		expandAllAction = new Action() {
+			@Override
 			public void run() {
-				viewer.refresh();
+				viewer.expandAll();
 			}
 		};
-		action1.setText("Refresh");
-		action1.setToolTipText("Full refresh");
-		action1.setImageDescriptor(
+		expandAllAction.setText("Expand all");
+		expandAllAction.setToolTipText("Expand all tree elements");
+		expandAllAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/expandall.png",Activator.PLUGIN_ID));
+		
+		collapseAllAction = new Action() {
+			@Override
+			public void run() {
+				viewer.collapseAll();
+			}
+		};
+		collapseAllAction.setText("Collpase all");
+		collapseAllAction.setToolTipText("Collapse all tree elements");
+		collapseAllAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/collapseall.png",Activator.PLUGIN_ID));
+		
+		switchContextAction = new Action() {
+			public void run() {
+				
+				EKubeConfiguration configuration = Activator.getDefault().getConfiguration();
+				List<EKubeConfigurationContext> data = configuration.getConfigurationContextList();
+				ElementListSelectionDialog dialog =
+					    new ElementListSelectionDialog(Display.getCurrent().getActiveShell(), new EKubeConfigurationLabelProvider());
+					dialog.setElements(data.toArray());
+					dialog.setMultipleSelection(false);
+					dialog.setTitle("Which context do you want to use ?");
+					// user pressed cancel
+					if (dialog.open() != Window.OK) {
+					        return;
+					}
+					Object[] result = dialog.getResult();
+					EKubeConfigurationContext context = (EKubeConfigurationContext) result[0];
+					configuration.setCurrentContext(context.getName());
+					
+					connect(configuration);
+			}
+		};
+		switchContextAction.setText("Switch");
+		switchContextAction.setToolTipText("Switch context");
+		switchContextAction.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
 
-		action2 = new Action() {
+		infoAction = new Action() {
 			public void run() {
 				StringBuilder sb = new StringBuilder();
 				EKubeConfiguration config = Activator.getDefault().getConfiguration();
@@ -153,9 +207,9 @@ public class KubernetesExplorer extends ViewPart {
 				showMessage(sb.toString());
 			}
 		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(
+		infoAction.setText("Info");
+		infoAction.setToolTipText("Info about kubernetes configuration");
+		infoAction.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action() {
 			public void run() {
@@ -201,11 +255,7 @@ public class KubernetesExplorer extends ViewPart {
 				
 			contentPovider.inputChanged(viewer, null, model);
 			
-			Display display = Display.getCurrent();
-			if (display==null){
-				display=Display.getDefault();
-			}
-			display.asyncExec(()->viewer.refresh());
+			EclipseUtil.safeAsyncExec(()->viewer.refresh());
 			
 			return Status.OK_STATUS;
 		}

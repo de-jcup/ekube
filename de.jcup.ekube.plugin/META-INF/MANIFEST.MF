@@ -66,4 +66,5 @@ Bundle-ClassPath: .,
  libs/external/sundr-core-0.9.2.jar,
  libs/external/swagger-annotations-1.5.12.jar,
  libs/external/validation-api-1.1.0.Final.jar,
- libs/external/zjsonpatch-0.3.0.jar
+ libs/external/zjsonpatch-0.3.0.jar,
+ libs/de-jcup-eclipse-commons.jar

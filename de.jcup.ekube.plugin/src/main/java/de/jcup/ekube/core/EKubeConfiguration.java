@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class EKubeConfiguration {
 
 	private List<EKubeConfigurationContext> configurationContextList = new ArrayList<>();
@@ -31,6 +33,20 @@ public class EKubeConfiguration {
 	
 	public String getCurrentContext() {
 		return currentContext;
+	}
+
+	/**
+	 * Finds context configuration or <code>null</code>
+	 * @param newCurrentContextName
+	 * @return config or <code>null</code> when not found
+	 */
+	public EKubeConfigurationContext findContextConfiguration(String newCurrentContextName) {
+		for (EKubeConfigurationContext ecc: configurationContextList){
+			if (StringUtils.equals(ecc.getName(), newCurrentContextName)){
+				return ecc;
+			}
+		}
+		return null;
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import de.jcup.ekube.core.EKubeConfiguration;
+import de.jcup.ekube.core.EKubeConfigurationContext;
 import de.jcup.ekube.core.ErrorHandler;
 import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeModel;
@@ -37,23 +38,46 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 		System.setProperty(io.fabric8.kubernetes.client.Config.KUBERNETES_KUBECONFIG_FILE,
 				cubeConfigFile.getAbsolutePath());
 
-		String newCurrentContext = configuration.getCurrentContext();
-		Config config = Config.autoConfigure(newCurrentContext);
+		String newCurrentContextName = configuration.getCurrentContext();
+		EKubeConfigurationContext contextConfiguration = configuration.findContextConfiguration(newCurrentContextName);
+		if (contextConfiguration==null){
+			/* not possible - return emtpy model*/
+			return model;
+		}
+		CurrentContextContainer currentContext = setupCurrentContextContainer(model, contextConfiguration);
+		
+		
+		Config config = Config.autoConfigure(newCurrentContextName);
 		
 		KubernetesClient client = new DefaultKubernetesClient(config);
-		model.getCurrentContext().setName(newCurrentContext);
-		model.getCurrentContext().setLabel(newCurrentContext);
+		
+		
+		
 		
 		/* build child content by using current context... if need more we must change the context and rebuild!*/
 		addNamespacesToCurrentContext(model, client);
 
-		List<NamespaceContainer> namespaceContainers = model.getCurrentContext().getNamespaces();
+		List<NamespaceContainer> namespaceContainers = currentContext.getNamespaces();
 		for (NamespaceContainer namespaceContainer: namespaceContainers){
 			PodUtils.addPodsFromNamespace(client, namespaceContainer);
 			ServiceUtils.addServicesFromNamespace(client, namespaceContainer);
 		}
 		return model;
 				
+	}
+
+
+	protected CurrentContextContainer setupCurrentContextContainer(EKubeModel model,
+			EKubeConfigurationContext contextConfiguration) {
+		/* setup current context container */
+		CurrentContextContainer currentContext = model.getCurrentContext();
+		
+		/* use settings from configuration - will be used for connection */
+		currentContext.setLabel(contextConfiguration.getName());
+		currentContext.setName(contextConfiguration.getName());
+		currentContext.setCluster(contextConfiguration.getCluster());
+		currentContext.setUser(contextConfiguration.getUser());
+		return currentContext;
 	}
 
 	protected void addNamespacesToCurrentContext(EKubeModel model, KubernetesClient client) {

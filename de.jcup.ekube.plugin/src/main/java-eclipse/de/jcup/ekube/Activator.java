@@ -7,6 +7,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.ErrorHandler;
 import de.jcup.ekube.explorer.KubernetesExplorer;
@@ -14,7 +15,7 @@ import de.jcup.ekube.explorer.KubernetesExplorer;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements PluginContextProvider {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.jcup.ekube"; //$NON-NLS-1$
@@ -100,5 +101,15 @@ public class Activator extends AbstractUIPlugin {
 
 	public ErrorHandler getErrorHandler() {
 		return errorHandler;
+	}
+
+	@Override
+	public AbstractUIPlugin getActivator() {
+		return this;
+	}
+
+	@Override
+	public String getPluginID() {
+		return PLUGIN_ID;
 	}
 }
