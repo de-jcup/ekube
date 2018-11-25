@@ -1,9 +1,0 @@
-<h1>This package is the core access layer to kubernetes.</h1>
-Why another layer?
-<br><br>
-Reason: K8jc (KubernetesJavaClient) is a generated API which could change in future.
-Also there is the danger that we must use different API calls in different versions to get all 
-interesting stuff from kubernetes. So this abstraction layer makes absolute sense. (e.g. K8jcNamespace could 
-be filled by using stable + experimental API calls).
-<br><br>
-Also using interfaces makes it much more easier to write mockito tests...

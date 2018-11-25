@@ -1,0 +1,16 @@
+== Initial import into IDE
+- checkout from github 
+ `git clone https://github.com/de-jcup/ekube.git`
+- import external dependencies
+  `./mvnw clean install -pl external-dependencies`
+- import sources as well
+  `./mvnw dependency:copy-dependencies -Dclassifier=sources -pl external-dependencies` 
+- Ensure you got Tycho Configurator m2e installed
+   `Eclipse->Windows->Preferences->Maven->Discovery->Open` ...
+- Import as existing maven project into eclipse
+- Inside project `de.jcup.ekube.plugins`
+ . Open `build.properties` add all jars in `de.jcup.ekube.plugins/lib/external`
+  as runtime dependencies
+ . Open also `Project->Properties->Build path` and add all external 
+   librariy jars into classpath
+  

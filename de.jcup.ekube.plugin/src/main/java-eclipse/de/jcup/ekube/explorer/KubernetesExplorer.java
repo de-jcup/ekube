@@ -1,7 +1,13 @@
 package de.jcup.ekube.explorer;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -9,10 +15,13 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -22,12 +31,16 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
-import de.jcup.ekube.core.access.Cluster;
-import de.jcup.ekube.core.access.EKubeObject;
-import de.jcup.ekube.core.access.KubernetesRegistry;
+import de.jcup.eclipse.commons.ui.EclipseUtil;
+import de.jcup.ekube.Activator;
+import de.jcup.ekube.core.EKubeConfiguration;
+import de.jcup.ekube.core.EKubeConfigurationContext;
+import de.jcup.ekube.core.fabric8io.Fabric8ioEKubeModelBuilder;
+import de.jcup.ekube.core.model.EKubeModel;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -53,11 +66,15 @@ public class KubernetesExplorer extends ViewPart {
 
 	@Inject
 	IWorkbench workbench;
-
+	
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	private Action action1;
-	private Action action2;
+	private Action switchContextAction;
+	private Action infoAction;
+	
+	private Action expandAllAction;
+	private Action collapseAllAction;
+	
 	private Action doubleClickAction;
 
 	private KubernetesExplorerContentProvider contentPovider;
@@ -69,7 +86,7 @@ public class KubernetesExplorer extends ViewPart {
 		contentPovider = new KubernetesExplorerContentProvider(this);
 		viewer.setContentProvider(contentPovider);
 		viewer.setInput(getViewSite());
-		viewer.setLabelProvider(new KubernetesExplorerViewLabelProvider());
+		viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new KubernetesExplorerViewLabelProvider()));
 
 		// Create the help context id for the viewer's control
 		// workbench.getHelpSystem().setHelp(viewer.getControl(),
@@ -101,14 +118,21 @@ public class KubernetesExplorer extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
+		manager.add(switchContextAction);
 		manager.add(new Separator());
-		manager.add(action2);
+		manager.add(infoAction);
+		manager.add(new Separator());
+		manager.add(expandAllAction);
+		manager.add(collapseAllAction);
+
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(switchContextAction);
+		manager.add(infoAction);
+		manager.add(new Separator());
+		manager.add(expandAllAction);
+		manager.add(collapseAllAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -116,58 +140,84 @@ public class KubernetesExplorer extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(switchContextAction);
+		manager.add(infoAction);
 		manager.add(new Separator());
+		manager.add(expandAllAction);
+		manager.add(collapseAllAction);
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions() {
-		action1 = new Action() {
+		expandAllAction = new Action() {
+			@Override
 			public void run() {
-				KubernetesRegistry.get().reload();
-				KubernetesExplorer.this.contentPovider.initialize();
-				viewer.refresh();
+				viewer.expandAll();
 			}
 		};
-		action1.setText("Refresh");
-		action1.setToolTipText("Full refresh");
-		action1.setImageDescriptor(
+		expandAllAction.setText("Expand all");
+		expandAllAction.setToolTipText("Expand all tree elements");
+		expandAllAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/expandall.png",Activator.PLUGIN_ID));
+		
+		collapseAllAction = new Action() {
+			@Override
+			public void run() {
+				viewer.collapseAll();
+			}
+		};
+		collapseAllAction.setText("Collpase all");
+		collapseAllAction.setToolTipText("Collapse all tree elements");
+		collapseAllAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/collapseall.png",Activator.PLUGIN_ID));
+		
+		switchContextAction = new Action() {
+			public void run() {
+				
+				EKubeConfiguration configuration = Activator.getDefault().getConfiguration();
+				List<EKubeConfigurationContext> data = configuration.getConfigurationContextList();
+				ElementListSelectionDialog dialog =
+					    new ElementListSelectionDialog(Display.getCurrent().getActiveShell(), new EKubeConfigurationLabelProvider());
+					dialog.setElements(data.toArray());
+					dialog.setMultipleSelection(false);
+					dialog.setTitle("Which context do you want to use ?");
+					// user pressed cancel
+					if (dialog.open() != Window.OK) {
+					        return;
+					}
+					Object[] result = dialog.getResult();
+					EKubeConfigurationContext context = (EKubeConfigurationContext) result[0];
+					configuration.setCurrentContext(context.getName());
+					
+					connect(configuration);
+			}
+		};
+		switchContextAction.setText("Switch");
+		switchContextAction.setToolTipText("Switch context");
+		switchContextAction.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
 
-		action2 = new Action() {
+		infoAction = new Action() {
 			public void run() {
-				showMessage("Action 2 executed");
+				StringBuilder sb = new StringBuilder();
+				EKubeConfiguration config = Activator.getDefault().getConfiguration();
+				sb.append("Info:\n-current context:"+config.getCurrentContext());
+				sb.append("\nContexts available:");
+				for (EKubeConfigurationContext contextConfig: config.getConfigurationContextList()){
+					sb.append("\n+").append(contextConfig.getName()+", cluster="+contextConfig.getCluster()+", user:"+contextConfig.getUser());
+				}
+				showMessage(sb.toString());
 			}
 		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(
+		infoAction.setText("Info");
+		infoAction.setToolTipText("Info about kubernetes configuration");
+		infoAction.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action() {
 			public void run() {
 				IStructuredSelection selection = viewer.getStructuredSelection();
 				Object obj = selection.getFirstElement();
-				if (obj instanceof TreeObject) {
-					TreeObject to = (TreeObject) obj;
-					handleDoubleClickOn(to.getKubeObject());
-				} else {
-					showMessage("Double-click detected on " + obj.toString());
-				}
+				showMessage("Double-click detected on " + obj.toString());
 			}
 		};
-	}
-
-	protected void handleDoubleClickOn(EKubeObject obj) {
-		if (obj instanceof Cluster) {
-			Cluster c = (Cluster) obj;
-			showMessage("Switching to cluster context:" + c.getName());
-			c.setAsCurrentContext();
-			KubernetesExplorer.this.contentPovider.initialize();
-	
-			Display.getCurrent().asyncExec(()->	viewer.refresh());
-		
-		}
 	}
 
 	private void hookDoubleClickAction() {
@@ -186,4 +236,36 @@ public class KubernetesExplorer extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
+	
+	private class ConnectionJob extends Job{
+
+		private EKubeConfiguration configuration;
+
+		public ConnectionJob(EKubeConfiguration configuration ) {
+			super("connect to kubernetes. contextg="+configuration.getCurrentContext());
+			this.configuration=configuration;
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			monitor.beginTask("Fetch data from cluster", IProgressMonitor.UNKNOWN);
+			Fabric8ioEKubeModelBuilder modelBuilder = new Fabric8ioEKubeModelBuilder(configuration, Activator.getDefault().getErrorHandler());
+			EKubeModel model = modelBuilder.build();
+			monitor.done();
+				
+			contentPovider.inputChanged(viewer, null, model);
+			
+			EclipseUtil.safeAsyncExec(()->viewer.refresh());
+			
+			return Status.OK_STATUS;
+		}
+		
+	}
+
+	public void connect(EKubeConfiguration configuration) {
+		Job job = new ConnectionJob(configuration);
+		job.setUser(true);
+		job.schedule();
+	}
+
 }

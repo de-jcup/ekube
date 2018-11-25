@@ -1,4 +1,4 @@
-= Technical documentation
+= Architecture documentation
 
 include::shared/01_about.adoc[]
 

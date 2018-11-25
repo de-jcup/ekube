@@ -1,0 +1,40 @@
+@startuml
+package de.jcup.ekube.explorer {
+	class EKubeModelTreeContentProvider
+}
+package de.jcup.ekube.core.model {
+	interface EKubeModel
+	interface EKubeModelBuilder
+	interface EKubeElement << general >>
+	interface EKubeContainer << general >>
+	abstract class AbstractEKubeElement
+	abstract class AbstractEKubeContainer
+
+	note top of EKubeElement : Every element insisde EKubeModel implements this
+	note "Also container is same as an element but can contain child elements" as N2
+	EKubeElement .. N2
+	N2 .. EKubeContainer
+	
+}
+
+package de.jcup.ekube.core.fabric8io {
+	class DefaultFabric8ioModelBuilder
+	note top of DefaultFabric8ioModelBuilder : Uses Fabric8io java client api
+}
+
+EKubeElement <|--- EKubeContainer
+AbstractEKubeElement <|--- AbstractEKubeContainer
+AbstractEKubeElement <|-- EKubeElement 
+EKubeContainer<|--- AbstractEKubeContainer 
+
+EKubeModelBuilder <|-- DefaultFabric8ioModelBuilder
+EKubeModelBuilder --> EKubeModel : Builds model
+EKubeModelBuilder --> EKubeElement : Creates elements
+
+EKubeModel <- EKubeModelTreeContentProvider
+EKubeModel "1" o-- EKubeElement
+
+EKubeContainer "1" *-- "many" EKubeElement: contains
+
+@enduml
+

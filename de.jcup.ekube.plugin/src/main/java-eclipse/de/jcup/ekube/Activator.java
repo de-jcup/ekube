@@ -1,13 +1,21 @@
 package de.jcup.ekube;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import de.jcup.eclipse.commons.PluginContextProvider;
+import de.jcup.ekube.core.EKubeConfiguration;
+import de.jcup.ekube.core.ErrorHandler;
+import de.jcup.ekube.explorer.KubernetesExplorer;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements PluginContextProvider {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.jcup.ekube"; //$NON-NLS-1$
@@ -16,6 +24,10 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator plugin;
 
 	private ColorManager colorManager;
+
+	private ErrorHandler errorHandler;
+
+	private EKubeConfiguration configuration;
 
 	/**
 	 * The constructor
@@ -32,11 +44,27 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		colorManager = new ColorManager();
+		errorHandler = new EclipseKubernetesErrorHandler();
+		configuration = new EKubeConfiguration();
+		
 		plugin = this;
 	}
 	
 	public ColorManager getColorManager() {
 		return colorManager;
+	}
+	
+	public EKubeConfiguration getConfiguration(){
+		return configuration;
+	}
+	
+	public KubernetesExplorer getExplorer(){
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IViewPart view = page.findView(KubernetesExplorer.ID);
+		if (view instanceof KubernetesExplorer) {
+			return (KubernetesExplorer) view;
+		}
+		throw new IllegalStateException("Did not find kubernetes explorer but:"+view);
 	}
 
 	/*
@@ -69,5 +97,19 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	public ErrorHandler getErrorHandler() {
+		return errorHandler;
+	}
+
+	@Override
+	public AbstractUIPlugin getActivator() {
+		return this;
+	}
+
+	@Override
+	public String getPluginID() {
+		return PLUGIN_ID;
 	}
 }
