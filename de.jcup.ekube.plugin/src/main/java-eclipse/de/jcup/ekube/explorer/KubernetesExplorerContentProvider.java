@@ -28,7 +28,7 @@ class KubernetesExplorerContentProvider implements ITreeContentProvider {
 	public Object[] getElements(Object parent) {
 		if (parent.equals(this.kubernetesExplorer.getViewSite())) {
 			if (model == null){
-				model=new EKubeModel(Activator.getDefault().getErrorHandler());
+				model=new EKubeModel();
 			}
 			return new Object[]{model.getCurrentContext()};
 		}

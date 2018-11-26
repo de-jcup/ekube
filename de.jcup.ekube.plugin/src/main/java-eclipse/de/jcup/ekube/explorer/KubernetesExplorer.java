@@ -19,7 +19,6 @@ import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -37,25 +36,11 @@ import org.eclipse.ui.part.ViewPart;
 
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
+import de.jcup.ekube.EclipseEKubeContext;
 import de.jcup.ekube.core.EKubeConfiguration;
-import de.jcup.ekube.core.EKubeConfigurationContext;
+import de.jcup.ekube.core.EKubeContextConfigurationEntry;
 import de.jcup.ekube.core.fabric8io.Fabric8ioEKubeModelBuilder;
 import de.jcup.ekube.core.model.EKubeModel;
-
-/**
- * This sample class demonstrates how to plug-in a new workbench view. The view
- * shows data obtained from the model. The sample creates a dummy model on the
- * fly, but a real implementation would connect to the model available either in
- * this or another plug-in (e.g. the workspace). The view is connected to the
- * model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be
- * presented in the view. Each view can present the same model objects using
- * different labels and icons, if needed. Alternatively, a single label provider
- * can be shared between views in order to ensure that objects of the same type
- * are presented in the same way everywhere.
- * <p>
- */
 
 public class KubernetesExplorer extends ViewPart {
 
@@ -66,15 +51,15 @@ public class KubernetesExplorer extends ViewPart {
 
 	@Inject
 	IWorkbench workbench;
-	
+
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
 	private Action switchContextAction;
 	private Action infoAction;
-	
+
 	private Action expandAllAction;
 	private Action collapseAllAction;
-	
+
 	private Action doubleClickAction;
 
 	private KubernetesExplorerContentProvider contentPovider;
@@ -157,8 +142,9 @@ public class KubernetesExplorer extends ViewPart {
 		};
 		expandAllAction.setText("Expand all");
 		expandAllAction.setToolTipText("Expand all tree elements");
-		expandAllAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/expandall.png",Activator.PLUGIN_ID));
-		
+		expandAllAction
+				.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/expandall.png", Activator.PLUGIN_ID));
+
 		collapseAllAction = new Action() {
 			@Override
 			public void run() {
@@ -167,42 +153,47 @@ public class KubernetesExplorer extends ViewPart {
 		};
 		collapseAllAction.setText("Collpase all");
 		collapseAllAction.setToolTipText("Collapse all tree elements");
-		collapseAllAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/collapseall.png",Activator.PLUGIN_ID));
-		
+		collapseAllAction
+				.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/collapseall.png", Activator.PLUGIN_ID));
+
 		switchContextAction = new Action() {
 			public void run() {
-				
+
 				EKubeConfiguration configuration = Activator.getDefault().getConfiguration();
-				List<EKubeConfigurationContext> data = configuration.getConfigurationContextList();
-				ElementListSelectionDialog dialog =
-					    new ElementListSelectionDialog(Display.getCurrent().getActiveShell(), new EKubeConfigurationLabelProvider());
-					dialog.setElements(data.toArray());
-					dialog.setMultipleSelection(false);
-					dialog.setTitle("Which context do you want to use ?");
-					// user pressed cancel
-					if (dialog.open() != Window.OK) {
-					        return;
-					}
-					Object[] result = dialog.getResult();
-					EKubeConfigurationContext context = (EKubeConfigurationContext) result[0];
-					configuration.setCurrentContext(context.getName());
-					
-					connect(configuration);
+				List<EKubeContextConfigurationEntry> data = configuration.getConfigurationContextList();
+				if (data.isEmpty()){
+					MessageDialog.openWarning(viewer.getControl().getShell(), "Not connected", "No information about contexts to choose available.\n\nPlease connect to kubernetes before!");
+					return;
+				}
+				ElementListSelectionDialog dialog = new ElementListSelectionDialog(
+						Display.getCurrent().getActiveShell(), new EKubeConfigurationLabelProvider());
+				dialog.setElements(data.toArray());
+				dialog.setMultipleSelection(false);
+				dialog.setTitle("Which context do you want to use ?");
+				// user pressed cancel
+				if (dialog.open() != Window.OK) {
+					return;
+				}
+				Object[] result = dialog.getResult();
+				EKubeContextConfigurationEntry context = (EKubeContextConfigurationEntry) result[0];
+				configuration.setKubernetesContext(context.getName());
+
+				connect(configuration);
 			}
 		};
 		switchContextAction.setText("Switch");
 		switchContextAction.setToolTipText("Switch context");
-		switchContextAction.setImageDescriptor(
-				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
+		switchContextAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/switch-context.png", Activator.PLUGIN_ID));
 
 		infoAction = new Action() {
 			public void run() {
 				StringBuilder sb = new StringBuilder();
 				EKubeConfiguration config = Activator.getDefault().getConfiguration();
-				sb.append("Info:\n-current context:"+config.getCurrentContext());
+				sb.append("Info:\n-current context:" + config.getKubernetesContext());
 				sb.append("\nContexts available:");
-				for (EKubeConfigurationContext contextConfig: config.getConfigurationContextList()){
-					sb.append("\n+").append(contextConfig.getName()+", cluster="+contextConfig.getCluster()+", user:"+contextConfig.getUser());
+				for (EKubeContextConfigurationEntry contextConfig : config.getConfigurationContextList()) {
+					sb.append("\n+").append(contextConfig.getName() + ", cluster=" + contextConfig.getCluster()
+							+ ", user:" + contextConfig.getUser());
 				}
 				showMessage(sb.toString());
 			}
@@ -236,30 +227,28 @@ public class KubernetesExplorer extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-	
-	private class ConnectionJob extends Job{
 
-		private EKubeConfiguration configuration;
+	private class ConnectionJob extends Job {
 
-		public ConnectionJob(EKubeConfiguration configuration ) {
-			super("connect to kubernetes. contextg="+configuration.getCurrentContext());
-			this.configuration=configuration;
+		public ConnectionJob(EKubeConfiguration configuration) {
+			super("connect to kubernetes. contextg=" + configuration.getKubernetesContext());
 		}
 
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			monitor.beginTask("Fetch data from cluster", IProgressMonitor.UNKNOWN);
-			Fabric8ioEKubeModelBuilder modelBuilder = new Fabric8ioEKubeModelBuilder(configuration, Activator.getDefault().getErrorHandler());
-			EKubeModel model = modelBuilder.build();
+			Fabric8ioEKubeModelBuilder modelBuilder = new Fabric8ioEKubeModelBuilder();
+			EclipseEKubeContext context = new EclipseEKubeContext(monitor);
+			EKubeModel model = modelBuilder.build(context);
 			monitor.done();
-				
+
 			contentPovider.inputChanged(viewer, null, model);
-			
-			EclipseUtil.safeAsyncExec(()->viewer.refresh());
-			
+
+			EclipseUtil.safeAsyncExec(() -> viewer.refresh());
+
 			return Status.OK_STATUS;
 		}
-		
+
 	}
 
 	public void connect(EKubeConfiguration configuration) {

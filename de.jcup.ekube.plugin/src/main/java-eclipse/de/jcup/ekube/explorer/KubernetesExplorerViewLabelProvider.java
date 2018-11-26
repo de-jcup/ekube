@@ -15,32 +15,48 @@ import org.eclipse.ui.PlatformUI;
 
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
+import de.jcup.ekube.core.model.ConfigMapElement;
+import de.jcup.ekube.core.model.ConfigMapsContainer;
 import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeStatusElement;
 import de.jcup.ekube.core.model.NamespaceContainer;
+import de.jcup.ekube.core.model.NetworkPolicyElement;
+import de.jcup.ekube.core.model.NetworksContainer;
+import de.jcup.ekube.core.model.PersistentVolumeClaimElement;
 import de.jcup.ekube.core.model.PodContainer;
 import de.jcup.ekube.core.model.PodsContainer;
 import de.jcup.ekube.core.model.ServiceContainer;
 import de.jcup.ekube.core.model.ServicesContainer;
+import de.jcup.ekube.core.model.VolumesContainer;
 
 class KubernetesExplorerViewLabelProvider extends LabelProvider implements IStyledLabelProvider, IColorProvider {
 
 	public Image getImage(Object obj) {
 		String element=null;
 		if (obj instanceof CurrentContextContainer){
-			element="ctxhelp_context_obj.png";
+			element="context.png";
 		}else if (obj instanceof NamespaceContainer){
-			element="memory_view.png";
+			element="namespace.png";
 		}else if (obj instanceof ServicesContainer){
-			element="osprc_obj.png";
+			element="services.png";
 		}else if (obj instanceof ServiceContainer){
-			element="thread_obj.png";
+			element="service.png";
 		}else if (obj instanceof PodsContainer){
-			element="debugt_obj.png";
+			element="pods.png";
 		}else if (obj instanceof PodContainer){
-			element="methpub_obj.png";
+			element="pod.png";
+		}else if (obj instanceof VolumesContainer){
+			element="volumes.png";
+		}else if (obj instanceof PersistentVolumeClaimElement){
+			element="persistentvolumeclaim.png";
+		}else if (obj instanceof ConfigMapsContainer){
+			element="configmaps.png";
+		}else if (obj instanceof NetworksContainer){
+			element="network.png";
+		}else if (obj instanceof NetworkPolicyElement){
+			element="network-policy.png";
 		}
 		if (element!=null){
 			return EclipseUtil.getImage("/icons/model/"+element, Activator.getDefault());
@@ -88,14 +104,19 @@ class KubernetesExplorerViewLabelProvider extends LabelProvider implements IStyl
 			return null;
 		}
 		EKubeElement element = (EKubeElement) e;
-		StyledString styledString = new StyledString(element.getLabel());
-		if (element instanceof EKubeStatusElement){
-			EKubeStatusElement cluster = (EKubeStatusElement) element;
-			styledString.append("  ["+cluster.getStatus()+"]", StyledString.COUNTER_STYLER);//contextStyler);
+		StyledString styledString = new StyledString();
+		if (element instanceof CurrentContextContainer){
+			styledString.append("context:");
 		}
+		styledString.append(element.getLabel());
 		if (element instanceof CurrentContextContainer){
 			CurrentContextContainer container = (CurrentContextContainer) element;
 			styledString.append("  [cluster:"+container.getCluster()+", user="+container.getUser() + "]", contextStyler);
+			return styledString;
+		}
+		if (element instanceof EKubeStatusElement){
+			EKubeStatusElement cluster = (EKubeStatusElement) element;
+			styledString.append("  ["+cluster.getStatus()+"]", StyledString.COUNTER_STYLER);//contextStyler);
 		}
 		return styledString;
 	}

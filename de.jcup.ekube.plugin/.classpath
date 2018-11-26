@@ -23,7 +23,7 @@
 	<classpathentry kind="lib" path="libs/external/commons-codec-1.11.jar"/>
 	<classpathentry kind="lib" path="libs/external/commons-collections4-4.1.jar"/>
 	<classpathentry kind="lib" path="libs/external/commons-compress-1.18.jar"/>
-	<classpathentry kind="lib" path="libs/external/commons-lang3-3.7.jar"/>
+	<classpathentry kind="lib" path="libs/external/commons-lang3-3.7.jar" sourcepath="C:/Users/ATRIGNA/AppData/Local/Temp/.org.sf.feeling.decompiler1543061257531/source/commons-lang3-3.7-sources.jar"/>
 	<classpathentry kind="lib" path="libs/external/error_prone_annotations-2.1.3.jar"/>
 	<classpathentry kind="lib" path="libs/external/generex-1.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/external/gson-2.6.2.jar"/>

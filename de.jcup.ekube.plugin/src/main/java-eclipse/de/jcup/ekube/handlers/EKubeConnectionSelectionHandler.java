@@ -5,22 +5,23 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
 import de.jcup.ekube.Activator;
-import de.jcup.ekube.core.EKubeConfiguration;
-import de.jcup.ekube.core.fabric8io.Fabric8ioConfgurationContextUpdater;
+import de.jcup.ekube.EclipseEKubeContext;
+import de.jcup.ekube.core.fabric8io.Fabric8ioConfgurationUpdater;
 
 public class EKubeConnectionSelectionHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Activator activator = Activator.getDefault();
-		EKubeConfiguration configuration = activator.getConfiguration();
+		
+		EclipseEKubeContext context  = new EclipseEKubeContext();
 
 		/* next lines load kube config data and creates a list of indexes*/
-		Fabric8ioConfgurationContextUpdater updater = new Fabric8ioConfgurationContextUpdater(activator.getErrorHandler());
-		updater.update(configuration);
+		Fabric8ioConfgurationUpdater updater = new Fabric8ioConfgurationUpdater();
+		updater.update(context);
 		
 		/* kube config is now up to date and can be used in explorer to switch context*/
-		activator.getExplorer().connect(configuration);
+		activator.getExplorer().connect(context.getConfiguration());
 		return null;
 	}
 }

@@ -1,6 +1,6 @@
 package de.jcup.ekube.core;
 
-public class EKubeConfigurationContext {
+public class EKubeContextConfigurationEntry {
 	
 	private String name;
 	private String user;

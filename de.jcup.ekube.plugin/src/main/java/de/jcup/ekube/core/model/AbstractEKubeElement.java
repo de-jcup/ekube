@@ -6,6 +6,8 @@ import java.util.Map;
 public abstract class AbstractEKubeElement implements EKubeElement {
 
 	protected String label;
+	protected String name;
+	
 	private Map<EKubeActionIdentifer, EKubeElementAction> actions = new EnumMap<>(EKubeActionIdentifer.class);
 	EKubeContainer parent;
 
@@ -17,13 +19,31 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 		return parent;
 	}
 
+	/**
+	 * This sets directly the label. Normally you do NOT have to use this method when your label shall be same as name.
+	 * @param text
+	 */
 	public void setLabel(String text) {
 		this.label = text;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
 	}
 
 	@Override
 	public String getLabel() {
-		return label != null ? label : getClass().getSimpleName() + hashCode();
+		if (label!=null){
+			return label;
+		}
+		if (name!=null){
+			return name;
+		}
+		return getClass().getSimpleName() + hashCode();
 	}
 
 	@Override

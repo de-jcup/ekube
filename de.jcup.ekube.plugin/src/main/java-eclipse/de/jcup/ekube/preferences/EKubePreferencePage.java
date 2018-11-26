@@ -5,23 +5,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import de.jcup.ekube.Activator;
 
-/**
- * This class represents a preference page that is contributed to the
- * Preferences dialog. By subclassing <samp>FieldEditorPreferencePage</samp>, we
- * can use the field support built into JFace that allows us to create a page
- * that is small and knows how to save, restore and apply itself.
- * <p>
- * This page is used to modify preferences only. They are stored in the
- * preference store that belongs to the main plug-in class. That way,
- * preferences can be accessed directly via the preference store.
- */
-
 public class EKubePreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
 	public EKubePreferencePage() {
 		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setDescription("A demonstration of a preference page implementation");
+		setDescription("Preferences for kubernetes communication");
 	}
 
 	/**
@@ -31,20 +20,16 @@ public class EKubePreferencePage extends FieldEditorPreferencePage implements IW
 	 */
 	public void createFieldEditors() {
 		addField(
-				new DirectoryFieldEditor(PreferenceConstants.P_PATH, "&Directory preference:", getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.P_BOOLEAN, "&An example of a boolean preference",
+				new FileFieldEditor(EKubePreferenceConstants.KUBE_CONFIGFILE_PATH.getId(), "&KubeConfig:", getFieldEditorParent()));
+		addField(new BooleanFieldEditor(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED.getId(), "&Filter namespaces enabled",
 				getFieldEditorParent()));
 
-		addField(new RadioGroupFieldEditor(PreferenceConstants.P_CHOICE, "An example of a multiple-choice preference",
-				1, new String[][] { { "&Choice 1", "choice1" }, { "C&hoice 2", "choice2" } }, getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceConstants.P_STRING, "A &text preference:", getFieldEditorParent()));
+//		addField(new RadioGroupFieldEditor(EKubePreferenceConstants.P_CHOICE, "An example of a multiple-choice preference",
+//				1, new String[][] { { "&Choice 1", "choice1" }, { "C&hoice 2", "choice2" } }, getFieldEditorParent()));
+		StringFieldEditor filteredNamespacesEditor = new StringFieldEditor(EKubePreferenceConstants.FILTERED_NAMESPACES.getId(), "Filtered namespaces", getFieldEditorParent());
+		addField(filteredNamespacesEditor);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
 	public void init(IWorkbench workbench) {
 	}
 

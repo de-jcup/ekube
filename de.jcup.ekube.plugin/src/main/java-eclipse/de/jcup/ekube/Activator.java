@@ -18,7 +18,7 @@ import de.jcup.ekube.explorer.KubernetesExplorer;
 public class Activator extends AbstractUIPlugin implements PluginContextProvider {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "de.jcup.ekube"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "de.jcup.ekube.plugin"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -45,7 +45,7 @@ public class Activator extends AbstractUIPlugin implements PluginContextProvider
 		super.start(context);
 		colorManager = new ColorManager();
 		errorHandler = new EclipseKubernetesErrorHandler();
-		configuration = new EKubeConfiguration();
+		configuration = new EclipseEKubeConfiguration();
 		
 		plugin = this;
 	}

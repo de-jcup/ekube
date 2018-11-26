@@ -19,7 +19,7 @@ public class PodUtils {
 		for (Pod pod: podList.getItems()){
 			PodContainer podContainer = new PodContainer();
 			updateStatus(pod, podContainer);
-			podContainer.setLabel(pod.getMetadata().getName());
+			podContainer.setName(pod.getMetadata().getName());
 			podsContainer.add(podContainer);
 			
 		}

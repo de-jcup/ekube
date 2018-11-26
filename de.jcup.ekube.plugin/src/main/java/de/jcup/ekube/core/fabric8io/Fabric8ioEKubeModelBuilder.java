@@ -3,8 +3,11 @@ package de.jcup.ekube.core.fabric8io;
 import java.io.File;
 import java.util.List;
 
+import de.jcup.ekube.core.DefaultEKubeConfiguration;
+import de.jcup.ekube.core.DefaultEKubeContext;
 import de.jcup.ekube.core.EKubeConfiguration;
-import de.jcup.ekube.core.EKubeConfigurationContext;
+import de.jcup.ekube.core.EKubeContextConfigurationEntry;
+import de.jcup.ekube.core.EKubeContext;
 import de.jcup.ekube.core.ErrorHandler;
 import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeModel;
@@ -22,32 +25,27 @@ import io.fabric8.kubernetes.client.dsl.Resource;
 
 public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 	
-	private ErrorHandler errorHandler;
-	private EKubeConfiguration configuration;
 
-	public Fabric8ioEKubeModelBuilder(EKubeConfiguration configuration, ErrorHandler errorHandler){
-		this.errorHandler=errorHandler;
-		this.configuration=configuration;
-	}
-	
-	
 	@Override
-	public EKubeModel build() {
-		EKubeModel model = new EKubeModel(errorHandler);
+	public EKubeModel build(EKubeContext context) {
+		int totalWork = 0;
+		
+		EKubeModel model = new EKubeModel();
+		EKubeConfiguration configuration = context.getConfiguration();
 		File cubeConfigFile = configuration.getKubeConfigFile();
 		System.setProperty(io.fabric8.kubernetes.client.Config.KUBERNETES_KUBECONFIG_FILE,
 				cubeConfigFile.getAbsolutePath());
 
-		String newCurrentContextName = configuration.getCurrentContext();
-		EKubeConfigurationContext contextConfiguration = configuration.findContextConfiguration(newCurrentContextName);
-		if (contextConfiguration==null){
+		String wantedKubernetesContext = configuration.getKubernetesContext();
+		EKubeContextConfigurationEntry entry = configuration.findContextConfigurationEntry(wantedKubernetesContext);
+		if (entry==null){
 			/* not possible - return emtpy model*/
 			return model;
 		}
-		CurrentContextContainer currentContext = setupCurrentContextContainer(model, contextConfiguration);
+		CurrentContextContainer currentContext = setupCurrentContextContainer(model, entry);
 		
 		
-		Config config = Config.autoConfigure(newCurrentContextName);
+		Config config = Config.autoConfigure(wantedKubernetesContext);
 		
 		KubernetesClient client = new DefaultKubernetesClient(config);
 		
@@ -55,12 +53,16 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 		
 		
 		/* build child content by using current context... if need more we must change the context and rebuild!*/
-		addNamespacesToCurrentContext(model, client);
+		addNamespacesToCurrentContext(context, model, client);
 
 		List<NamespaceContainer> namespaceContainers = currentContext.getNamespaces();
 		for (NamespaceContainer namespaceContainer: namespaceContainers){
+			context.getProgressHandler().beginSubTask("inspecting namespace: "+namespaceContainer.getLabel(), totalWork++);
 			PodUtils.addPodsFromNamespace(client, namespaceContainer);
 			ServiceUtils.addServicesFromNamespace(client, namespaceContainer);
+			VolumeUtils.addVolumeClaimsFromNamespace(client, namespaceContainer);
+			NetworkUtils.addNetworkPolicies(client, namespaceContainer);
+			ConfigMapUtils.addConfigMapsFromNamespace(client,namespaceContainer);
 		}
 		return model;
 				
@@ -68,38 +70,47 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 
 
 	protected CurrentContextContainer setupCurrentContextContainer(EKubeModel model,
-			EKubeConfigurationContext contextConfiguration) {
+			EKubeContextConfigurationEntry entry) {
 		/* setup current context container */
-		CurrentContextContainer currentContext = model.getCurrentContext();
+		CurrentContextContainer currentContextContainer = model.getCurrentContext();
 		
 		/* use settings from configuration - will be used for connection */
-		currentContext.setLabel(contextConfiguration.getName());
-		currentContext.setName(contextConfiguration.getName());
-		currentContext.setCluster(contextConfiguration.getCluster());
-		currentContext.setUser(contextConfiguration.getUser());
-		return currentContext;
+		currentContextContainer.setName(entry.getName());
+		currentContextContainer.setCluster(entry.getCluster());
+		currentContextContainer.setUser(entry.getUser());
+		return currentContextContainer;
 	}
 
-	protected void addNamespacesToCurrentContext(EKubeModel model, KubernetesClient client) {
+	protected void addNamespacesToCurrentContext(EKubeContext context, EKubeModel model, KubernetesClient client) {
 		CurrentContextContainer currentContextContainer = model.getCurrentContext();
 		NonNamespaceOperation<Namespace, NamespaceList, DoneableNamespace, Resource<Namespace, DoneableNamespace>> namespaces = client.namespaces();
 		NamespaceList namespacesList = namespaces.list();
 		for (Namespace namespace: namespacesList.getItems()){
 			String namespaceName = namespace.getMetadata().getName();
+			if (isNamespaceFiltered(context, namespaceName)){
+				continue;
+			}
 
 			NamespaceContainer namespaceContainer = new NamespaceContainer();
-			namespaceContainer.setLabel(namespaceName);
 			namespaceContainer.setName(namespaceName);
 
 			currentContextContainer.add(namespaceContainer);
 		}
 	}
 
+
+	protected boolean isNamespaceFiltered(EKubeContext context, String namespaceName) {
+		return context.getConfiguration().getFilteredNamespaces().contains(namespaceName);
+	}
+
 	
 	
 	public static void main(String[] args) {
-		long time1 = System.currentTimeMillis();
-		EKubeModel model = new Fabric8ioEKubeModelBuilder(new EKubeConfiguration(), new ErrorHandler() {
+		DefaultEKubeConfiguration configuration = new DefaultEKubeConfiguration();
+		configuration.setKubernetesContext("minikube");
+		
+		DefaultEKubeContext context = new DefaultEKubeContext(
+		new ErrorHandler() {
 			
 			@Override
 			public void logError(String message, Exception e) {
@@ -108,7 +119,10 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 					e.printStackTrace();
 				}
 			}
-		}).build();
+		}, configuration);
+		
+		long time1 = System.currentTimeMillis();
+		EKubeModel model = new Fabric8ioEKubeModelBuilder().build(context);
 		long time2 = System.currentTimeMillis();
 	
 		System.out.println(new EKubeModelToStringDumpConverter().convert(model));
