@@ -5,11 +5,9 @@ import java.util.Map;
 
 import de.jcup.ekube.core.model.NamespaceContainer;
 import de.jcup.ekube.core.model.PersistentVolumeClaimElement;
-import io.fabric8.kubernetes.api.model.PersistentVolume;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaimList;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaimStatus;
-import io.fabric8.kubernetes.api.model.PersistentVolumeList;
 import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.client.KubernetesClient;
 

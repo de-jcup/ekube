@@ -15,7 +15,6 @@ import org.eclipse.ui.PlatformUI;
 
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
-import de.jcup.ekube.core.model.ConfigMapElement;
 import de.jcup.ekube.core.model.ConfigMapsContainer;
 import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeContainer;

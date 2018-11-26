@@ -1,7 +1,5 @@
 package de.jcup.ekube.core.fabric8io;
 
-import com.google.protobuf.Descriptors.Descriptor;
-
 import de.jcup.ekube.core.model.NamespaceContainer;
 import de.jcup.ekube.core.model.PodContainer;
 import de.jcup.ekube.core.model.PodsContainer;

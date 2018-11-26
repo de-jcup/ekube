@@ -3,7 +3,6 @@ package de.jcup.ekube.explorer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import de.jcup.ekube.Activator;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
