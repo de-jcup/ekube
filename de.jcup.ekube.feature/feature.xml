@@ -2,7 +2,7 @@
 <feature
       id="de.jcup.ekube.feature"
       label="EKube feature"
-      version="0.0.1.pre-alpha"
+      version="0.1.0.alpha"
       provider-name="Albert Tregnaghi">
 
    <description url="http://www.example.com/description">

@@ -10,7 +10,7 @@
 	
 	<groupId>de.jcup.ekube</groupId>
 	<artifactId>de.jcup.ekube.feature</artifactId>
-	<version>0.0.1.pre-alpha</version>
+	<version>0.1.0.alpha</version>
 	<packaging>eclipse-feature</packaging>
 
 </project>

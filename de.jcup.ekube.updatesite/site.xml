@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.jcup.ekube.feature_0.0.1.pre-alpha.jar" id="de.jcup.ekube.feature" version="0.0.1.pre-alpha"/>
+   <feature url="features/de.jcup.ekube.feature_0.1.0.alpha.jar" id="de.jcup.ekube.feature" version="0.1.0.alpha"/>
 </site>
