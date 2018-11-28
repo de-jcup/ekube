@@ -29,7 +29,7 @@ class EKubeElementTreeContentProvider implements ITreeContentProvider {
 			if (model == null){
 				model=new EKubeModel();
 			}
-			return new Object[]{model.getCurrentContext()};
+			return new Object[]{model.getCurrentContext(),model.getNodesContainer()};
 		}
 		return getChildren(parent);
 	}

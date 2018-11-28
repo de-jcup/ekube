@@ -12,7 +12,11 @@ public class Fabric8ioSupport {
 	private VolumeSupport volumeSupport = new VolumeSupport();
 	private ServiceSupport serviceSupport = new ServiceSupport();
 	private ConfigMapSupport configMapSupport = new ConfigMapSupport();
+	private NodesSupport nodesSupport=new NodesSupport();
 	
+	public NodesSupport nodes(){
+		return nodesSupport;
+	}
 	
 	public NetworkSupport networks() {
 		return networkSupport;

@@ -56,6 +56,9 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 		
 		/* build child content by using current context... if need more we must change the context and rebuild!*/
 		addNamespacesToCurrentContext(context, model, client);
+		
+		context.getProgressHandler().beginSubTask("inspecting nodes", totalWork++);
+		support.nodes().addnodesFromNamespace(context, client, model.getNodesContainer());
 
 		List<NamespaceContainer> namespaceContainers = currentContext.getNamespaces();
 		for (NamespaceContainer namespaceContainer: namespaceContainers){

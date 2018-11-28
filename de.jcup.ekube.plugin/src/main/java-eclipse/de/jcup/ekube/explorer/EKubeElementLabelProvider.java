@@ -23,6 +23,9 @@ import de.jcup.ekube.core.model.EKubeStatusElement;
 import de.jcup.ekube.core.model.NamespaceContainer;
 import de.jcup.ekube.core.model.NetworkPolicyElement;
 import de.jcup.ekube.core.model.NetworksContainer;
+import de.jcup.ekube.core.model.NodeConditionElement;
+import de.jcup.ekube.core.model.NodeContainer;
+import de.jcup.ekube.core.model.NodesContainer;
 import de.jcup.ekube.core.model.PersistentVolumeClaimElement;
 import de.jcup.ekube.core.model.PodContainer;
 import de.jcup.ekube.core.model.PodsContainer;
@@ -91,6 +94,12 @@ class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabe
 			element = "network.png";
 		} else if (obj instanceof NetworkPolicyElement) {
 			element = "network-policy.png";
+		} else if (obj instanceof NodesContainer) {
+			element = "nodes.png";
+		} else if (obj instanceof NodeContainer) {
+			element = "node.png";
+		} else if (obj instanceof NodeConditionElement) {
+			element = "node-condition.png";
 		}
 		if (element != null) {
 			Image image = EclipseUtil.getImage("/icons/model/" + element, Activator.getDefault());
