@@ -58,6 +58,29 @@
          </toolbar>
       </menuContribution>
    </extension>
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          DECORATION                                  -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.ui.decorators">
+     <decorator
+            lightweight="true"
+            adaptable="true"
+            label="Kubernetes decorator"
+            class="de.jcup.ekube.explorer.EKubeElementLabelDecorator"
+            state="true"
+            location="BOTTOM_RIGHT"
+            id="de.jcup.ekube.elements.decorator">
+            <enablement>
+              <objectClass name="de.jcup.ekube.core.model.EKubeElement"/>
+            </enablement>
+         <description>
+           	Decorator for all ekube elements
+         </description>
+      </decorator>
+   </extension>
+   
    <extension
          point="org.eclipse.help.toc">
       <toc
@@ -84,7 +107,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             id="de.jcup.ekube.preferences.EKubePreferencePage"
-            name="EKube Preferences"
+            name="EKube"
             class="de.jcup.ekube.preferences.EKubePreferencePage">
       </page>
    </extension>

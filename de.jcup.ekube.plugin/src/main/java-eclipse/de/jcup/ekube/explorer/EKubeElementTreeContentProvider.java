@@ -7,11 +7,11 @@ import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
 
-class KubernetesExplorerContentProvider implements ITreeContentProvider {
+class EKubeElementTreeContentProvider implements ITreeContentProvider {
 	private final KubernetesExplorer kubernetesExplorer;
 	private EKubeModel model;
 
-	KubernetesExplorerContentProvider(KubernetesExplorer kubernetesExplorer) {
+	EKubeElementTreeContentProvider(KubernetesExplorer kubernetesExplorer) {
 		this.kubernetesExplorer = kubernetesExplorer;
 	}
 
@@ -45,6 +45,9 @@ class KubernetesExplorerContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object parent) {
 		if (parent instanceof EKubeContainer) {
 			EKubeContainer container = (EKubeContainer) parent;
+			if (container.isLocked()){
+				return new Object[0];
+			}
 			return container.getChildren().toArray();
 		}
 		return new Object[0];
@@ -53,6 +56,9 @@ class KubernetesExplorerContentProvider implements ITreeContentProvider {
 	public boolean hasChildren(Object parent) {
 		if (parent instanceof EKubeContainer) {
 			EKubeContainer container = (EKubeContainer) parent;
+			if (container.isLocked()){
+				return false;
+			}
 			return container.hasChildren();
 		}
 		return false;

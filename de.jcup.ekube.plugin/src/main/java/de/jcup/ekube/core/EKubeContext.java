@@ -7,4 +7,7 @@ public interface EKubeContext {
 	public EKubeConfiguration getConfiguration();
 
 	public EKubeProgressHandler getProgressHandler();
+	
+	public SafeExecutor getExecutor();
+	
 }

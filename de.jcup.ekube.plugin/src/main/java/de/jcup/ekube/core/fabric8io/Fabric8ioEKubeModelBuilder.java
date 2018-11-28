@@ -9,6 +9,7 @@ import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.EKubeContext;
 import de.jcup.ekube.core.EKubeContextConfigurationEntry;
 import de.jcup.ekube.core.ErrorHandler;
+import de.jcup.ekube.core.fabric8io.exec.Fabric8ioSupport;
 import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeModel;
 import de.jcup.ekube.core.model.EKubeModelBuilder;
@@ -25,7 +26,8 @@ import io.fabric8.kubernetes.client.dsl.Resource;
 
 public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 	
-
+	private Fabric8ioSupport support = new Fabric8ioSupport();
+	
 	@Override
 	public EKubeModel build(EKubeContext context) {
 		int totalWork = 0;
@@ -58,11 +60,13 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 		List<NamespaceContainer> namespaceContainers = currentContext.getNamespaces();
 		for (NamespaceContainer namespaceContainer: namespaceContainers){
 			context.getProgressHandler().beginSubTask("inspecting namespace: "+namespaceContainer.getLabel(), totalWork++);
-			PodUtils.addPodsFromNamespace(client, namespaceContainer);
-			ServiceUtils.addServicesFromNamespace(client, namespaceContainer);
-			VolumeUtils.addVolumeClaimsFromNamespace(client, namespaceContainer);
-			NetworkUtils.addNetworkPolicies(client, namespaceContainer);
-			ConfigMapUtils.addConfigMapsFromNamespace(client,namespaceContainer);
+			
+			support.pods().addPodsFromNamespace(context,client, namespaceContainer);
+			support.services().addServicesFromNamespace(context,client, namespaceContainer);
+			support.volumes().addVolumeClaimsFromNamespace(context,client, namespaceContainer);
+			support.networks().addNetworkPolicies(context,client, namespaceContainer);
+			support.configMaps().addConfigMapsFromNamespace(context,client,namespaceContainer);
+			
 		}
 		return model;
 				
@@ -107,7 +111,6 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 	
 	public static void main(String[] args) {
 		DefaultEKubeConfiguration configuration = new DefaultEKubeConfiguration();
-		configuration.setKubernetesContext("minikube");
 		
 		DefaultEKubeContext context = new DefaultEKubeContext(
 		new ErrorHandler() {
@@ -120,6 +123,8 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 				}
 			}
 		}, configuration);
+		Fabric8ioConfgurationUpdater updater = new Fabric8ioConfgurationUpdater();
+		updater.update(context); // loads kube config from file system...
 		
 		long time1 = System.currentTimeMillis();
 		EKubeModel model = new Fabric8ioEKubeModelBuilder().build(context);

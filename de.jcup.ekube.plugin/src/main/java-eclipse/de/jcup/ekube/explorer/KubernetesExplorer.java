@@ -15,9 +15,10 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
@@ -62,16 +63,19 @@ public class KubernetesExplorer extends ViewPart {
 
 	private Action doubleClickAction;
 
-	private KubernetesExplorerContentProvider contentPovider;
+	private EKubeElementTreeContentProvider contentPovider;
 
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
-		contentPovider = new KubernetesExplorerContentProvider(this);
+		contentPovider = new EKubeElementTreeContentProvider(this);
 		viewer.setContentProvider(contentPovider);
 		viewer.setInput(getViewSite());
-		viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new KubernetesExplorerViewLabelProvider()));
+		ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
+		EKubeElementLabelProvider kubernesExplorerLabelProvider = new EKubeElementLabelProvider();
+		
+		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(kubernesExplorerLabelProvider,decorator,null));
 
 		// Create the help context id for the viewer's control
 		// workbench.getHelpSystem().setHelp(viewer.getControl(),
@@ -166,7 +170,7 @@ public class KubernetesExplorer extends ViewPart {
 					return;
 				}
 				ElementListSelectionDialog dialog = new ElementListSelectionDialog(
-						Display.getCurrent().getActiveShell(), new EKubeConfigurationLabelProvider());
+						Display.getCurrent().getActiveShell(), new EKubeSwitchContextConfigurationLabelProvider());
 				dialog.setElements(data.toArray());
 				dialog.setMultipleSelection(false);
 				dialog.setTitle("Which context do you want to use ?");
@@ -231,7 +235,7 @@ public class KubernetesExplorer extends ViewPart {
 	private class ConnectionJob extends Job {
 
 		public ConnectionJob(EKubeConfiguration configuration) {
-			super("connect to kubernetes. contextg=" + configuration.getKubernetesContext());
+			super("connect to kubernetes - use context:" + configuration.getKubernetesContext());
 		}
 
 		@Override

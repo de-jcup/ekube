@@ -10,6 +10,8 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 	
 	private Map<EKubeActionIdentifer, EKubeElementAction> actions = new EnumMap<>(EKubeActionIdentifer.class);
 	EKubeContainer parent;
+	private boolean locked;
+	private String errorMessage;
 
 	public AbstractEKubeElement() {
 	}
@@ -17,6 +19,15 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 	@Override
 	public EKubeContainer getParent() {
 		return parent;
+	}
+	
+	@Override
+	public boolean isLocked() {
+		return locked;
+	}
+	
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 
 	/**
@@ -70,6 +81,14 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 	 */
 	public void register(EKubeElementAction action) {
 		actions.put(action.getIdentifier(), action);
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage=errorMessage;
+	}
+	
+	public String getErrorMessage() {
+		return errorMessage;
 	}
 
 }

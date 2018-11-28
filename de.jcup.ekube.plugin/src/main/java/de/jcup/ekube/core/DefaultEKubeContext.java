@@ -5,18 +5,21 @@ public class DefaultEKubeContext implements EKubeContext{
 	private ErrorHandler errorHandler;
 	private EKubeConfiguration configuration;
 	private EKubeProgressHandler progressHandler;
+	private SafeExecutor executor;
 	
 	public DefaultEKubeContext(ErrorHandler errorHandler, EKubeConfiguration configuration) {
 		this(errorHandler,configuration,null);
 	}
 
-	public DefaultEKubeContext(ErrorHandler errorHandler, EKubeConfiguration configuration, EKubeProgressHandler handler) {
+	public DefaultEKubeContext(ErrorHandler errorHandler, EKubeConfiguration configuration, EKubeProgressHandler progressHandler) {
 		this.errorHandler=errorHandler;
 		this.configuration=configuration;
 		if (progressHandler==null){
-			progressHandler=new NullProgressHandler();
+			this.progressHandler=new NullProgressHandler();
+		}else{
+			this.progressHandler=progressHandler;
 		}
-		this.progressHandler=handler;
+		this.executor=new DefaultSafeExecutor();
 	}
 
 	@Override
@@ -33,5 +36,11 @@ public class DefaultEKubeContext implements EKubeContext{
 	public EKubeProgressHandler getProgressHandler() {
 		return progressHandler;
 	}
+
+	@Override
+	public SafeExecutor getExecutor() {
+		return executor;
+	}
+	
 
 }

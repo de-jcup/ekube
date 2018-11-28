@@ -15,6 +15,12 @@ public class EKubeModelToStringDumpConverter {
 			sb.append(" ");
 		}
 		sb.append(element.toString());
+		if (element instanceof EKubeStatusElement){
+			sb.append("[");
+			EKubeStatusElement se = (EKubeStatusElement) element;
+			sb.append(se.getStatus());
+			sb.append("]");
+		}
 		sb.append("\n");
 		
 		if (element instanceof EKubeContainer){

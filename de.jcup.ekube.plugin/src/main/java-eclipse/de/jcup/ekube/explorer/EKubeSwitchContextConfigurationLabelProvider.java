@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 
 import de.jcup.ekube.core.EKubeContextConfigurationEntry;
 
-public class EKubeConfigurationLabelProvider extends LabelProvider{
+public class EKubeSwitchContextConfigurationLabelProvider extends LabelProvider{
 
 	public String getText(Object element) {
 		if (element instanceof EKubeContextConfigurationEntry){

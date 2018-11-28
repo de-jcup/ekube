@@ -6,7 +6,8 @@ Bundle-Version: 0.1.0.alpha
 Bundle-Activator: de.jcup.ekube.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.ui,
-  org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.jface
 Automatic-Module-Name: de.jcup.ekube
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

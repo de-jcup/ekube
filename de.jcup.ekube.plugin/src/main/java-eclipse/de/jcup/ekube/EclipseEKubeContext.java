@@ -3,14 +3,17 @@ package de.jcup.ekube;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import de.jcup.ekube.core.DefaultSafeExecutor;
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.EKubeContext;
 import de.jcup.ekube.core.EKubeProgressHandler;
 import de.jcup.ekube.core.ErrorHandler;
+import de.jcup.ekube.core.SafeExecutor;
 
 public class EclipseEKubeContext implements EKubeContext {
 
 	private EclipseProgressHandler progressHandler;
+	private SafeExecutor executor;
 	
 	public EclipseEKubeContext() {
 		this(null);
@@ -18,6 +21,7 @@ public class EclipseEKubeContext implements EKubeContext {
 
 	public EclipseEKubeContext(IProgressMonitor monitor) {
 		this.progressHandler=new EclipseProgressHandler(monitor);
+		this.executor=new DefaultSafeExecutor();
 	}
 
 	@Override
@@ -51,6 +55,11 @@ public class EclipseEKubeContext implements EKubeContext {
 			monitor.beginTask(name, totalWork);
 		}
 		
+	}
+
+	@Override
+	public SafeExecutor getExecutor() {
+		return executor;
 	}
 
 

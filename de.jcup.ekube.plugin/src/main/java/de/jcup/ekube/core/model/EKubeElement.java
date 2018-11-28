@@ -12,4 +12,14 @@ public interface EKubeElement {
 	public void execute(EKubeActionIdentifer action);
 
 	public EKubeContainer getParent();
+	
+	/**
+	 * @return <code>true</code> when this element is not accessible by current user
+	 */
+	public boolean isLocked();
+	
+	/**
+	 * @return error message or <code>null</code>
+	 */
+	public String getErrorMessage();
 }

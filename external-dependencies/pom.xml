@@ -7,10 +7,9 @@
     <groupId>de.jcup.ekube</groupId>
     <version>1.0.0</version>
   </parent>
-  <artifactId>preparation</artifactId>
-  <version>1.0.0</version>
+  <artifactId>external-dependencies</artifactId>
+  <version>0.1.0.alpha</version>
   <packaging>pom</packaging>
-  
   <build>
   	<plugins>
   		<plugin>
