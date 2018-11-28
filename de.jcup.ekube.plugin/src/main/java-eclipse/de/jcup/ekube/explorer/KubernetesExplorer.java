@@ -1,13 +1,12 @@
 package de.jcup.ekube.explorer;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -60,7 +59,13 @@ public class KubernetesExplorer extends ViewPart {
 	private KubernetesExplorerActionGroup actionSet;
 
 	private KubeConfigLoader configLoader;
-
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+	
+	
+	SimpleDateFormat getDateFormat() {
+		return dateFormat;
+	}
+	
 	private class InternalDecoratingStyledCellLabelProvider extends DecoratingStyledCellLabelProvider implements ILabelProvider{
 
 		public InternalDecoratingStyledCellLabelProvider(IStyledLabelProvider labelProvider, ILabelDecorator decorator,
@@ -83,7 +88,6 @@ public class KubernetesExplorer extends ViewPart {
 		configLoader = new KubeConfigLoader();
 
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer.setAutoExpandLevel(1);
 		
 		contentPovider = new EKubeElementTreeContentProvider(this);
 		viewer.setContentProvider(contentPovider);
@@ -146,10 +150,7 @@ public class KubernetesExplorer extends ViewPart {
 	}
 
 	private void makeActions() {
-		
 		actionSet = new KubernetesExplorerActionGroup(this);
-		
-		
 	}
 
 	private void hookDoubleClickAction() {
@@ -178,23 +179,24 @@ public class KubernetesExplorer extends ViewPart {
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			monitor.beginTask("Fetch data from cluster", IProgressMonitor.UNKNOWN);
+			
 			Fabric8ioEKubeModelBuilder modelBuilder = new Fabric8ioEKubeModelBuilder();
 			EclipseEKubeContext context = new EclipseEKubeContext(monitor);
-			
 			EKubeModel model = modelBuilder.build(context);
-			
-			/* set to normal executor which does not append defaults etc. */
-			context.setExecutor(new DefaultSafeExecutor());
 			
 			monitor.done();
 
-			contentPovider.inputChanged(viewer, null, model);
-
-			EclipseUtil.safeAsyncExec(() -> viewer.refresh());
+			EclipseUtil.safeAsyncExec(()-> refreshTreeInSWTThread(model));
 
 			return Status.OK_STATUS;
 		}
 
+	}
+	
+	private void refreshTreeInSWTThread(EKubeModel model){
+		contentPovider.inputChanged(viewer, null, model);
+		viewer.refresh();
+		viewer.expandToLevel(model.getCurrentContext(), 1);
 	}
 
 	public void connect(EKubeConfiguration configuration) {

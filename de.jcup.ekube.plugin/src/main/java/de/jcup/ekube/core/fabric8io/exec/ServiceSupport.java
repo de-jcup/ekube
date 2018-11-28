@@ -60,8 +60,10 @@ public class ServiceSupport extends AbstractSupport{
 			
 			
 			for (ServicePort servicePort: spec.getPorts()){
-				sb.append(servicePort.getName());
-				sb.append(":");
+				if (servicePort.getName()!=null){
+					sb.append(servicePort.getName());
+					sb.append(":");
+				}
 				
 				Integer nodePort = servicePort.getNodePort();
 				if (nodePort!=null){

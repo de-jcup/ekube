@@ -17,6 +17,8 @@ import de.jcup.ekube.core.model.EKubeModel;
 import de.jcup.ekube.core.model.EKubeModelBuilder;
 import de.jcup.ekube.core.model.NamespaceContainer;
 import io.fabric8.kubernetes.api.model.DoneableNamespace;
+import io.fabric8.kubernetes.api.model.Endpoints;
+import io.fabric8.kubernetes.api.model.EndpointsList;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceList;
 import io.fabric8.kubernetes.client.Config;
@@ -74,13 +76,16 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 			supports.networks().addNetworkPolicies(namespaceContainer);
 			supports.configMaps().addConfigMapsFromNamespace(namespaceContainer);
 			
+//			EndpointsList endpointList = client.endpoints().list();
+//			List<Endpoints> items = endpointList.getItems();
+//			for (Endpoints endpoints: items){
+//				endpoints.getMetadata();
+//			}
 		}
 		
 		/* dispose build listener */
 		executor.remove(listener);
 		return model;
-		
-		
 		
 	}
 

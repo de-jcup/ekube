@@ -27,7 +27,7 @@ class EKubeElementTreeContentProvider implements ITreeContentProvider {
 	public Object[] getElements(Object parent) {
 		if (parent.equals(this.kubernetesExplorer.getViewSite())) {
 			if (model == null){
-				model=new EKubeModel();
+				return new Object[]{};
 			}
 			return new Object[]{model.getCurrentContext()};
 		}

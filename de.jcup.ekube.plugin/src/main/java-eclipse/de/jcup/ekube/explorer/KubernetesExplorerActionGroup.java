@@ -2,7 +2,6 @@ package de.jcup.ekube.explorer;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -137,6 +136,16 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 			}
 		});
 
+		createExpandAllAction(viewer);
+		createCollapseAllAction(viewer);
+		createSwitchContextAction(viewer);
+		createReloadAction();
+		createInfoAction();
+		createDoubleClickAction();
+
+	}
+
+	protected void createExpandAllAction(TreeViewer viewer) {
 		expandAllAction = new Action() {
 			@Override
 			public void run() {
@@ -152,7 +161,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		expandAllAction.setToolTipText("Expand all tree elements");
 		expandAllAction
 				.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/expandall.png", Activator.PLUGIN_ID));
+	}
 
+	protected void createCollapseAllAction(TreeViewer viewer) {
 		collapseAllAction = new Action() {
 			@Override
 			public void run() {
@@ -168,7 +179,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		collapseAllAction.setToolTipText("Collapse all tree elements");
 		collapseAllAction
 				.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/collapseall.png", Activator.PLUGIN_ID));
+	}
 
+	protected void createSwitchContextAction(TreeViewer viewer) {
 		switchContextAction = new Action() {
 			public void run() {
 				explorer.loadconfiguration(true);
@@ -201,7 +214,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 				.setToolTipText("Switch kubernetes current context for ekube.\nWill NOT change your kube config file!");
 		switchContextAction.setImageDescriptor(
 				EclipseUtil.createImageDescriptor("/icons/switch-context.png", Activator.PLUGIN_ID));
+	}
 
+	protected void createReloadAction() {
 		reloadKubeConfigAction = new Action() {
 			public void run() {
 				/* always load - no matter if already loaded or not */
@@ -212,7 +227,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		reloadKubeConfigAction.setToolTipText("Reloads kube config file from configured location (see preferences)");
 		reloadKubeConfigAction.setImageDescriptor(
 				EclipseUtil.createImageDescriptor("/icons/reload-kube-config.gif", Activator.PLUGIN_ID));
+	}
 
+	protected void createInfoAction() {
 		infoAction = new Action() {
 			public void run() {
 				StringBuilder sb = new StringBuilder();
@@ -230,6 +247,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		infoAction.setToolTipText("Info about kubernetes configuration");
 		infoAction.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+	}
+
+	protected void createDoubleClickAction() {
 		doubleClickAction = new Action() {
 			public void run() {
 				Object obj = explorer.getFirstSelectedElement();
@@ -248,8 +268,8 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 							try (FileWriter fw = new FileWriter(tmpfile)) {
 								StringBuilder yaml = new StringBuilder();
 								yaml.append("# ---------------------------------------------------------------------------\n");
-								yaml.append("# EKube info about : ").append(eelement.getLabel()).append("\n");
-								yaml.append("# Timestamp        : ").append(DateFormat.getInstance().format(new Date())).append("\n");
+								yaml.append("# EKube info about : ").append(eelement.getClass().getSimpleName()).append(" '").append(eelement.getLabel()).append("'\n");
+								yaml.append("# Timestamp        : ").append(explorer.getDateFormat().format(new Date())).append("\n");
 								yaml.append("# ---------------------------------------------------------------------------\n");
 								yaml.append(info);
 								fw.write(yaml.toString());
@@ -278,7 +298,6 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 
 			}
 		};
-
 	}
 
 	public Action getDoubleClickAction() {
@@ -289,9 +308,6 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 	public void dispose() {
 		super.dispose();
 	}
-
-	// ---- Action Bars
-	// ----------------------------------------------------------------------------
 
 	@Override
 	public void fillActionBars(IActionBars actionBars) {

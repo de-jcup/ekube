@@ -15,6 +15,7 @@ import org.eclipse.ui.PlatformUI;
 
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
+import de.jcup.ekube.core.model.ConfigMapElement;
 import de.jcup.ekube.core.model.ConfigMapsContainer;
 import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.DeploymentConditionElement;
@@ -93,6 +94,8 @@ class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabe
 			element = "persistentvolumeclaim.png";
 		} else if (obj instanceof ConfigMapsContainer) {
 			element = "configmaps.png";
+		} else if (obj instanceof ConfigMapElement) {
+			element = "configmap.png";
 		} else if (obj instanceof NetworksContainer) {
 			element = "network.png";
 		} else if (obj instanceof NetworkPolicyElement) {
