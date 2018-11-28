@@ -17,7 +17,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="de.jcup.ekube.handlers.EKubeConnectionSelectionHandler"
+            class="de.jcup.ekube.handlers.EKubeReloadKubeConfigurationHandler"
             commandId="de.jcup.ekube.commands.connectCommand">
       </handler>
    </extension>
@@ -30,6 +30,7 @@
             sequence="M1+6">
       </key>
    </extension>
+    <!-- 	
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
@@ -45,19 +46,20 @@
             </command>
          </menu>
       </menuContribution>
-      <menuContribution
+    <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
                id="de.jcup.ekube.toolbars.main">
             <command
                   id="de.jcup.ekube.toolbars.connectCommand"
                   commandId="de.jcup.ekube.commands.connectCommand"
-                  icon="icons/connect.png"
-                  tooltip="Connect to kubernetes">
+                  icon="icons/reload-kube-config.gif"
+                  tooltip="Reload kube config file">
             </command>
          </toolbar>
       </menuContribution>
    </extension>
+      -->
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          DECORATION                                  -->
@@ -138,7 +140,7 @@
             targetID="org.eclipse.jdt.ui.JavaPerspective">
          <view
                id="de.jcup.ekube.views.KubernetesExplorer"
-               relative="org.eclipse.ui.views.ProblemView"
+               relative="org.eclipse.ui.views.ResourceNavigator"
                relationship="right"
                ratio="0.5">
          </view>

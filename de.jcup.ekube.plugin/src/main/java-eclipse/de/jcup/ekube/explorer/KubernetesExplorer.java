@@ -38,6 +38,7 @@ import org.eclipse.ui.part.ViewPart;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
 import de.jcup.ekube.EclipseEKubeContext;
+import de.jcup.ekube.KubeConfigLoader;
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.EKubeContextConfigurationEntry;
 import de.jcup.ekube.core.fabric8io.Fabric8ioEKubeModelBuilder;
@@ -56,6 +57,7 @@ public class KubernetesExplorer extends ViewPart {
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
 	private Action switchContextAction;
+	private Action reloadKubeConfigAction;
 	private Action infoAction;
 
 	private Action expandAllAction;
@@ -65,8 +67,12 @@ public class KubernetesExplorer extends ViewPart {
 
 	private EKubeElementTreeContentProvider contentPovider;
 
+	private KubeConfigLoader configLoader;
+
 	@Override
 	public void createPartControl(Composite parent) {
+		configLoader = new KubeConfigLoader();
+
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
 		contentPovider = new EKubeElementTreeContentProvider(this);
@@ -74,8 +80,8 @@ public class KubernetesExplorer extends ViewPart {
 		viewer.setInput(getViewSite());
 		ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
 		EKubeElementLabelProvider kubernesExplorerLabelProvider = new EKubeElementLabelProvider();
-		
-		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(kubernesExplorerLabelProvider,decorator,null));
+
+		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(kubernesExplorerLabelProvider, decorator, null));
 
 		// Create the help context id for the viewer's control
 		// workbench.getHelpSystem().setHelp(viewer.getControl(),
@@ -85,6 +91,7 @@ public class KubernetesExplorer extends ViewPart {
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
+
 	}
 
 	private void hookContextMenu() {
@@ -108,6 +115,7 @@ public class KubernetesExplorer extends ViewPart {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(switchContextAction);
+		manager.add(reloadKubeConfigAction);
 		manager.add(new Separator());
 		manager.add(infoAction);
 		manager.add(new Separator());
@@ -118,6 +126,7 @@ public class KubernetesExplorer extends ViewPart {
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(switchContextAction);
+		manager.add(reloadKubeConfigAction);
 		manager.add(infoAction);
 		manager.add(new Separator());
 		manager.add(expandAllAction);
@@ -130,6 +139,7 @@ public class KubernetesExplorer extends ViewPart {
 
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(switchContextAction);
+		manager.add(reloadKubeConfigAction);
 		manager.add(infoAction);
 		manager.add(new Separator());
 		manager.add(expandAllAction);
@@ -163,10 +173,14 @@ public class KubernetesExplorer extends ViewPart {
 		switchContextAction = new Action() {
 			public void run() {
 
+				if (!configLoader.isLoaded()) {
+					configLoader.load();
+				}
 				EKubeConfiguration configuration = Activator.getDefault().getConfiguration();
 				List<EKubeContextConfigurationEntry> data = configuration.getConfigurationContextList();
-				if (data.isEmpty()){
-					MessageDialog.openWarning(viewer.getControl().getShell(), "Not connected", "No information about contexts to choose available.\n\nPlease connect to kubernetes before!");
+				if (data.isEmpty()) {
+					MessageDialog.openWarning(viewer.getControl().getShell(), "Not connected",
+							"No information about contexts to choose available.\n\nPlease connect to kubernetes before!");
 					return;
 				}
 				ElementListSelectionDialog dialog = new ElementListSelectionDialog(
@@ -185,9 +199,22 @@ public class KubernetesExplorer extends ViewPart {
 				connect(configuration);
 			}
 		};
-		switchContextAction.setText("Switch");
-		switchContextAction.setToolTipText("Switch context");
-		switchContextAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/switch-context.png", Activator.PLUGIN_ID));
+		switchContextAction.setText("Switch context");
+		switchContextAction
+				.setToolTipText("Switch kubernetes current context for ekube.\nWill NOT change your kube config file!");
+		switchContextAction.setImageDescriptor(
+				EclipseUtil.createImageDescriptor("/icons/switch-context.png", Activator.PLUGIN_ID));
+
+		reloadKubeConfigAction = new Action() {
+			public void run() {
+				/* always load - no matter if already loaded or not*/
+				configLoader.load();
+			}
+		};
+		reloadKubeConfigAction.setText("Reload kube config");
+		reloadKubeConfigAction.setToolTipText("Reloads kube config file from configured location (see preferences)");
+		reloadKubeConfigAction.setImageDescriptor(
+				EclipseUtil.createImageDescriptor("/icons/reload-kube-config.gif", Activator.PLUGIN_ID));
 
 		infoAction = new Action() {
 			public void run() {
