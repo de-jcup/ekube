@@ -2,14 +2,14 @@ package de.jcup.ekube.core.model;
 
 import de.jcup.ekube.core.EKubeContext;
 
-public abstract class AbstractEKubeElementAction<E extends EKubeElement, T> implements EKubeElementAction {
+public abstract class AbstractEKubeElementAction<E extends EKubeElement, T,R> implements EKubeElementAction<R> {
 
 	protected E kubeElement;
 	protected T technicalObject;
-	private EKubeActionIdentifer actionIdentifier;
+	private EKubeActionIdentifer<R> actionIdentifier;
 	protected EKubeContext context;
 
-	public AbstractEKubeElementAction(EKubeContext context, EKubeActionIdentifer actionIdentifier, E ekubeElement, T technicalObject) {
+	public AbstractEKubeElementAction(EKubeContext context, EKubeActionIdentifer<R> actionIdentifier, E ekubeElement, T technicalObject) {
 		this.context=context;
 		this.actionIdentifier = actionIdentifier;
 		this.kubeElement = ekubeElement;
@@ -20,7 +20,7 @@ public abstract class AbstractEKubeElementAction<E extends EKubeElement, T> impl
 		return context;
 	}
 	
-	public final EKubeActionIdentifer getIdentifier() {
+	public final EKubeActionIdentifer<R> getIdentifier() {
 		return actionIdentifier;
 	}
 

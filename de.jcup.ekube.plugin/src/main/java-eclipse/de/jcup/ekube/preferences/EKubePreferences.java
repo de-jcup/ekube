@@ -87,4 +87,8 @@ public class EKubePreferences {
 		return Arrays.asList(StringUtils.split(namespaces,","));
 	}
 
+	public boolean getFilterNamespacesEnabled() {
+		return getBooleanPreference(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED);
+	}
+
 }

@@ -8,7 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/external/jackson-dataformat-yaml-2.7.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/external/jackson-module-jaxb-annotations-2.7.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/external/jul-to-slf4j-1.7.13.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/external/kubernetes-client-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/kubernetes-client-4.1.0.jar" sourcepath="C:/Users/ATRIGNA/AppData/Local/Temp/.org.sf.feeling.decompiler1543253537733/source/kubernetes-client-4.1.0-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/external/kubernetes-model-4.1.0.jar" sourcepath="C:/Users/ATRIGNA/AppData/Local/Temp/.org.sf.feeling.decompiler1543253537733/source/kubernetes-model-4.1.0-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/external/logging-interceptor-3.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/external/okhttp-3.9.1.jar"/>
@@ -25,6 +25,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/java-eclipse"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="lib" path="libs/de-jcup-eclipse-commons.jar"/>
 	<classpathentry kind="lib" path="libs/external/commons-lang3-3.8.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>

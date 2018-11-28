@@ -1,8 +1,8 @@
 package de.jcup.ekube.core.model;
 
-public interface EKubeElementAction {
+public interface EKubeElementAction<R> {
 
-	public EKubeActionIdentifer getIdentifier();
+	public EKubeActionIdentifer<R> getIdentifier();
 
-	public void execute();
+	public R execute();
 }

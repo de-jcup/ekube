@@ -31,4 +31,8 @@ public interface EKubeConfiguration {
 	 */
 	EKubeContextConfigurationEntry findContextConfigurationEntry(String newCurrentContextName);
 
+	boolean isNamespaceFiltered(String namespaceName);
+	
+	boolean isNamespaceFilteringEnabled();
+
 }

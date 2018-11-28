@@ -4,6 +4,7 @@ public class NamespaceContainer extends AbstractEKubeContainer {
 
 	public NamespaceContainer(){
 		addChild(new ServicesContainer());
+		addChild(new DeploymentsContainer());
 		addChild(new PodsContainer());
 		addChild(new VolumesContainer());
 		addChild(new NetworksContainer());
@@ -29,6 +30,12 @@ public class NamespaceContainer extends AbstractEKubeContainer {
 	public ServicesContainer fetchServicesContainer(){
 		/* always available, no check necessary */
 		return fetchAllChildrenOfType(ServicesContainer.class).iterator().next();
+	}
+
+	public DeploymentsContainer fetchDeploymentsContainer() {
+		/* always available, no check necessary */
+		return fetchAllChildrenOfType(DeploymentsContainer.class).iterator().next();
+		
 	}
 	
 }

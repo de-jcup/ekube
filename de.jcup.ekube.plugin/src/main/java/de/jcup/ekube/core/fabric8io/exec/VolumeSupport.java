@@ -12,10 +12,19 @@ import io.fabric8.kubernetes.api.model.PersistentVolumeClaimStatus;
 import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public class VolumeSupport {
+public class VolumeSupport extends AbstractSupport{
+
+
+	public VolumeSupport(Fabric8ioSupportContext context) {
+		super(context);
+	}
 
 	private AddVolumeClaimsFromNamespaceExecutable addVolumesClaims = new AddVolumeClaimsFromNamespaceExecutable();
 	private UpdateVolumeClaimStatusExecutable updateVolumeClaimStatus = new UpdateVolumeClaimStatusExecutable();
+
+	public void addVolumeClaimsFromNamespace(NamespaceContainer namespaceContainer) {
+		this.addVolumeClaimsFromNamespace(getContext(), getClient(), namespaceContainer);;
+	}
 	
 	public void addVolumeClaimsFromNamespace(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer) {
 		context.getExecutor().execute(context, addVolumesClaims, namespaceContainer, client);
@@ -69,4 +78,6 @@ public class VolumeSupport {
 		}
 		
 	}
+
+	
 }

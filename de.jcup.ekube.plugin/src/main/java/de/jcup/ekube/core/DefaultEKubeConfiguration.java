@@ -9,8 +9,10 @@ public class DefaultEKubeConfiguration extends AbstractEKubeConfiguration implem
 	private List<String> filteredNamespaces = new ArrayList<>();
 
 	private File kubeConfigFile;
-	
-	public DefaultEKubeConfiguration(){
+
+	private boolean namespaceFilteringEnabled;
+
+	public DefaultEKubeConfiguration() {
 		setDefaults();
 	}
 
@@ -20,13 +22,21 @@ public class DefaultEKubeConfiguration extends AbstractEKubeConfiguration implem
 	}
 
 	@Override
-	public File getKubeConfigFile(){
+	public File getKubeConfigFile() {
 		return kubeConfigFile;
 	}
-	
+
 	@Override
-	public List<String> getFilteredNamespaces(){
+	public List<String> getFilteredNamespaces() {
 		return filteredNamespaces;
 	}
-	
+
+	public void setNamespaceFilteringEnabled(boolean namespaceFilteringEnabled) {
+		this.namespaceFilteringEnabled = namespaceFilteringEnabled;
+	}
+
+	@Override
+	public boolean isNamespaceFilteringEnabled() {
+		return namespaceFilteringEnabled;
+	}
 }

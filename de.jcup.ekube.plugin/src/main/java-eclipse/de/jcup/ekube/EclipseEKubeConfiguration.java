@@ -17,5 +17,10 @@ public class EclipseEKubeConfiguration extends AbstractEKubeConfiguration{
 	public List<String> getFilteredNamespaces() {
 		return EKubePreferences.getInstance().getFilteredNamespacesAsList();
 	}
+	
+	@Override
+	public boolean isNamespaceFilteringEnabled() {
+		return EKubePreferences.getInstance().getFilterNamespacesEnabled();
+	}
 
 }

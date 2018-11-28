@@ -9,11 +9,19 @@ import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.api.model.PodStatus;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public class PodSupport {
+public class PodSupport extends AbstractSupport{
+	
+	public PodSupport(Fabric8ioSupportContext context) {
+		super(context);
+	}
 	
 	private AddPodsFromNamespaceExecutable addPodsFromNamespaceExecutable = new AddPodsFromNamespaceExecutable();
 	private UpdatePodsExecutable updateStatus = new UpdatePodsExecutable();
 
+	public void addPodsFromNamespace(NamespaceContainer namespaceContainer) {
+		this.addPodsFromNamespace(getContext(), getClient(), namespaceContainer);
+	}
+	
 	public void addPodsFromNamespace(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer) {
 		context.getExecutor().execute(context, addPodsFromNamespaceExecutable, namespaceContainer, client);
 	}
@@ -49,4 +57,5 @@ public class PodSupport {
 		}
 		
 	}
+	
 }

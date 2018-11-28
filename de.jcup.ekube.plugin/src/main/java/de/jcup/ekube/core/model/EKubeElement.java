@@ -9,7 +9,7 @@ public interface EKubeElement {
 	
 	public String getName();
 	
-	public void execute(EKubeActionIdentifer action);
+	public <T> T execute(EKubeActionIdentifer<T> actionIdentifier);
 
 	public EKubeContainer getParent();
 	

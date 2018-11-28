@@ -11,11 +11,19 @@ import io.fabric8.kubernetes.api.model.ServicePort;
 import io.fabric8.kubernetes.api.model.ServiceSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public class ServiceSupport {
+public class ServiceSupport extends AbstractSupport{
 
+	public ServiceSupport(Fabric8ioSupportContext context) {
+		super(context);
+	}
 	private AddServicesFromNamespaceExecutable addPods = new AddServicesFromNamespaceExecutable();
 	private UpdatePodsExecutable updateService = new UpdatePodsExecutable();
 
+	
+	public void addServicesFromNamespace(NamespaceContainer namespaceContainer) {
+		this.addServicesFromNamespace(getContext(), getClient(), namespaceContainer);
+	}
+	
 	public void addServicesFromNamespace(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer) {
 		context.getExecutor().execute(context, addPods, namespaceContainer, client);
 	}
@@ -86,4 +94,5 @@ public class ServiceSupport {
 		}
 		
 	}
+	
 }

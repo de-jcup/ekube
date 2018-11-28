@@ -1,47 +1,47 @@
 package de.jcup.ekube.explorer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDecorationContext;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelDecorator;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.part.DrillDownAdapter;
+import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.part.ViewPart;
 
 import de.jcup.eclipse.commons.ui.EclipseUtil;
-import de.jcup.ekube.Activator;
 import de.jcup.ekube.EclipseEKubeContext;
 import de.jcup.ekube.KubeConfigLoader;
+import de.jcup.ekube.core.DefaultSafeExecutor;
 import de.jcup.ekube.core.EKubeConfiguration;
-import de.jcup.ekube.core.EKubeContextConfigurationEntry;
 import de.jcup.ekube.core.fabric8io.Fabric8ioEKubeModelBuilder;
+import de.jcup.ekube.core.model.EKubeContainer;
+import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
 
 public class KubernetesExplorer extends ViewPart {
@@ -55,51 +55,84 @@ public class KubernetesExplorer extends ViewPart {
 	IWorkbench workbench;
 
 	private TreeViewer viewer;
-	private DrillDownAdapter drillDownAdapter;
-	private Action switchContextAction;
-	private Action reloadKubeConfigAction;
-	private Action infoAction;
-
-	private Action expandAllAction;
-	private Action collapseAllAction;
-
-	private Action doubleClickAction;
 
 	private EKubeElementTreeContentProvider contentPovider;
+	private KubernetesExplorerActionGroup actionSet;
 
 	private KubeConfigLoader configLoader;
 
+	private class InternalDecoratingStyledCellLabelProvider extends DecoratingStyledCellLabelProvider implements ILabelProvider{
+
+		public InternalDecoratingStyledCellLabelProvider(IStyledLabelProvider labelProvider, ILabelDecorator decorator,
+				IDecorationContext decorationContext) {
+			super(labelProvider, decorator, decorationContext);
+		}
+
+		@Override
+		public String getText(Object element) {
+			if (element instanceof EKubeElement){
+				EKubeElement eelement = (EKubeElement) element;
+				return eelement.getLabel();
+			}
+			return null;
+		}
+		
+	}
 	@Override
 	public void createPartControl(Composite parent) {
 		configLoader = new KubeConfigLoader();
 
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		drillDownAdapter = new DrillDownAdapter(viewer);
+		viewer.setAutoExpandLevel(1);
+		
 		contentPovider = new EKubeElementTreeContentProvider(this);
 		viewer.setContentProvider(contentPovider);
 		viewer.setInput(getViewSite());
+		
+		
 		ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
 		EKubeElementLabelProvider kubernesExplorerLabelProvider = new EKubeElementLabelProvider();
 
-		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(kubernesExplorerLabelProvider, decorator, null));
+		viewer.setLabelProvider(new InternalDecoratingStyledCellLabelProvider(kubernesExplorerLabelProvider, decorator, null));
 
 		// Create the help context id for the viewer's control
 		// workbench.getHelpSystem().setHelp(viewer.getControl(),
 		// "de.jcup.ekube.viewer");
 		getSite().setSelectionProvider(viewer);
 		makeActions();
+		initFrameActions();
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
 
 	}
 
+	private void initFrameActions() {
+		actionSet.getUpAction().update();
+		actionSet.getBackAction().update();
+		actionSet.getForwardAction().update();
+	}
+	
+	public Object getFirstSelectedElement() {
+		ISelection selection = getSelection();
+		if (selection instanceof IStructuredSelection){
+			return ((IStructuredSelection) selection).getFirstElement();
+		}
+		return null;
+	}
+	
+	private ISelection getSelection() {
+		return viewer.getSelection();
+	}
+	
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
-				KubernetesExplorer.this.fillContextMenu(manager);
+				actionSet.setContext(new ActionContext(getSelection()));
+				actionSet.fillContextMenu(manager);
+				actionSet.setContext(null);
 			}
 		});
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());
@@ -109,148 +142,25 @@ public class KubernetesExplorer extends ViewPart {
 
 	private void contributeToActionBars() {
 		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(switchContextAction);
-		manager.add(reloadKubeConfigAction);
-		manager.add(new Separator());
-		manager.add(infoAction);
-		manager.add(new Separator());
-		manager.add(expandAllAction);
-		manager.add(collapseAllAction);
-
-	}
-
-	private void fillContextMenu(IMenuManager manager) {
-		manager.add(switchContextAction);
-		manager.add(reloadKubeConfigAction);
-		manager.add(infoAction);
-		manager.add(new Separator());
-		manager.add(expandAllAction);
-		manager.add(collapseAllAction);
-		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(switchContextAction);
-		manager.add(reloadKubeConfigAction);
-		manager.add(infoAction);
-		manager.add(new Separator());
-		manager.add(expandAllAction);
-		manager.add(collapseAllAction);
-		drillDownAdapter.addNavigationActions(manager);
+		actionSet.fillActionBars(bars);
 	}
 
 	private void makeActions() {
-		expandAllAction = new Action() {
-			@Override
-			public void run() {
-				viewer.expandAll();
-			}
-		};
-		expandAllAction.setText("Expand all");
-		expandAllAction.setToolTipText("Expand all tree elements");
-		expandAllAction
-				.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/expandall.png", Activator.PLUGIN_ID));
-
-		collapseAllAction = new Action() {
-			@Override
-			public void run() {
-				viewer.collapseAll();
-			}
-		};
-		collapseAllAction.setText("Collpase all");
-		collapseAllAction.setToolTipText("Collapse all tree elements");
-		collapseAllAction
-				.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/collapseall.png", Activator.PLUGIN_ID));
-
-		switchContextAction = new Action() {
-			public void run() {
-
-				if (!configLoader.isLoaded()) {
-					configLoader.load();
-				}
-				EKubeConfiguration configuration = Activator.getDefault().getConfiguration();
-				List<EKubeContextConfigurationEntry> data = configuration.getConfigurationContextList();
-				if (data.isEmpty()) {
-					MessageDialog.openWarning(viewer.getControl().getShell(), "Not connected",
-							"No information about contexts to choose available.\n\nPlease connect to kubernetes before!");
-					return;
-				}
-				ElementListSelectionDialog dialog = new ElementListSelectionDialog(
-						Display.getCurrent().getActiveShell(), new EKubeSwitchContextConfigurationLabelProvider());
-				dialog.setElements(data.toArray());
-				dialog.setMultipleSelection(false);
-				dialog.setTitle("Which context do you want to use ?");
-				// user pressed cancel
-				if (dialog.open() != Window.OK) {
-					return;
-				}
-				Object[] result = dialog.getResult();
-				EKubeContextConfigurationEntry context = (EKubeContextConfigurationEntry) result[0];
-				configuration.setKubernetesContext(context.getName());
-
-				connect(configuration);
-			}
-		};
-		switchContextAction.setText("Switch context");
-		switchContextAction
-				.setToolTipText("Switch kubernetes current context for ekube.\nWill NOT change your kube config file!");
-		switchContextAction.setImageDescriptor(
-				EclipseUtil.createImageDescriptor("/icons/switch-context.png", Activator.PLUGIN_ID));
-
-		reloadKubeConfigAction = new Action() {
-			public void run() {
-				/* always load - no matter if already loaded or not*/
-				configLoader.load();
-			}
-		};
-		reloadKubeConfigAction.setText("Reload kube config");
-		reloadKubeConfigAction.setToolTipText("Reloads kube config file from configured location (see preferences)");
-		reloadKubeConfigAction.setImageDescriptor(
-				EclipseUtil.createImageDescriptor("/icons/reload-kube-config.gif", Activator.PLUGIN_ID));
-
-		infoAction = new Action() {
-			public void run() {
-				StringBuilder sb = new StringBuilder();
-				EKubeConfiguration config = Activator.getDefault().getConfiguration();
-				sb.append("Info:\n-current context:" + config.getKubernetesContext());
-				sb.append("\nContexts available:");
-				for (EKubeContextConfigurationEntry contextConfig : config.getConfigurationContextList()) {
-					sb.append("\n+").append(contextConfig.getName() + ", cluster=" + contextConfig.getCluster()
-							+ ", user:" + contextConfig.getUser());
-				}
-				showMessage(sb.toString());
-			}
-		};
-		infoAction.setText("Info");
-		infoAction.setToolTipText("Info about kubernetes configuration");
-		infoAction.setImageDescriptor(
-				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		doubleClickAction = new Action() {
-			public void run() {
-				IStructuredSelection selection = viewer.getStructuredSelection();
-				Object obj = selection.getFirstElement();
-				showMessage("Double-click detected on " + obj.toString());
-			}
-		};
+		
+		actionSet = new KubernetesExplorerActionGroup(this);
+		
+		
 	}
 
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
+				actionSet.getDoubleClickAction().run();
 			}
 		});
 	}
 
-	private void showMessage(String message) {
+	void showMessage(String message) {
 		MessageDialog.openInformation(viewer.getControl().getShell(), "Kubernetes Explorer", message);
 	}
 
@@ -270,7 +180,12 @@ public class KubernetesExplorer extends ViewPart {
 			monitor.beginTask("Fetch data from cluster", IProgressMonitor.UNKNOWN);
 			Fabric8ioEKubeModelBuilder modelBuilder = new Fabric8ioEKubeModelBuilder();
 			EclipseEKubeContext context = new EclipseEKubeContext(monitor);
+			
 			EKubeModel model = modelBuilder.build(context);
+			
+			/* set to normal executor which does not append defaults etc. */
+			context.setExecutor(new DefaultSafeExecutor());
+			
 			monitor.done();
 
 			contentPovider.inputChanged(viewer, null, model);
@@ -288,4 +203,78 @@ public class KubernetesExplorer extends ViewPart {
 		job.schedule();
 	}
 
+	public TreeViewer getTreeViewer() {
+		return viewer;
+	}
+
+	public String getFrameName(Object input) {
+		if (input instanceof EKubeElement){
+			EKubeElement eelement  = (EKubeElement) input;
+			return eelement.getLabel();
+		}else{
+			return null;
+		}
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		
+		if (actionSet != null){
+			actionSet.dispose();
+		}
+	}
+
+
+	void updateToolbar() {
+		IActionBars actionBars= getViewSite().getActionBars();
+		actionSet.updateToolBar(actionBars.getToolBarManager());
+	}
+
+	/**
+	 * Updates the title text and title tool tip.
+	 * Called whenever the input of the viewer changes.
+	 */
+	void updateTitle() {
+		Object input= viewer.getInput();
+		String inputText= createTitleName(input);
+		if (inputText == null) {
+			setContentDescription(""); //$NON-NLS-1$
+			setTitleToolTip(""); //$NON-NLS-1$
+		} else {
+			setContentDescription(inputText);
+			setTitleToolTip(inputText);
+		}
+	}
+
+	private String createTitleName(Object input) {
+		if (input instanceof EKubeElement){
+			EKubeElement eelement  = (EKubeElement) input;
+			
+			StringBuilder sb = new StringBuilder();
+			List<String> list = new ArrayList<>();
+			list.add(eelement.getLabel());
+			EKubeContainer parent = eelement.getParent();
+			while (parent!=null){
+				list.add(parent.getLabel());
+				parent = parent.getParent();
+			}
+			Collections.reverse(list);
+			sb.append(list.toString());
+			return sb.toString();
+			
+		}else{
+			return "";
+		}
+	}
+
+	void loadconfiguration(boolean lazy) {
+		if (!configLoader.isLoaded() || !lazy) {
+			configLoader.load();
+		}
+	}
+
+	public String getToolTipText(Object input) {
+		return getFrameName(input);
+	}
 }

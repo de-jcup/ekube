@@ -19,6 +19,9 @@ public class ConfigMapElement extends AbstractEKubeElement implements EKubeStatu
 
 	public void setData(Map<String, String> data) {
 		this.data.clear();
+		if (data==null){
+			return;
+		}
 		this.data.putAll(data);
 	}
 	

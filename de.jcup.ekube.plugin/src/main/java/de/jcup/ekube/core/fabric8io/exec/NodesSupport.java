@@ -15,8 +15,13 @@ import io.fabric8.kubernetes.api.model.NodeList;
 import io.fabric8.kubernetes.api.model.NodeStatus;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public class NodesSupport {
+public class NodesSupport extends AbstractSupport {
 	
+
+	public NodesSupport(Fabric8ioSupportContext context) {
+		super(context);
+	}
+
 	private AddNodesExcecutable addNodesExcecutable = new AddNodesExcecutable();
 	private UpdateNodeExecutable updateStatus = new UpdateNodeExecutable();
 
@@ -56,6 +61,7 @@ public class NodesSupport {
 
 		@Override
 		public void execute(EKubeContext context, KubernetesClient client, NodesContainer nodesContainer, Void ignore) {
+			
 			NodeList nodeList = client.nodes().list();
 			for (Node node: nodeList.getItems()){
 				NodeContainer nodeContainer = new NodeContainer();
@@ -63,7 +69,8 @@ public class NodesSupport {
 				nodesContainer.add(nodeContainer);
 
 				updateStatus(context,client,node,nodeContainer);
-
+				
+				/* add node conditions */
 				List<NodeCondition> conditions = node.getStatus().getConditions();
 				for (NodeCondition condition: conditions){
 					NodeConditionElement element = new NodeConditionElement();

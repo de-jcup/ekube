@@ -40,5 +40,13 @@ public abstract class AbstractEKubeConfiguration implements EKubeConfiguration{
 		}
 		return null;
 	}
+	
+	@Override
+	public boolean isNamespaceFiltered(String namespaceName) {
+		if (!isNamespaceFilteringEnabled()){
+			return false;
+		}
+		return getFilteredNamespaces().contains(namespaceName);
+	}
 
 }

@@ -4,6 +4,10 @@ import java.util.List;
 
 public class CurrentContextContainer extends AbstractContextContainer {
 	
+	public CurrentContextContainer(){
+		addChild(new NodesContainer());
+	}
+	
 	public void add(NamespaceContainer namespaceContainer){
 		addChild(namespaceContainer);
 	}
@@ -12,5 +16,9 @@ public class CurrentContextContainer extends AbstractContextContainer {
 		return fetchAllChildrenOfType(NamespaceContainer.class);
 	}
 	
+	public NodesContainer getNodesContainer(){
+		return fetchAllChildrenOfType(NodesContainer.class).iterator().next();
+	}
+
 
 }

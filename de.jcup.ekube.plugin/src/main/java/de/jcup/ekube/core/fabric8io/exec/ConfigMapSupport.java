@@ -9,11 +9,20 @@ import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public class ConfigMapSupport {
+public class ConfigMapSupport extends AbstractSupport{
 	
+
+	public ConfigMapSupport(Fabric8ioSupportContext context) {
+		super(context);
+	}
+
 	private UpdateConfigMapsExecutable updateConfigMapsExecutable = new UpdateConfigMapsExecutable();
 	private AddConfigMapsFromNamespaceExecutable addConfigMapsFromNamespaceExecutable = new AddConfigMapsFromNamespaceExecutable();
 
+	public void addConfigMapsFromNamespace(NamespaceContainer namespaceContainer) {
+		this.addConfigMapsFromNamespace(getContext(), getClient(), namespaceContainer);
+	}
+	
 	public void addConfigMapsFromNamespace(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer) {
 		context.getExecutor().execute(context, addConfigMapsFromNamespaceExecutable, namespaceContainer, client);
 	}
@@ -51,4 +60,5 @@ public class ConfigMapSupport {
 		}
 		
 	}
+	
 }

@@ -1,6 +1,7 @@
 package de.jcup.ekube.core.model;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractEKubeElement implements EKubeElement {
@@ -8,7 +9,7 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 	protected String label;
 	protected String name;
 	
-	private Map<EKubeActionIdentifer, EKubeElementAction> actions = new EnumMap<>(EKubeActionIdentifer.class);
+	private Map<EKubeActionIdentifer<?>, EKubeElementAction<?>> actions = new HashMap<>();
 	EKubeContainer parent;
 	private boolean locked;
 	private String errorMessage;
@@ -63,12 +64,13 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 	}
 
 	@Override
-	public void execute(EKubeActionIdentifer actionIdentifier) {
-		EKubeElementAction action = actions.get(actionIdentifier);
+	public <T> T execute(EKubeActionIdentifer<T> actionIdentifier) {
+		@SuppressWarnings("unchecked") // ugly but necessary -currently no other way to have fluent
+		EKubeElementAction<T> action = (EKubeElementAction<T>) actions.get(actionIdentifier);
 		if (action == null) {
-			return;
+			return null;
 		}
-		action.execute();
+		return action.execute();
 	}
 
 	/**

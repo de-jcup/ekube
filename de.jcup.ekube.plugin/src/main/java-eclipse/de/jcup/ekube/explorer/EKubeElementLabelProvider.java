@@ -17,6 +17,9 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
 import de.jcup.ekube.core.model.ConfigMapsContainer;
 import de.jcup.ekube.core.model.CurrentContextContainer;
+import de.jcup.ekube.core.model.DeploymentConditionElement;
+import de.jcup.ekube.core.model.DeploymentContainer;
+import de.jcup.ekube.core.model.DeploymentsContainer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeStatusElement;
@@ -100,6 +103,12 @@ class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabe
 			element = "node.png";
 		} else if (obj instanceof NodeConditionElement) {
 			element = "node-condition.png";
+		} else if (obj instanceof DeploymentConditionElement){
+			element = "node-condition.png";
+		} else if (obj instanceof DeploymentContainer){
+			element = "deployment.gif";
+		} else if (obj instanceof DeploymentsContainer){
+			element = "deployments.gif";
 		}
 		if (element != null) {
 			Image image = EclipseUtil.getImage("/icons/model/" + element, Activator.getDefault());
@@ -129,6 +138,7 @@ class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabe
 	public void update(ViewerCell cell) {
 		cell.setBackground(Activator.getDefault().getColorManager().getColor(new RGB(255,0,0)));
 	}
+	
 	@Override
 	public String getToolTipText(Object element) {
 		if (! (element instanceof EKubeElement)){

@@ -6,16 +6,17 @@ import de.jcup.ekube.core.model.ServiceContainer;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public class Fabric8ioRefreshServiceAction extends AbstractFabric8ioElementAction<ServiceContainer, Service> {
+public class Fabric8ioRefreshServiceAction extends AbstractFabric8ioElementAction<ServiceContainer, Service,Void> {
 
 	public Fabric8ioRefreshServiceAction(EKubeContext context, KubernetesClient client,
-			EKubeActionIdentifer actionIdentifier, ServiceContainer ekubeElement, Service technicalObject) {
+			EKubeActionIdentifer<Void> actionIdentifier, ServiceContainer ekubeElement, Service technicalObject) {
 		super(context,client, EKubeActionIdentifer.REFRESH, ekubeElement, technicalObject);
 	}
 
 	@Override
-	public void execute() {
+	public Void execute() {
 		support.services().updateStatus(context,client,technicalObject, kubeElement);
+		return null;
 	}
 
 }

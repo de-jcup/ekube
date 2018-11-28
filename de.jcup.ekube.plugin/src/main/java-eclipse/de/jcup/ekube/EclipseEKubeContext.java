@@ -21,7 +21,10 @@ public class EclipseEKubeContext implements EKubeContext {
 
 	public EclipseEKubeContext(IProgressMonitor monitor) {
 		this.progressHandler=new EclipseProgressHandler(monitor);
-		this.executor=new DefaultSafeExecutor();
+	}
+	
+	public void setExecutor(SafeExecutor executor) {
+		this.executor = executor;
 	}
 
 	@Override
@@ -59,6 +62,9 @@ public class EclipseEKubeContext implements EKubeContext {
 
 	@Override
 	public SafeExecutor getExecutor() {
+		if (executor==null){
+			executor=new DefaultSafeExecutor();
+		}
 		return executor;
 	}
 
