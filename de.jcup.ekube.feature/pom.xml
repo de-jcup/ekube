@@ -8,9 +8,8 @@
 		<version>1.0.0</version>
 	</parent>
 	
-	<groupId>de.jcup.ekube</groupId>
-	<artifactId>de.jcup.ekube.feature</artifactId>
-	<version>0.2.0.alpha</version>
+	<artifactId>de-jcup-ekube-feature</artifactId>
+	<version>0.2.1</version>
 	<packaging>eclipse-feature</packaging>
 
 </project>

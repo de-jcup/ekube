@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.jcup.ekube.feature"
-      label="EKube feature"
-      version="0.2.0.alpha"
+      id="de.jcup.ekube"
+      label="EKube"
+      version="0.2.1"
       provider-name="Albert Tregnaghi">
 
    <description url="http://www.example.com/description">
@@ -230,7 +230,7 @@ and limitations under the License.
    </license>
 
    <plugin
-         id="de.jcup.ekube.plugin"
+         id="de.jcup.ekube"
          download-size="0"
          install-size="0"
          version="0.0.0"
