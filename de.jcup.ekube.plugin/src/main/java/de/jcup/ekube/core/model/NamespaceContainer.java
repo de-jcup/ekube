@@ -9,6 +9,7 @@ public class NamespaceContainer extends AbstractEKubeContainer {
 		addChild(new VolumesContainer());
 		addChild(new NetworksContainer());
 		addChild(new ConfigMapsContainer());
+		addChild(new SecretsContainer());
 	}
 	
 	public NetworksContainer fetchNetworksContainer(){
@@ -30,6 +31,11 @@ public class NamespaceContainer extends AbstractEKubeContainer {
 	public ServicesContainer fetchServicesContainer(){
 		/* always available, no check necessary */
 		return fetchAllChildrenOfType(ServicesContainer.class).iterator().next();
+	}
+	
+	public SecretsContainer fetchSecretsContainer(){
+		/* always available, no check necessary */
+		return fetchAllChildrenOfType(SecretsContainer.class).iterator().next();
 	}
 
 	public DeploymentsContainer fetchDeploymentsContainer() {

@@ -1,8 +1,9 @@
 package de.jcup.ekube.core.model;
 
-import java.util.EnumMap;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractEKubeElement implements EKubeElement {
 
@@ -13,9 +14,6 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 	EKubeContainer parent;
 	private boolean locked;
 	private String errorMessage;
-
-	public AbstractEKubeElement() {
-	}
 
 	@Override
 	public EKubeContainer getParent() {
@@ -81,7 +79,7 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 	 * 
 	 * @param action
 	 */
-	public void register(EKubeElementAction action) {
+	public void register(EKubeElementAction<?> action) {
 		actions.put(action.getIdentifier(), action);
 	}
 
@@ -91,6 +89,11 @@ public abstract class AbstractEKubeElement implements EKubeElement {
 	
 	public String getErrorMessage() {
 		return errorMessage;
+	}
+	
+	@Override
+	public Set<EKubeActionIdentifer<?>> getExecutableActionIdentifiers() {
+		return Collections.unmodifiableSet(actions.keySet());
 	}
 
 }

@@ -6,11 +6,11 @@ import de.jcup.ekube.core.model.ServiceContainer;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public class Fabric8ioRefreshServiceAction extends AbstractFabric8ioElementAction<ServiceContainer, Service,Void> {
+public class Fabric8ioRefreshServiceStatusAction extends AbstractFabric8ioElementAction<ServiceContainer, Service,Void> {
 
-	public Fabric8ioRefreshServiceAction(EKubeContext context, KubernetesClient client,
+	public Fabric8ioRefreshServiceStatusAction(EKubeContext context, KubernetesClient client,
 			EKubeActionIdentifer<Void> actionIdentifier, ServiceContainer ekubeElement, Service technicalObject) {
-		super(context,client, EKubeActionIdentifer.REFRESH, ekubeElement, technicalObject);
+		super(context,client, EKubeActionIdentifer.REFRESH_STATUS, ekubeElement, technicalObject);
 	}
 
 	@Override

@@ -1,13 +1,8 @@
 package de.jcup.ekube.explorer;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuManager;
@@ -26,13 +21,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.handlers.CollapseAllHandler;
 import org.eclipse.ui.handlers.IHandlerService;
-import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.views.framelist.BackAction;
 import org.eclipse.ui.views.framelist.ForwardAction;
 import org.eclipse.ui.views.framelist.FrameAction;
@@ -54,7 +47,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 	private static final String FRAME_ACTION_SEPARATOR_ID = "FRAME_ACTION_SEPARATOR_ID"; //$NON-NLS-1$
 	private static final String FRAME_ACTION_GROUP_ID = "FRAME_ACTION_GROUP_ID"; //$NON-NLS-1$
 
-	private KubernetesExplorer explorer;
+	KubernetesExplorer explorer;
 
 	private FrameList frameList;
 	private GoIntoAction fZoomInAction;
@@ -70,14 +63,15 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 	private Action expandAllAction;
 	private Action collapseAllAction;
 
-	private Action doubleClickAction;
+	private Action showMetaInfoAsYamlAction;
 
 	public KubernetesExplorerActionGroup(KubernetesExplorer part) {
 		super();
 		explorer = part;
 		fFrameActionsShown = false;
 		TreeViewer viewer = part.getTreeViewer();
-
+		showMetaInfoAsYamlAction = new ShowYamlInfoAction(this);
+		showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.GRAB_STRING_INFO.getLabel());
 		// IPropertyChangeListener workingSetListener= new
 		// IPropertyChangeListener() {
 		// @Override
@@ -141,7 +135,6 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		createSwitchContextAction(viewer);
 		createReloadAction();
 		createInfoAction();
-		createDoubleClickAction();
 
 	}
 
@@ -249,59 +242,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 	}
 
-	protected void createDoubleClickAction() {
-		doubleClickAction = new Action() {
-			public void run() {
-				Object obj = explorer.getFirstSelectedElement();
-				StringBuilder sb = new StringBuilder();
-				sb.append("Double-click detected on " + obj.toString());
-				sb.append("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-				if (obj instanceof EKubeElement) {
-					EKubeElement eelement = (EKubeElement) obj;
-					String info = eelement.execute(EKubeActionIdentifer.GRAB_STRING_INFO);
-					if (info != null) {
-						try {
 
-							File tmpfile = File.createTempFile("ekube_info_", ".yaml");
-							tmpfile.deleteOnExit();
-
-							try (FileWriter fw = new FileWriter(tmpfile)) {
-								StringBuilder yaml = new StringBuilder();
-								yaml.append("# ---------------------------------------------------------------------------\n");
-								yaml.append("# EKube info about : ").append(eelement.getClass().getSimpleName()).append(" '").append(eelement.getLabel()).append("'\n");
-								yaml.append("# Timestamp        : ").append(explorer.getDateFormat().format(new Date())).append("\n");
-								yaml.append("# ---------------------------------------------------------------------------\n");
-								yaml.append(info);
-								fw.write(yaml.toString());
-								fw.close();
-								/* loading temporary file from outside eclipse workspace :*/
-								IFileStore fileStore =  EFS.getLocalFileSystem().getStore(new Path(tmpfile.getAbsolutePath()));
-								
-								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-										.getActivePage();
-								IDE.openEditorOnFileStore(page, fileStore);
-								return;
-							}
-						} catch (Exception e) {
-							Activator.getDefault().getErrorHandler().logError("Was not able to get yaml", e);
-							sb.append("Failed:");
-							sb.append(e.getClass());
-							sb.append("\nMessage:");
-							sb.append(e.getMessage());
-							sb.append("\n");
-						}
-					} else {
-						sb.append("Element/Container does NOT contain meta information");
-					}
-					explorer.showMessage(sb.toString());
-				}
-
-			}
-		};
-	}
-
-	public Action getDoubleClickAction() {
-		return doubleClickAction;
+	public Action getShowMetaInfoAsYamlAction() {
+		return showMetaInfoAsYamlAction;
 	}
 
 	@Override
@@ -394,6 +337,34 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		int size = selection.size();
 		Object element = selection.getFirstElement();
 
+		manager.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
+	    
+		if (!(element instanceof EKubeElement)){
+			return;
+		}
+		EKubeElement eke = (EKubeElement) element;
+		Set<EKubeActionIdentifer<?>> actions = eke.getExecutableActionIdentifiers();
+		for (EKubeActionIdentifer<?> action: actions){
+			if (! action.isVisibleForUser()){
+				continue;
+			}
+			if (EKubeActionIdentifer.GRAB_STRING_INFO.equals(action)){
+				manager.add(showMetaInfoAsYamlAction);
+			}else {
+				Action uiAction = new Action() {
+					@Override
+					public void run() {
+						Object result = eke.execute(action);
+						if (action.isRefreshNecessary()){
+							explorer.refreshTreeElelement(eke);
+						}
+					}
+				};
+				uiAction.setText(action.getLabel());
+				manager.add(uiAction);
+			}
+			
+		}
 		manager.add(switchContextAction);
 		manager.add(reloadKubeConfigAction);
 		manager.add(infoAction);

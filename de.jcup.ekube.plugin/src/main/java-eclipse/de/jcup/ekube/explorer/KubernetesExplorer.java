@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -11,6 +12,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -24,11 +27,13 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.part.ViewPart;
@@ -36,9 +41,9 @@ import org.eclipse.ui.part.ViewPart;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.EclipseEKubeContext;
 import de.jcup.ekube.KubeConfigLoader;
-import de.jcup.ekube.core.DefaultSafeExecutor;
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.fabric8io.Fabric8ioEKubeModelBuilder;
+import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
@@ -81,7 +86,6 @@ public class KubernetesExplorer extends ViewPart {
 			}
 			return null;
 		}
-		
 	}
 	@Override
 	public void createPartControl(Composite parent) {
@@ -137,6 +141,7 @@ public class KubernetesExplorer extends ViewPart {
 				actionSet.setContext(new ActionContext(getSelection()));
 				actionSet.fillContextMenu(manager);
 				actionSet.setContext(null);
+				
 			}
 		});
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());
@@ -156,7 +161,7 @@ public class KubernetesExplorer extends ViewPart {
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				actionSet.getDoubleClickAction().run();
+				actionSet.getShowMetaInfoAsYamlAction().run();
 			}
 		});
 	}
@@ -278,5 +283,9 @@ public class KubernetesExplorer extends ViewPart {
 
 	public String getToolTipText(Object input) {
 		return getFrameName(input);
+	}
+
+	public void refreshTreeElelement(EKubeElement kubeElement) {
+		viewer.refresh(kubeElement);
 	}
 }

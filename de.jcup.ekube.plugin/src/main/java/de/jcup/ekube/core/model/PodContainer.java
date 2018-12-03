@@ -15,4 +15,8 @@ public class PodContainer extends AbstractEKubeContainer implements EKubeStatusE
 	public String getStatus() {
 		return status;
 	}
+
+	public void add(PodConditionElement element) {
+		addChild(element);
+	}
 }

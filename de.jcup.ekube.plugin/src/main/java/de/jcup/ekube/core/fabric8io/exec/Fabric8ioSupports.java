@@ -19,6 +19,7 @@ public class Fabric8ioSupports implements Fabric8ioSupportContext {
 	private ConfigMapSupport configMapSupport;
 	private NodesSupport nodesSupport;
 	private DefaultSupport defaultSupport;
+	private SecretsSupport secretsSupport;
 	
 	private EKubeContext context;
 	private KubernetesClient client;
@@ -33,6 +34,7 @@ public class Fabric8ioSupports implements Fabric8ioSupportContext {
 		volumeSupport = new VolumeSupport(this);
 		serviceSupport = new ServiceSupport(this);
 		configMapSupport = new ConfigMapSupport(this);
+		secretsSupport = new SecretsSupport(this);
 		nodesSupport = new NodesSupport(this);
 		deploymentsSupport = new DeploymentsSupport(this);
 		defaultSupport = new DefaultSupport(this);
@@ -75,6 +77,10 @@ public class Fabric8ioSupports implements Fabric8ioSupportContext {
 		return context;
 	}
 
+	public SecretsSupport secrets(){
+		return secretsSupport;
+	}
+	
 	@Override
 	public KubernetesClient getClient() {
 		return client;

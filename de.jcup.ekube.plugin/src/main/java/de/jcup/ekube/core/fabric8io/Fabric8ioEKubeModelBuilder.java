@@ -17,8 +17,6 @@ import de.jcup.ekube.core.model.EKubeModel;
 import de.jcup.ekube.core.model.EKubeModelBuilder;
 import de.jcup.ekube.core.model.NamespaceContainer;
 import io.fabric8.kubernetes.api.model.DoneableNamespace;
-import io.fabric8.kubernetes.api.model.Endpoints;
-import io.fabric8.kubernetes.api.model.EndpointsList;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceList;
 import io.fabric8.kubernetes.client.Config;
@@ -61,7 +59,7 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 		
 		
 		/* build child content by using current context... if need more we must change the context and rebuild!*/
-		addNamespacesToCurrentContext(context, model, client);
+		addNamespacesToCurrentContext(context, model, client,supports);
 		
 		context.getProgressHandler().beginSubTask("inspecting nodes", totalWork++);
 		supports.nodes().addnodesFromNamespace(context, client, currentContext.getNodesContainer());
@@ -75,6 +73,7 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 			supports.volumes().addVolumeClaimsFromNamespace(namespaceContainer);
 			supports.networks().addNetworkPolicies(namespaceContainer);
 			supports.configMaps().addConfigMapsFromNamespace(namespaceContainer);
+			supports.secrets().addSecretsFromNamespace(namespaceContainer);
 			
 //			EndpointsList endpointList = client.endpoints().list();
 //			List<Endpoints> items = endpointList.getItems();
@@ -101,7 +100,7 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 		return currentContextContainer;
 	}
 
-	protected void addNamespacesToCurrentContext(EKubeContext context, EKubeModel model, KubernetesClient client) {
+	protected void addNamespacesToCurrentContext(EKubeContext context, EKubeModel model, KubernetesClient client, Fabric8ioSupports supports) {
 		CurrentContextContainer currentContextContainer = model.getCurrentContext();
 		NonNamespaceOperation<Namespace, NamespaceList, DoneableNamespace, Resource<Namespace, DoneableNamespace>> namespaces = client.namespaces();
 		NamespaceList namespacesList = namespaces.list();
@@ -113,7 +112,7 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 
 			NamespaceContainer namespaceContainer = new NamespaceContainer();
 			namespaceContainer.setName(namespaceName);
-
+			supports.defaults().appendDefaultActions(context, client, namespaceContainer, namespace);
 			currentContextContainer.add(namespaceContainer);
 		}
 	}

@@ -1,5 +1,7 @@
 package de.jcup.ekube.core.model;
 
+import java.util.Set;
+
 public interface EKubeElement {
 
 	/**
@@ -10,6 +12,8 @@ public interface EKubeElement {
 	public String getName();
 	
 	public <T> T execute(EKubeActionIdentifer<T> actionIdentifier);
+	
+	public Set<EKubeActionIdentifer<?>> getExecutableActionIdentifiers();
 
 	public EKubeContainer getParent();
 	
@@ -22,4 +26,5 @@ public interface EKubeElement {
 	 * @return error message or <code>null</code>
 	 */
 	public String getErrorMessage();
+
 }
