@@ -31,8 +31,11 @@ import de.jcup.ekube.core.model.NodeConditionElement;
 import de.jcup.ekube.core.model.NodeContainer;
 import de.jcup.ekube.core.model.NodesContainer;
 import de.jcup.ekube.core.model.PersistentVolumeClaimElement;
+import de.jcup.ekube.core.model.PodConditionElement;
 import de.jcup.ekube.core.model.PodContainer;
 import de.jcup.ekube.core.model.PodsContainer;
+import de.jcup.ekube.core.model.SecretElement;
+import de.jcup.ekube.core.model.SecretsContainer;
 import de.jcup.ekube.core.model.ServiceContainer;
 import de.jcup.ekube.core.model.ServicesContainer;
 import de.jcup.ekube.core.model.VolumesContainer;
@@ -108,10 +111,16 @@ class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabe
 			element = "node-condition.png";
 		} else if (obj instanceof DeploymentConditionElement){
 			element = "node-condition.png";
+		} else if (obj instanceof PodConditionElement){
+			element = "node-condition.png";
 		} else if (obj instanceof DeploymentContainer){
 			element = "deployment.gif";
 		} else if (obj instanceof DeploymentsContainer){
 			element = "deployments.gif";
+		} else if (obj instanceof SecretsContainer){
+			element = "secrets.png";
+		} else if (obj instanceof SecretElement){
+			element = "secret.gif";
 		}
 		if (element != null) {
 			Image image = EclipseUtil.getImage("/icons/model/" + element, Activator.getDefault());
