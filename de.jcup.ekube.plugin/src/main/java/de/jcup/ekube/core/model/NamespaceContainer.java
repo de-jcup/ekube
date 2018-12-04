@@ -2,7 +2,8 @@ package de.jcup.ekube.core.model;
 
 public class NamespaceContainer extends AbstractEKubeContainer {
 
-	public NamespaceContainer(){
+	public NamespaceContainer(String uid){
+		super(uid);
 		addChild(new ServicesContainer());
 		addChild(new DeploymentsContainer());
 		addChild(new PodsContainer());

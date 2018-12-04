@@ -11,11 +11,12 @@ public class DefaultSafeExecutor implements SafeExecutor {
 	private List<SafeExecutionListener> listeners = new ArrayList<>();
 
 	@Override
-	public <E extends EKubeElement, C, D> void execute(EKubeContext context, SafeExecutable<E, C, D> executable,
+	public <E extends EKubeElement, C, D, R> R execute(EKubeContext context, SafeExecutable<E, C, D,R> executable,
 			E element, C client, D data) {
 		try {
-			executable.execute(context, client, element, data);
+			R result = executable.execute(context, client, element, data);
 			afterExecution(context, executable, client, element, data);
+			return result;
 		} catch (Exception e) {
 			/* NPE will be logged */
 			if (e instanceof NullPointerException) {
@@ -29,10 +30,11 @@ public class DefaultSafeExecutor implements SafeExecutor {
 				context.getErrorHandler()
 						.logError("Kube element not wellknown, cannot set error and lock to :" + element, e);
 			}
+			return null;
 		}
 	}
 
-	private <E extends EKubeElement, C, D> void afterExecution(EKubeContext context, SafeExecutable<E, C, D> executable,
+	private <E extends EKubeElement, C, D,R> void afterExecution(EKubeContext context, SafeExecutable<E, C, D,R> executable,
 			C client, E element, D data) {
 		for (SafeExecutionListener listener : listeners) {
 			listener.afterExecute(context, executable, element, client, data);

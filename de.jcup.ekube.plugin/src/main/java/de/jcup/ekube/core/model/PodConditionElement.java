@@ -4,6 +4,11 @@ public class PodConditionElement extends AbstractEKubeElement implements EKubeSt
 
 	private String status;
 
+	public PodConditionElement(String uid) {
+		super(uid);
+	}
+
+
 	public void setStatus(String status) {
 		this.status = status;
 	}

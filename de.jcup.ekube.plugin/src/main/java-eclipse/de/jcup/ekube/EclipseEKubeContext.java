@@ -54,8 +54,19 @@ public class EclipseEKubeContext implements EKubeContext {
 		}
 
 		@Override
-		public void beginSubTask(String name, int totalWork) {
+		public void beginTask(String name, int totalWork) {
 			monitor.beginTask(name, totalWork);
+		}
+
+		@Override
+		public void worked(int summary) {
+			monitor.worked(summary);
+		}
+
+		@Override
+		public void beginSubTask(String name) {
+			monitor.subTask(name);
+			
 		}
 		
 	}

@@ -71,7 +71,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		fFrameActionsShown = false;
 		TreeViewer viewer = part.getTreeViewer();
 		showMetaInfoAsYamlAction = new ShowYamlInfoAction(this);
-		showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.GRAB_STRING_INFO.getLabel());
+		showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.SHOW_YAML.getLabel());
 		// IPropertyChangeListener workingSetListener= new
 		// IPropertyChangeListener() {
 		// @Override
@@ -287,6 +287,17 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 	}
 
 	/* package */ void fillToolBar(IToolBarManager toolBar) {
+		if (EclipseDebugSettings.isShowingDebugActions()){
+			Action refreshTreeUIAction = new Action("DEBUG: Refresh complete tree ui") {
+				
+				@Override
+				public void run() {
+					explorer.getTreeViewer().refresh();
+				}
+			};
+			refreshTreeUIAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
+			toolBar.add(refreshTreeUIAction);
+		}
 		toolBar.add(switchContextAction);
 		toolBar.add(reloadKubeConfigAction);
 		toolBar.add(infoAction);
@@ -327,9 +338,6 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		}
 	}
 
-	// ---- Context menu
-	// -------------------------------------------------------------------------
-
 	@Override
 	public void fillContextMenu(IMenuManager manager) {
 
@@ -348,19 +356,10 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 			if (! action.isVisibleForUser()){
 				continue;
 			}
-			if (EKubeActionIdentifer.GRAB_STRING_INFO.equals(action)){
+			if (EKubeActionIdentifer.SHOW_YAML.equals(action)){
 				manager.add(showMetaInfoAsYamlAction);
 			}else {
-				Action uiAction = new Action() {
-					@Override
-					public void run() {
-						Object result = eke.execute(action);
-						if (action.isRefreshNecessary()){
-							explorer.refreshTreeElelement(eke);
-						}
-					}
-				};
-				uiAction.setText(action.getLabel());
+				Action uiAction = createActionForIdentifier(eke, action);
 				manager.add(uiAction);
 			}
 			
@@ -382,6 +381,20 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 		manager.add(collapseAllAction);
 
 		super.fillContextMenu(manager);
+	}
+
+	protected Action createActionForIdentifier(EKubeElement eke, EKubeActionIdentifer<?> action) {
+		Action uiAction = new Action() {
+			@Override
+			public void run() {
+				Object result = eke.execute(action);
+				if (action.isRefreshNecessary()){
+					explorer.refreshTreeElelement(eke);
+				}
+			}
+		};
+		uiAction.setText(action.getLabel());
+		return uiAction;
 	}
 
 	private void addGotoMenu(IMenuManager menu, Object element, int size) {
@@ -415,4 +428,5 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 	public FrameList getFrameList() {
 		return frameList;
 	}
+
 }

@@ -3,7 +3,9 @@ package de.jcup.ekube.core.fabric8io.exec;
 import java.util.List;
 
 import de.jcup.ekube.core.EKubeContext;
+import de.jcup.ekube.core.fabric8io.elementaction.Fabric8ioGenericExecutionAction;
 import de.jcup.ekube.core.fabric8io.elementaction.Fabric8ioRefreshPodStatusAction;
+import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.NamespaceContainer;
 import de.jcup.ekube.core.model.PodConditionElement;
 import de.jcup.ekube.core.model.PodContainer;
@@ -36,10 +38,10 @@ public class PodSupport extends AbstractSupport{
 		context.getExecutor().execute(context, updateStatus, podContainer,client,pod);
 	}
 	
-	private class UpdatePodsExecutable implements Fabric8ioSafeExecutable<PodContainer, Pod>{
+	private class UpdatePodsExecutable implements Fabric8ioSafeExecutable<PodContainer, Pod,Void>{
 
 		@Override
-		public void execute(EKubeContext context, KubernetesClient client, PodContainer podContainer, Pod pod) {
+		public Void execute(EKubeContext context, KubernetesClient client, PodContainer podContainer, Pod pod) {
 			PodStatus status = pod.getStatus();
 			List<ContainerStatus> containerStatuses = status.getContainerStatuses();
 			int ready=0;
@@ -51,19 +53,28 @@ public class PodSupport extends AbstractSupport{
 				}
 			}
 			podContainer.setStatus("Ready: "+ready+"/"+count);
+			return null;
 		}
 		
 	}
 	private class AddPodsFromNamespaceExecutable implements Fabric8ioSafeExecutableNoData<NamespaceContainer>{
 
 		@Override
-		public void execute(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer, Void ignore) {
+		public Void execute(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer, Object ignore) {
 			String namespaceName = namespaceContainer.getName();
 			PodList podList = client.pods().inNamespace(namespaceName).list();
 			PodsContainer podsContainer = namespaceContainer.fetchPodsContainer();
+			
+			/* set this itself as action for rebuild */
+			Fabric8ioGenericExecutionAction<NamespaceContainer, Object, Void> x = new Fabric8ioGenericExecutionAction<>(addPodsFromNamespaceExecutable, EKubeActionIdentifer.REFRESH_CHILDREN, context, client, namespaceContainer, ignore);
+			podsContainer.register(x);
+			
+			podsContainer.startOrphanCheck();
 			for (Pod pod: podList.getItems()){
-				PodContainer podContainer = new PodContainer();
-				
+				PodContainer podContainer = new PodContainer(pod.getMetadata().getUid());
+				if (podsContainer.isAlreadyFoundAndSoNoOrphan(podContainer)){
+					continue;
+				}
 				updateStatus(context,client,pod,podContainer);
 				
 				podContainer.setName(pod.getMetadata().getName());
@@ -75,7 +86,7 @@ public class PodSupport extends AbstractSupport{
 				
 				List<PodCondition> conditions = pod.getStatus().getConditions();
 				for (PodCondition condition: conditions){
-					PodConditionElement element = new PodConditionElement();
+					PodConditionElement element = new PodConditionElement(pod.getMetadata().getUid()+"#"+condition.getType());
 					element.setName(condition.getType());
 					
 					StringBuilder sb = new StringBuilder();
@@ -88,7 +99,10 @@ public class PodSupport extends AbstractSupport{
 					
 					podContainer.add(element);
 				}
+			
 			}
+			podsContainer.removeOrphans();
+			return null;
 		}
 		
 	}

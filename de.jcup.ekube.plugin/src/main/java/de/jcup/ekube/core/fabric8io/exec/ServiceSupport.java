@@ -3,8 +3,11 @@ package de.jcup.ekube.core.fabric8io.exec;
 import java.util.List;
 
 import de.jcup.ekube.core.EKubeContext;
+import de.jcup.ekube.core.fabric8io.elementaction.Fabric8ioGenericExecutionAction;
+import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.NamespaceContainer;
 import de.jcup.ekube.core.model.ServiceContainer;
+import de.jcup.ekube.core.model.ServicesContainer;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.api.model.ServicePort;
@@ -32,11 +35,12 @@ public class ServiceSupport extends AbstractSupport{
 		context.getExecutor().execute(context, updateService, podContainer,client,service);
 	}
 	
-	private class UpdatePodsExecutable implements Fabric8ioSafeExecutable<ServiceContainer, Service>{
+	private class UpdatePodsExecutable implements Fabric8ioSafeExecutable<ServiceContainer, Service,Void>{
 
 		@Override
-		public void execute(EKubeContext context, KubernetesClient client, ServiceContainer podContainer, Service pod) {
+		public Void execute(EKubeContext context, KubernetesClient client, ServiceContainer serviceContainer, Service pod) {
 			//https://kubernetes.io/docs/concepts/services-networking/service/
+			
 			ServiceSpec spec = pod.getSpec();
 			
 			StringBuilder sb = new StringBuilder();
@@ -74,25 +78,38 @@ public class ServiceSupport extends AbstractSupport{
 				}
 			}
 			
-			podContainer.setStatus(sb.toString());
+			serviceContainer.setStatus(sb.toString());
+			return null;
 		}
 		
 	}
 	private class AddServicesFromNamespaceExecutable implements Fabric8ioSafeExecutableNoData<NamespaceContainer>{
 
 		@Override
-		public void execute(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer, Void ignore) {
+		public Void execute(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer, Object ignore) {
 			String namespaceName = namespaceContainer.getName();
 			ServiceList serviceList = client.services().inNamespace(namespaceName).list();
 			List<Service> items = serviceList.getItems();
+			ServicesContainer fetchServicesContainer = namespaceContainer.fetchServicesContainer();
+			
+			/* set this itself as action for rebuild */
+			Fabric8ioGenericExecutionAction<NamespaceContainer, Object, Void> x = new Fabric8ioGenericExecutionAction<>(addPods, EKubeActionIdentifer.REFRESH_CHILDREN, context, client, namespaceContainer, ignore);
+			fetchServicesContainer.register(x);
+			
+			fetchServicesContainer.startOrphanCheck();
 			for (Service service: items){
-				ServiceContainer serviceContainer = new ServiceContainer();
+				ServiceContainer serviceContainer = new ServiceContainer(service.getMetadata().getUid());
+				if (fetchServicesContainer.isAlreadyFoundAndSoNoOrphan(serviceContainer)){
+					continue;
+				}
 				serviceContainer.setName(service.getMetadata().getName());
 				
 				updateStatus(context, client, service, serviceContainer);
 				
-				namespaceContainer.fetchServicesContainer().add(serviceContainer);
+				fetchServicesContainer.add(serviceContainer);
 			}
+			fetchServicesContainer.removeOrphans();
+			return null;
 		}
 		
 	}

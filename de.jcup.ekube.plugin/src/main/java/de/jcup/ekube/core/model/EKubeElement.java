@@ -4,6 +4,7 @@ import java.util.Set;
 
 public interface EKubeElement {
 
+	public String getUid();
 	/**
 	 * @return label, or when no label defined, the name. No name defined returns a fallback
 	 */

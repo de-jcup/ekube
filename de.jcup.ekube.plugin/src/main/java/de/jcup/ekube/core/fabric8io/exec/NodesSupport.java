@@ -33,10 +33,10 @@ public class NodesSupport extends AbstractSupport {
 		context.getExecutor().execute(context, updateStatus, nodeContainer,client,node);
 	}
 	
-	private class UpdateNodeExecutable implements Fabric8ioSafeExecutable<NodeContainer, Node>{
+	private class UpdateNodeExecutable implements Fabric8ioSafeExecutable<NodeContainer, Node,Void>{
 
 		@Override
-		public void execute(EKubeContext context, KubernetesClient client, NodeContainer nodeContainer, Node node) {
+		public Void execute(EKubeContext context, KubernetesClient client, NodeContainer nodeContainer, Node node) {
 			StringBuilder sb = new StringBuilder();
 			NodeStatus status = node.getStatus();
 			List<NodeAddress> adresses = status.getAddresses();
@@ -53,6 +53,7 @@ public class NodesSupport extends AbstractSupport {
 				sb.append(phase);
 			}
 			nodeContainer.setStatus(sb.toString());
+			return null;
 		}
 		
 	}
@@ -60,11 +61,14 @@ public class NodesSupport extends AbstractSupport {
 	private class AddNodesExcecutable implements Fabric8ioSafeExecutableNoData<NodesContainer>{
 
 		@Override
-		public void execute(EKubeContext context, KubernetesClient client, NodesContainer nodesContainer, Void ignore) {
-			
+		public Void execute(EKubeContext context, KubernetesClient client, NodesContainer nodesContainer, Object ignore) {
+			nodesContainer.startOrphanCheck();
 			NodeList nodeList = client.nodes().list();
 			for (Node node: nodeList.getItems()){
-				NodeContainer nodeContainer = new NodeContainer();
+				NodeContainer nodeContainer = new NodeContainer(node.getMetadata().getUid());
+				if (nodeContainer.isAlreadyFoundAndSoNoOrphan(nodeContainer)){
+					continue;
+				}
 				nodeContainer.setName(node.getMetadata().getName());
 				nodesContainer.add(nodeContainer);
 
@@ -73,7 +77,7 @@ public class NodesSupport extends AbstractSupport {
 				/* add node conditions */
 				List<NodeCondition> conditions = node.getStatus().getConditions();
 				for (NodeCondition condition: conditions){
-					NodeConditionElement element = new NodeConditionElement();
+					NodeConditionElement element = new NodeConditionElement(node.getMetadata().getUid()+"#"+condition.getType());
 					element.setName(condition.getType());
 					
 					StringBuilder sb = new StringBuilder();
@@ -89,6 +93,8 @@ public class NodesSupport extends AbstractSupport {
 				
 				
 			}
+			nodesContainer.removeOrphans();
+			return null;
 		}
 		
 	}

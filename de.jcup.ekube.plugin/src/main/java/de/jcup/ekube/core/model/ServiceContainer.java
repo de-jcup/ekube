@@ -2,6 +2,10 @@ package de.jcup.ekube.core.model;
 
 public class ServiceContainer extends AbstractEKubeContainer implements EKubeStatusElement {
 
+	public ServiceContainer(String uid) {
+		super(uid);
+	}
+
 	private String status;
 
 	public String getStatus() {

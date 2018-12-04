@@ -5,7 +5,7 @@ public class EKubeActionIdentifer<R> {
 	public static final EKubeActionIdentifer<Void> REFRESH_STATUS = new EKubeActionIdentifer<>("Refresh status", Void.class);
 	public static final EKubeActionIdentifer<Void> REFRESH_CHILDREN= new EKubeActionIdentifer<>("Refresh children", Void.class);
 	
-	public static final EKubeActionIdentifer<String> GRAB_STRING_INFO = new EKubeActionIdentifer<>("Open as Yaml",String.class).markDirectlyExecutable();
+	public static final EKubeActionIdentifer<String> SHOW_YAML = new EKubeActionIdentifer<>("Show Yaml",String.class).markDirectlyExecutable();
 
 	public static final EKubeActionIdentifer<Void> REFRESH = new EKubeActionIdentifer<>("Refresh", Void.class).markDirectlyExecutable().markRefreshNecessary();
 
@@ -41,5 +41,8 @@ public class EKubeActionIdentifer<R> {
 		return directExecutable;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "ActionIdentifier:"+label;
+	}
 }

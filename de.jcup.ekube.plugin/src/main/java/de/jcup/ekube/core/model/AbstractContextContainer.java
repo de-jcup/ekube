@@ -2,6 +2,10 @@ package de.jcup.ekube.core.model;
 
 public abstract class AbstractContextContainer extends AbstractEKubeContainer {
 
+	public AbstractContextContainer(String uid) {
+		super(uid);
+	}
+
 	private String user;
 	private String cluster;
 

@@ -34,7 +34,7 @@ final class ShowYamlInfoAction extends Action {
 		StringBuilder sb = new StringBuilder();
 		if (obj instanceof EKubeElement) {
 			EKubeElement eelement = (EKubeElement) obj;
-			String info = eelement.execute(EKubeActionIdentifer.GRAB_STRING_INFO);
+			String info = eelement.execute(EKubeActionIdentifer.SHOW_YAML);
 			if (info != null) {
 				try {
 

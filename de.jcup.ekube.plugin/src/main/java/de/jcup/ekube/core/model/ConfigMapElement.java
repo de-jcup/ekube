@@ -6,6 +6,10 @@ import java.util.TreeMap;
 
 public class ConfigMapElement extends AbstractEKubeElement implements EKubeStatusElement {
 
+	public ConfigMapElement(String uid) {
+		super(uid);
+	}
+
 	private String status;
 	private Map<String, String> data = new TreeMap<>();
 

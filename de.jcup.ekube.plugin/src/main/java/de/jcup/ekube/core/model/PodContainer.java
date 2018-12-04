@@ -2,6 +2,10 @@ package de.jcup.ekube.core.model;
 
 public class PodContainer extends AbstractEKubeContainer implements EKubeStatusElement {
 
+	public PodContainer(String uid) {
+		super(uid);
+	}
+
 	private String status;
 
 	public void add(DockerElement docker) {

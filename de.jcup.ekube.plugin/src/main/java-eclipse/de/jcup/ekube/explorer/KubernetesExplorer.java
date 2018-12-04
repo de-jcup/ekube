@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -12,8 +11,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -27,13 +24,13 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.part.ViewPart;
@@ -96,7 +93,18 @@ public class KubernetesExplorer extends ViewPart {
 		contentPovider = new EKubeElementTreeContentProvider(this);
 		viewer.setContentProvider(contentPovider);
 		viewer.setInput(getViewSite());
-		
+		viewer.getControl().addKeyListener(new KeyAdapter() {
+          @Override
+        public void keyPressed(KeyEvent event) {
+        	  if (event.keyCode == SWT.F5) {
+        		  Object element = getFirstSelectedElement();
+        		  if (element instanceof EKubeElement){
+        			  EKubeElement eke = (EKubeElement) element;
+        			  actionSet.createActionForIdentifier(eke, EKubeActionIdentifer.REFRESH).run();
+        		  }
+        	  }
+        }  
+        });
 		
 		ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
 		EKubeElementLabelProvider kubernesExplorerLabelProvider = new EKubeElementLabelProvider();

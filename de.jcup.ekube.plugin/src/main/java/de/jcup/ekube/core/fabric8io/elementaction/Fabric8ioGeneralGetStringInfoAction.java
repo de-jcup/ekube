@@ -12,7 +12,7 @@ import io.fabric8.kubernetes.client.internal.SerializationUtils;
 public class Fabric8ioGeneralGetStringInfoAction extends AbstractFabric8ioElementAction<EKubeElement, HasMetadata,String> {
 
 	public Fabric8ioGeneralGetStringInfoAction(EKubeContext context, KubernetesClient client, EKubeElement kubeElement, HasMetadata technicalObject) {
-		super(context,client, EKubeActionIdentifer.GRAB_STRING_INFO, kubeElement, technicalObject);
+		super(context,client, EKubeActionIdentifer.SHOW_YAML, kubeElement, technicalObject);
 	}
 
 	@Override

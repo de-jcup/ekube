@@ -24,6 +24,7 @@ public class Fabric8ioSupports implements Fabric8ioSupportContext {
 	private EKubeContext context;
 	private KubernetesClient client;
 	private DeploymentsSupport deploymentsSupport;
+	private NamespaceSupport namespaceSupport;
 
 	public Fabric8ioSupports(EKubeContext context, KubernetesClient client) {
 		this.context = context;
@@ -38,6 +39,12 @@ public class Fabric8ioSupports implements Fabric8ioSupportContext {
 		nodesSupport = new NodesSupport(this);
 		deploymentsSupport = new DeploymentsSupport(this);
 		defaultSupport = new DefaultSupport(this);
+		namespaceSupport= new NamespaceSupport(this);
+	}
+	
+	@Override
+	public NamespaceSupport namespaces() {
+		return namespaceSupport;
 	}
 	
 	public DeploymentsSupport deployments(){
