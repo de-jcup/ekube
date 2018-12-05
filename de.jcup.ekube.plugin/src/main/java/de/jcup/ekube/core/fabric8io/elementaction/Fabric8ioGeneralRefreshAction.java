@@ -1,40 +1,32 @@
 package de.jcup.ekube.core.fabric8io.elementaction;
 
+import java.util.Collections;
+
 import de.jcup.ekube.core.EKubeContext;
+import de.jcup.ekube.core.ExecutionParameters;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public class Fabric8ioGeneralRefreshAction extends AbstractFabric8ioElementAction<EKubeElement, Object,Void> {
+public class Fabric8ioGeneralRefreshAction extends AbstractFabric8ioElementAction<EKubeElement, Void> {
 
-	public Fabric8ioGeneralRefreshAction(EKubeContext context, KubernetesClient client, EKubeElement kubeElement, Object technicalObject) {
-		super(context,client, EKubeActionIdentifer.REFRESH, kubeElement, technicalObject);
-	}
+    public Fabric8ioGeneralRefreshAction(EKubeContext context, KubernetesClient client, EKubeElement kubeElement) {
+        super(context, client, EKubeActionIdentifer.REFRESH, kubeElement);
+    }
 
-	@Override
-	public Void execute() {
-		refreshChildren();
-		refreshStatus();
-		triggerRefreshActionDownwardsToChildren();
-		return null;
-	}
-	
-	private void refreshStatus() {
-		kubeElement.execute(EKubeActionIdentifer.REFRESH_STATUS);
-	}
-
-	protected void refreshChildren(){
-		kubeElement.execute(EKubeActionIdentifer.REFRESH_CHILDREN);
-	}
-
-	protected void triggerRefreshActionDownwardsToChildren() {
-		if (this.kubeElement instanceof EKubeContainer){
-			EKubeContainer container = (EKubeContainer) this.kubeElement;
-			for (EKubeElement element: container.getChildren()){
-				element.execute(EKubeActionIdentifer.REFRESH);
-			}
-		}
-	}
+    @Override
+    public Void execute(ExecutionParameters params) {
+        /*
+         * refresh yourself by using parent doing a "refresh child" only on
+         * this!
+         */
+        EKubeContainer parent = kubeElement.getParent();
+        if (parent==null){
+            return null;
+        }
+        parent.execute(EKubeActionIdentifer.REFRESH_CHILDREN, new ExecutionParameters().setChildren(Collections.singleton(kubeElement)));
+        return null;
+    }
 
 }

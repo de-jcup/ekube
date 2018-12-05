@@ -1,19 +1,27 @@
 package de.jcup.ekube.core.model;
 
+import de.jcup.ekube.core.fabric8io.condition.ConditionInfo;
+
 public class PodConditionElement extends AbstractEKubeElement implements EKubeStatusElement {
 
-	private String status;
+    public PodConditionElement(String uid, Object technicalObject) {
+        super(uid, technicalObject);
+    }
 
-	public PodConditionElement(String uid) {
-		super(uid);
-	}
+    private ConditionInfo info;
 
+    public void setInfo(ConditionInfo info) {
+        this.info = info;
+    }
+    
+    public ConditionInfo getInfo() {
+        return info;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        if (info == null) {
+            return "<none>";
+        }
+        return info.getText();
+    }
 }

@@ -1,80 +1,115 @@
 package de.jcup.ekube.core.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.jcup.ekube.core.ExecutionParameters;
+
 public abstract class AbstractEKubeContainer extends AbstractEKubeElement implements EKubeContainer {
 
-	public AbstractEKubeContainer(String uid) {
-		super(uid);
-	}
+    public AbstractEKubeContainer(String uid, Object technicalObject) {
+        super(uid, technicalObject);
+    }
 
-	private List<EKubeElement> children = new ArrayList<>();
+    private List<EKubeElement> children = new ArrayList<>();
 
-	/**
-	 * Adds kubeElement to children list. Will also set this as parent for the
-	 * child.
-	 * 
-	 * @param kubeElement
-	 */
-	protected void addChild(EKubeElement kubeElement) {
-		children.add(kubeElement);
-		if (kubeElement instanceof AbstractEKubeElement) {
-			AbstractEKubeElement abstractElement = (AbstractEKubeElement) kubeElement;
-			abstractElement.parent = this;
-		}
-	}
+    /**
+     * Adds kubeElement to children list. Will also set this as parent for the
+     * child.
+     * 
+     * @param kubeElement
+     */
+    protected void addChild(EKubeElement kubeElement) {
+        children.add(kubeElement);
+        if (kubeElement instanceof AbstractEKubeElement) {
+            AbstractEKubeElement abstractElement = (AbstractEKubeElement) kubeElement;
+            abstractElement.parent = this;
+        }
+    }
+    
+    protected void removeAllChildren(Class<?> clazz) {
+        List<?> childrenToRemove = fetchAllChildrenOfType(clazz);
+        for (Object object: childrenToRemove){
+            removeChild((EKubeElement) object);
+        }
+        
+    }
 
-	public boolean isAlreadyFoundAndSoNoOrphan(EKubeElement element) {
-		boolean contained = children.contains(element);
-		if (contained) {
-			orphans.remove(element);
-		}
-		return contained;
-	}
+    @SuppressWarnings("unchecked")
+    public <E extends EKubeElement> E AddOrReuseExisting(E newElement) {
+        for (EKubeElement existing : children) {
+            if (existing.equals(newElement)) {
+                orphans.remove(existing);
+                if (existing instanceof AbstractEKubeElement) {
+                    AbstractEKubeElement abstractElement = (AbstractEKubeElement) existing;
+                    abstractElement.setTechnicalObject(newElement.getTechnicalObject());
+                }
+                return (E) existing;
+            }
+        }
+        addChild(newElement);
+        return newElement;
+    }
 
-	private Set<EKubeElement> orphans = new HashSet<>();
+    private Set<EKubeElement> orphans = new HashSet<>();
 
-	/**
-	 * Marks all children as being an orphan !
-	 * Use {@link #isAlreadyFoundAndSoNoOrphan(EKubeElement)} to unmark them  */
-	public void startOrphanCheck() {
-		orphans.clear();
-		for (EKubeElement element : children) {
-			orphans.add(element);
-		}
-	}
+    /**
+     * Marks all children as being an orphan ! Use
+     * {@link #AddOrReuseExisting(EKubeElement)} to unmark them
+     * 
+     * @param parameters
+     *            - when children ar set in parameters, only those children will
+     *            be handled as potential orphans
+     */
+    public void startOrphanCheck(ExecutionParameters parameters) {
+        orphans.clear();
+        Collection<EKubeElement> toInspect = parameters.getChildren();
+        if (toInspect.isEmpty()) {
+            toInspect = children;
+        }
+        orphans.addAll(toInspect);
+    }
 
-	/**
-	 * Removes all children being orphans
-	 */
-	public void removeOrphans() {
-		for (EKubeElement element : orphans) {
-			children.remove(element);
-		}
-	}
+    /**
+     * Removes all children being orphans
+     */
+    public void removeOrphans() {
+        for (EKubeElement element : orphans) {
+            removeChild(element);
+        }
+    }
 
-	@Override
-	public List<EKubeElement> getChildren() {
-		return Collections.unmodifiableList(children);
-	}
+    protected void removeChild(EKubeElement element) {
+        if (element instanceof AbstractEKubeElement) {
+            AbstractEKubeElement abstractElement = (AbstractEKubeElement) element;
+            abstractElement.parent = null;
+        }
+        children.remove(element);
 
-	@Override
-	public boolean hasChildren() {
-		return !children.isEmpty();
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	protected <T> List<T> fetchAllChildrenOfType(Class<T> clazz) {
-		List<T> list = new ArrayList<>();
-		for (EKubeElement element : children) {
-			if (clazz.isAssignableFrom(element.getClass())) {
-				list.add((T) element);
-			}
-		}
-		return list;
-	}
+    @Override
+    public List<EKubeElement> getChildren() {
+        return Collections.unmodifiableList(children);
+    }
+
+    @Override
+    public boolean hasChildren() {
+        return !children.isEmpty();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> List<T> fetchAllChildrenOfType(Class<T> clazz) {
+        List<T> list = new ArrayList<>();
+        for (EKubeElement element : children) {
+            if (clazz.isAssignableFrom(element.getClass())) {
+                list.add((T) element);
+            }
+        }
+        return list;
+    }
 }

@@ -6,21 +6,26 @@ import java.util.List;
 import de.jcup.ekube.core.AbstractEKubeConfiguration;
 import de.jcup.ekube.preferences.EKubePreferences;
 
-public class EclipseEKubeConfiguration extends AbstractEKubeConfiguration{
+public class EclipseEKubeConfiguration extends AbstractEKubeConfiguration {
 
-	@Override
-	public File getKubeConfigFile() {
-		return EKubePreferences.getInstance().getKubeConfigFile();
-	}
+    @Override
+    public File getKubeConfigFile() {
+        return EKubePreferences.getInstance().getKubeConfigFile();
+    }
 
-	@Override
-	public List<String> getFilteredNamespaces() {
-		return EKubePreferences.getInstance().getFilteredNamespacesAsList();
-	}
-	
-	@Override
-	public boolean isNamespaceFilteringEnabled() {
-		return EKubePreferences.getInstance().getFilterNamespacesEnabled();
-	}
+    @Override
+    public List<String> getFilteredNamespaces() {
+        return EKubePreferences.getInstance().getFilteredNamespacesAsList();
+    }
+
+    @Override
+    public boolean isNamespaceFilteringEnabled() {
+        return EKubePreferences.getInstance().getFilterNamespacesEnabled();
+    }
+
+    @Override
+    public boolean isContextNamespaceOnly() {
+        return EKubePreferences.getInstance().getContextNamespaceOnly();
+    }
 
 }

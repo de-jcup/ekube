@@ -5,34 +5,38 @@ import java.util.List;
 
 public interface EKubeConfiguration {
 
-	File getKubeConfigFile();
+    File getKubeConfigFile();
 
-	void updateEntries(List<EKubeContextConfigurationEntry> entries);
+    void updateEntries(List<EKubeContextConfigurationEntry> entries);
 
-	/**
-	 * Set current kubernetes context
-	 * @param currentContext
-	 */
-	void setKubernetesContext(String currentContext);
+    /**
+     * Set current kubernetes context
+     * 
+     * @param currentContext
+     */
+    void setKubernetesContext(String currentContext);
 
-	List<EKubeContextConfigurationEntry> getConfigurationContextList();
+    List<EKubeContextConfigurationEntry> getConfigurationContextList();
 
-	/**
-	 * @return current kubernetes context
-	 */
-	String getKubernetesContext();
+    /**
+     * @return current kubernetes context
+     */
+    String getKubernetesContext();
 
-	List<String> getFilteredNamespaces();
+    List<String> getFilteredNamespaces();
 
-	/**
-	 * Finds context configuration entry or <code>null</code>
-	 * @param newCurrentContextName
-	 * @return config or <code>null</code> when not found
-	 */
-	EKubeContextConfigurationEntry findContextConfigurationEntry(String newCurrentContextName);
+    /**
+     * Finds context configuration entry or <code>null</code>
+     * 
+     * @param newCurrentContextName
+     * @return config or <code>null</code> when not found
+     */
+    EKubeContextConfigurationEntry findContextConfigurationEntry(String newCurrentContextName);
 
-	boolean isNamespaceFiltered(String namespaceName);
-	
-	boolean isNamespaceFilteringEnabled();
+    boolean isNamespaceFiltered(String namespaceName);
+
+    boolean isNamespaceFilteringEnabled();
+
+    boolean isContextNamespaceOnly();
 
 }

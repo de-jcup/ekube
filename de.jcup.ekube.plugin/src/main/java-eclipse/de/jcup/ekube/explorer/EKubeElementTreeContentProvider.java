@@ -8,60 +8,60 @@ import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
 
 class EKubeElementTreeContentProvider implements ITreeContentProvider {
-	private final KubernetesExplorer kubernetesExplorer;
-	private EKubeModel model;
+    private final KubernetesExplorer kubernetesExplorer;
+    private EKubeModel model;
 
-	EKubeElementTreeContentProvider(KubernetesExplorer kubernetesExplorer) {
-		this.kubernetesExplorer = kubernetesExplorer;
-	}
+    EKubeElementTreeContentProvider(KubernetesExplorer kubernetesExplorer) {
+        this.kubernetesExplorer = kubernetesExplorer;
+    }
 
-	
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput){
-		if (newInput instanceof EKubeModel){
-			this.model=(EKubeModel) newInput;
-			return;
-		}
-	}
-	
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        if (newInput instanceof EKubeModel) {
+            this.model = (EKubeModel) newInput;
+            return;
+        }else{
+            this.model=null;
+        }
+    }
 
-	public Object[] getElements(Object parent) {
-		if (parent.equals(this.kubernetesExplorer.getViewSite())) {
-			if (model == null){
-				return new Object[]{};
-			}
-			return new Object[]{model.getCurrentContext()};
-		}
-		return getChildren(parent);
-	}
+    public Object[] getElements(Object parent) {
+        if (parent.equals(this.kubernetesExplorer.getViewSite())) {
+            if (model == null) {
+                return new Object[] {};
+            }
+            return new Object[] { model.getCurrentContext() };
+        }
+        return getChildren(parent);
+    }
 
-	public Object getParent(Object child) {
-		if (child instanceof EKubeElement) {
-			EKubeElement element = (EKubeElement) child;
-			return element.getParent();
-		}
-		return null;
-	}
+    public Object getParent(Object child) {
+        if (child instanceof EKubeElement) {
+            EKubeElement element = (EKubeElement) child;
+            return element.getParent();
+        }
+        return null;
+    }
 
-	public Object[] getChildren(Object parent) {
-		if (parent instanceof EKubeContainer) {
-			EKubeContainer container = (EKubeContainer) parent;
-			if (container.isLocked()){
-				return new Object[0];
-			}
-			return container.getChildren().toArray();
-		}
-		return new Object[0];
-	}
+    public Object[] getChildren(Object parent) {
+        if (parent instanceof EKubeContainer) {
+            EKubeContainer container = (EKubeContainer) parent;
+            if (container.isLocked()) {
+                return new Object[0];
+            }
+            return container.getChildren().toArray();
+        }
+        return new Object[0];
+    }
 
-	public boolean hasChildren(Object parent) {
-		if (parent instanceof EKubeContainer) {
-			EKubeContainer container = (EKubeContainer) parent;
-			if (container.isLocked()){
-				return false;
-			}
-			return container.hasChildren();
-		}
-		return false;
-	}
+    public boolean hasChildren(Object parent) {
+        if (parent instanceof EKubeContainer) {
+            EKubeContainer container = (EKubeContainer) parent;
+            if (container.isLocked()) {
+                return false;
+            }
+            return container.hasChildren();
+        }
+        return false;
+    }
 
 }

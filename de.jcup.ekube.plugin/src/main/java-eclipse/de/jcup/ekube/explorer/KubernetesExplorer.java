@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -23,6 +24,7 @@ import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -40,260 +42,288 @@ import de.jcup.ekube.EclipseEKubeContext;
 import de.jcup.ekube.KubeConfigLoader;
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.fabric8io.Fabric8ioEKubeModelBuilder;
+import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
+import de.jcup.ekube.core.model.NamespaceContainer;
 
 public class KubernetesExplorer extends ViewPart {
 
-	/**
-	 * The ID of the view as specified by the extension.
-	 */
-	public static final String ID = "de.jcup.ekube.views.KubernetesExplorer";
+    /**
+     * The ID of the view as specified by the extension.
+     */
+    public static final String ID = "de.jcup.ekube.views.KubernetesExplorer";
 
-	@Inject
-	IWorkbench workbench;
+    @Inject
+    IWorkbench workbench;
 
-	private TreeViewer viewer;
+    private TreeViewer viewer;
 
-	private EKubeElementTreeContentProvider contentPovider;
-	private KubernetesExplorerActionGroup actionSet;
+    private EKubeElementTreeContentProvider contentPovider;
+    private KubernetesExplorerActionGroup actionSet;
 
-	private KubeConfigLoader configLoader;
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
-	
-	
-	SimpleDateFormat getDateFormat() {
-		return dateFormat;
-	}
-	
-	private class InternalDecoratingStyledCellLabelProvider extends DecoratingStyledCellLabelProvider implements ILabelProvider{
+    private KubeConfigLoader configLoader;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
 
-		public InternalDecoratingStyledCellLabelProvider(IStyledLabelProvider labelProvider, ILabelDecorator decorator,
-				IDecorationContext decorationContext) {
-			super(labelProvider, decorator, decorationContext);
-		}
+    SimpleDateFormat getDateFormat() {
+        return dateFormat;
+    }
 
-		@Override
-		public String getText(Object element) {
-			if (element instanceof EKubeElement){
-				EKubeElement eelement = (EKubeElement) element;
-				return eelement.getLabel();
-			}
-			return null;
-		}
-	}
-	@Override
-	public void createPartControl(Composite parent) {
-		configLoader = new KubeConfigLoader();
+    private class InternalDecoratingStyledCellLabelProvider extends DecoratingStyledCellLabelProvider implements ILabelProvider {
 
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		
-		contentPovider = new EKubeElementTreeContentProvider(this);
-		viewer.setContentProvider(contentPovider);
-		viewer.setInput(getViewSite());
-		viewer.getControl().addKeyListener(new KeyAdapter() {
-          @Override
-        public void keyPressed(KeyEvent event) {
-        	  if (event.keyCode == SWT.F5) {
-        		  Object element = getFirstSelectedElement();
-        		  if (element instanceof EKubeElement){
-        			  EKubeElement eke = (EKubeElement) element;
-        			  actionSet.createActionForIdentifier(eke, EKubeActionIdentifer.REFRESH).run();
-        		  }
-        	  }
-        }  
+        public InternalDecoratingStyledCellLabelProvider(IStyledLabelProvider labelProvider, ILabelDecorator decorator,
+                IDecorationContext decorationContext) {
+            super(labelProvider, decorator, decorationContext);
+        }
+
+        @Override
+        public String getText(Object element) {
+            if (element instanceof EKubeElement) {
+                EKubeElement eelement = (EKubeElement) element;
+                return eelement.getLabel();
+            }
+            return null;
+        }
+    }
+
+    @Override
+    public void createPartControl(Composite parent) {
+        configLoader = new KubeConfigLoader();
+
+        viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+
+        contentPovider = new EKubeElementTreeContentProvider(this);
+        viewer.setContentProvider(contentPovider);
+        viewer.setInput(getViewSite());
+        viewer.getControl().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (event.keyCode == SWT.F5) {
+                    Object element = getFirstSelectedElement();
+                    if (element instanceof EKubeElement) {
+                        EKubeElement eke = (EKubeElement) element;
+                        actionSet.createActionForIdentifier(eke, EKubeActionIdentifer.REFRESH).run();
+                    }
+                }
+            }
         });
-		
-		ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
-		EKubeElementLabelProvider kubernesExplorerLabelProvider = new EKubeElementLabelProvider();
 
-		viewer.setLabelProvider(new InternalDecoratingStyledCellLabelProvider(kubernesExplorerLabelProvider, decorator, null));
+        ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
+        EKubeElementLabelProvider kubernesExplorerLabelProvider = new EKubeElementLabelProvider();
 
-		// Create the help context id for the viewer's control
-		// workbench.getHelpSystem().setHelp(viewer.getControl(),
-		// "de.jcup.ekube.viewer");
-		getSite().setSelectionProvider(viewer);
-		makeActions();
-		initFrameActions();
-		hookContextMenu();
-		hookDoubleClickAction();
-		contributeToActionBars();
+        viewer.setLabelProvider(new InternalDecoratingStyledCellLabelProvider(kubernesExplorerLabelProvider, decorator, null));
 
-	}
+        // Create the help context id for the viewer's control
+        // workbench.getHelpSystem().setHelp(viewer.getControl(),
+        // "de.jcup.ekube.viewer");
+        getSite().setSelectionProvider(viewer);
+        makeActions();
+        initFrameActions();
+        hookContextMenu();
+        hookDoubleClickAction();
+        contributeToActionBars();
 
-	private void initFrameActions() {
-		actionSet.getUpAction().update();
-		actionSet.getBackAction().update();
-		actionSet.getForwardAction().update();
-	}
-	
-	public Object getFirstSelectedElement() {
-		ISelection selection = getSelection();
-		if (selection instanceof IStructuredSelection){
-			return ((IStructuredSelection) selection).getFirstElement();
-		}
-		return null;
-	}
-	
-	private ISelection getSelection() {
-		return viewer.getSelection();
-	}
-	
-	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				actionSet.setContext(new ActionContext(getSelection()));
-				actionSet.fillContextMenu(manager);
-				actionSet.setContext(null);
-				
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
-	}
+    }
 
-	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
-		actionSet.fillActionBars(bars);
-	}
+    private void initFrameActions() {
+        actionSet.getUpAction().update();
+        actionSet.getBackAction().update();
+        actionSet.getForwardAction().update();
+    }
 
-	private void makeActions() {
-		actionSet = new KubernetesExplorerActionGroup(this);
-	}
+    public Object getFirstSelectedElement() {
+        ISelection selection = getSelection();
+        if (selection instanceof IStructuredSelection) {
+            return ((IStructuredSelection) selection).getFirstElement();
+        }
+        return null;
+    }
 
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				actionSet.getShowMetaInfoAsYamlAction().run();
-			}
-		});
-	}
+    private ISelection getSelection() {
+        return viewer.getSelection();
+    }
 
-	void showMessage(String message) {
-		MessageDialog.openInformation(viewer.getControl().getShell(), "Kubernetes Explorer", message);
-	}
+    private void hookContextMenu() {
+        MenuManager menuMgr = new MenuManager("#PopupMenu");
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager manager) {
+                actionSet.setContext(new ActionContext(getSelection()));
+                actionSet.fillContextMenu(manager);
+                actionSet.setContext(null);
 
-	@Override
-	public void setFocus() {
-		viewer.getControl().setFocus();
-	}
+            }
+        });
+        Menu menu = menuMgr.createContextMenu(viewer.getControl());
+        viewer.getControl().setMenu(menu);
+        getSite().registerContextMenu(menuMgr, viewer);
+    }
 
-	private class ConnectionJob extends Job {
+    private void contributeToActionBars() {
+        IActionBars bars = getViewSite().getActionBars();
+        actionSet.fillActionBars(bars);
+    }
 
-		public ConnectionJob(EKubeConfiguration configuration) {
-			super("connect to kubernetes - use context:" + configuration.getKubernetesContext());
-		}
+    private void makeActions() {
+        actionSet = new KubernetesExplorerActionGroup(this);
+    }
 
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			monitor.beginTask("Fetch data from cluster", IProgressMonitor.UNKNOWN);
-			
-			Fabric8ioEKubeModelBuilder modelBuilder = new Fabric8ioEKubeModelBuilder();
-			EclipseEKubeContext context = new EclipseEKubeContext(monitor);
-			EKubeModel model = modelBuilder.build(context);
-			
-			monitor.done();
+    private void hookDoubleClickAction() {
+        viewer.addDoubleClickListener(new IDoubleClickListener() {
+            public void doubleClick(DoubleClickEvent event) {
+                actionSet.getShowMetaInfoAsYamlAction().run();
+            }
+        });
+    }
 
-			EclipseUtil.safeAsyncExec(()-> refreshTreeInSWTThread(model));
+    void showMessage(String message) {
+        MessageDialog.openInformation(viewer.getControl().getShell(), "Kubernetes Explorer", message);
+    }
 
-			return Status.OK_STATUS;
-		}
+    @Override
+    public void setFocus() {
+        viewer.getControl().setFocus();
+    }
 
-	}
-	
-	private void refreshTreeInSWTThread(EKubeModel model){
-		contentPovider.inputChanged(viewer, null, model);
-		viewer.refresh();
-		viewer.expandToLevel(model.getCurrentContext(), 1);
-	}
+    private class ConnectionJob extends Job {
 
-	public void connect(EKubeConfiguration configuration) {
-		Job job = new ConnectionJob(configuration);
-		job.setUser(true);
-		job.schedule();
-	}
+        public ConnectionJob(EKubeConfiguration configuration) {
+            super("connect to kubernetes - use context:" + configuration.getKubernetesContext());
+        }
 
-	public TreeViewer getTreeViewer() {
-		return viewer;
-	}
+        @Override
+        protected IStatus run(IProgressMonitor monitor) {
+            monitor.beginTask("Fetch data from cluster", IProgressMonitor.UNKNOWN);
 
-	public String getFrameName(Object input) {
-		if (input instanceof EKubeElement){
-			EKubeElement eelement  = (EKubeElement) input;
-			return eelement.getLabel();
-		}else{
-			return null;
-		}
-	}
-	
-	@Override
-	public void dispose() {
-		super.dispose();
-		
-		if (actionSet != null){
-			actionSet.dispose();
-		}
-	}
+            Fabric8ioEKubeModelBuilder modelBuilder = new Fabric8ioEKubeModelBuilder();
+            EclipseEKubeContext context = new EclipseEKubeContext(monitor);
+            EKubeModel model = modelBuilder.build(context);
 
+            monitor.done();
 
-	void updateToolbar() {
-		IActionBars actionBars= getViewSite().getActionBars();
-		actionSet.updateToolBar(actionBars.getToolBarManager());
-	}
+            EclipseUtil.safeAsyncExec(() -> refreshTreeInSWTThread(model));
 
-	/**
-	 * Updates the title text and title tool tip.
-	 * Called whenever the input of the viewer changes.
-	 */
-	void updateTitle() {
-		Object input= viewer.getInput();
-		String inputText= createTitleName(input);
-		if (inputText == null) {
-			setContentDescription(""); //$NON-NLS-1$
-			setTitleToolTip(""); //$NON-NLS-1$
-		} else {
-			setContentDescription(inputText);
-			setTitleToolTip(inputText);
-		}
-	}
+            return Status.OK_STATUS;
+        }
 
-	private String createTitleName(Object input) {
-		if (input instanceof EKubeElement){
-			EKubeElement eelement  = (EKubeElement) input;
-			
-			StringBuilder sb = new StringBuilder();
-			List<String> list = new ArrayList<>();
-			list.add(eelement.getLabel());
-			EKubeContainer parent = eelement.getParent();
-			while (parent!=null){
-				list.add(parent.getLabel());
-				parent = parent.getParent();
-			}
-			Collections.reverse(list);
-			sb.append(list.toString());
-			return sb.toString();
-			
-		}else{
-			return "";
-		}
-	}
+    }
 
-	void loadconfiguration(boolean lazy) {
-		if (!configLoader.isLoaded() || !lazy) {
-			configLoader.load();
-		}
-	}
+    private void refreshTreeInSWTThread(EKubeModel model) {
+        contentPovider.inputChanged(viewer, null, model);
+        viewer.refresh();
+        
+        CurrentContextContainer currentContext = model.getCurrentContext();
+        viewer.expandToLevel(currentContext, 1);
 
-	public String getToolTipText(Object input) {
-		return getFrameName(input);
-	}
+        /* when namespace defined in context use this and expand it automatically*/
+        String contextNamespace = currentContext.getNamespace();
+        if (contextNamespace != null) {
+            for (NamespaceContainer nc : currentContext.getNamespaces()) {
+                if (StringUtils.equals(nc.getName(), contextNamespace)) {
+                    viewer.expandToLevel(nc, 1);
+                    break;
+                }
+            }
+        }
+    }
 
-	public void refreshTreeElelement(EKubeElement kubeElement) {
-		viewer.refresh(kubeElement);
-	}
+    public void connect(EKubeConfiguration configuration) {
+
+        contentPovider.inputChanged(viewer, null, null);
+        viewer.refresh();
+
+        Job job = new ConnectionJob(configuration);
+        job.setUser(true);
+        job.schedule();
+    }
+
+    public TreeViewer getTreeViewer() {
+        return viewer;
+    }
+
+    public String getFrameName(Object input) {
+        if (input instanceof EKubeElement) {
+            EKubeElement eelement = (EKubeElement) input;
+            return eelement.getLabel();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        if (actionSet != null) {
+            actionSet.dispose();
+        }
+    }
+
+    void updateToolbar() {
+        IActionBars actionBars = getViewSite().getActionBars();
+        actionSet.updateToolBar(actionBars.getToolBarManager());
+    }
+
+    /**
+     * Updates the title text and title tool tip. Called whenever the input of
+     * the viewer changes.
+     */
+    void updateTitle() {
+        Object input = viewer.getInput();
+        String inputText = createTitleName(input);
+        if (inputText == null) {
+            setContentDescription(""); //$NON-NLS-1$
+            setTitleToolTip(""); //$NON-NLS-1$
+        } else {
+            setContentDescription(inputText);
+            setTitleToolTip(inputText);
+        }
+    }
+
+    private String createTitleName(Object input) {
+        if (input instanceof EKubeElement) {
+            EKubeElement eelement = (EKubeElement) input;
+
+            StringBuilder sb = new StringBuilder();
+            List<String> list = new ArrayList<>();
+            list.add(eelement.getLabel());
+            EKubeContainer parent = eelement.getParent();
+            while (parent != null) {
+                list.add(parent.getLabel());
+                parent = parent.getParent();
+            }
+            Collections.reverse(list);
+            sb.append(list.toString());
+            return sb.toString();
+
+        } else {
+            return "";
+        }
+    }
+
+    void loadconfiguration(boolean lazy) {
+        if (!configLoader.isLoaded() || !lazy) {
+            configLoader.load();
+        }
+    }
+
+    public String getToolTipText(Object input) {
+        return getFrameName(input);
+    }
+
+    public void refreshTreeElelement(EKubeElement kubeElement) {
+        viewer.refresh(kubeElement);
+    }
+
+    public void toggleExpandState(EKubeElement eelement) {
+        boolean isAlreadyExpanded = viewer.getExpandedState(eelement);
+        if (isAlreadyExpanded) {
+            viewer.collapseToLevel(eelement, TreeViewer.ALL_LEVELS);
+        } else {
+            viewer.expandToLevel(eelement, 1);
+        }
+
+    }
 }

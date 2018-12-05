@@ -12,12 +12,14 @@ import de.jcup.ekube.core.DefaultEKubeConfiguration;
  */
 public class EKubePreferenceInitializer extends AbstractPreferenceInitializer {
 
-	public void initializeDefaultPreferences() {
-		DefaultEKubeConfiguration defaults = new DefaultEKubeConfiguration();
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		store.setDefault(EKubePreferenceConstants.KUBE_CONFIGFILE_PATH.getId(),defaults.getKubeConfigFile().getAbsolutePath());
-		store.setDefault(EKubePreferenceConstants.FILTERED_NAMESPACES.getId(),StringUtils.join(defaults.getFilteredNamespaces(), "\n"));
-		store.setDefault(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED.getId(), true);
-	}
+    public void initializeDefaultPreferences() {
+        DefaultEKubeConfiguration defaults = new DefaultEKubeConfiguration();
+        IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+        store.setDefault(EKubePreferenceConstants.KUBE_CONFIGFILE_PATH.getId(), defaults.getKubeConfigFile().getAbsolutePath());
+        store.setDefault(EKubePreferenceConstants.FILTERED_NAMESPACES.getId(), StringUtils.join(defaults.getFilteredNamespaces(), "\n"));
+        store.setDefault(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED.getId(), true);
+        store.setDefault(EKubePreferenceConstants.CONTEXT_NAMESPACE_ONLY_ENABLED.getId(), true);
+        store.setDefault(EKubePreferenceConstants.LOG_LINES_TO_FETCH.getId(), 20);
+    }
 
 }

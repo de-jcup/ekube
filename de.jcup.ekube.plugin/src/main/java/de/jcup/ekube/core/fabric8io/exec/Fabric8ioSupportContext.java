@@ -1,32 +1,31 @@
 package de.jcup.ekube.core.fabric8io.exec;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-
 import de.jcup.ekube.core.EKubeContext;
+import io.fabric8.kubernetes.client.KubernetesClient;
 
 public interface Fabric8ioSupportContext {
 
-	public EKubeContext getContext();
+    public EKubeContext getContext();
 
-	public KubernetesClient getClient();
+    public KubernetesClient getClient();
 
-	public DeploymentsSupport deployments();
-	
-	public DefaultSupport defaults();
+    public DeploymentsSupport deployments();
 
-	public NodesSupport nodes();
+    public DefaultSupport defaults();
 
-	public NetworkSupport networks();
+    public NodesSupport nodes();
 
-	public PodSupport pods();
+    public NetworkSupport networks();
 
-	public VolumeSupport volumes();
+    public PodSupport pods();
 
-	public ServiceSupport services();
+    public VolumeSupport volumes();
 
-	public ConfigMapSupport configMaps();
-	
-	public NamespaceSupport namespaces();
+    public ServiceSupport services();
 
-	public SecretsSupport secrets();
+    public ConfigMapSupport configMaps();
+
+    public NamespaceSupport namespaces();
+
+    public SecretsSupport secrets();
 }

@@ -12,72 +12,71 @@ import de.jcup.ekube.core.SafeExecutor;
 
 public class EclipseEKubeContext implements EKubeContext {
 
-	private EclipseProgressHandler progressHandler;
-	private SafeExecutor executor;
-	
-	public EclipseEKubeContext() {
-		this(null);
-	}
+    private EclipseProgressHandler progressHandler;
+    private SafeExecutor executor;
 
-	public EclipseEKubeContext(IProgressMonitor monitor) {
-		this.progressHandler=new EclipseProgressHandler(monitor);
-	}
-	
-	public void setExecutor(SafeExecutor executor) {
-		this.executor = executor;
-	}
+    public EclipseEKubeContext() {
+        this(null);
+    }
 
-	@Override
-	public ErrorHandler getErrorHandler() {
-		return Activator.getDefault().getErrorHandler();
-	}
+    public EclipseEKubeContext(IProgressMonitor monitor) {
+        this.progressHandler = new EclipseProgressHandler(monitor);
+    }
 
-	@Override
-	public EKubeConfiguration getConfiguration() {
-		return Activator.getDefault().getConfiguration();
-	}
+    public void setExecutor(SafeExecutor executor) {
+        this.executor = executor;
+    }
 
-	@Override
-	public EKubeProgressHandler getProgressHandler() {
-		return progressHandler;
-	}
-	
-	private class EclipseProgressHandler implements EKubeProgressHandler{
-		private IProgressMonitor monitor;
+    @Override
+    public ErrorHandler getErrorHandler() {
+        return Activator.getDefault().getErrorHandler();
+    }
 
-		public EclipseProgressHandler(IProgressMonitor monitor) {
-			if (monitor ==null){
-				this.monitor = new NullProgressMonitor();
-			}else{
-				this.monitor=monitor;
-			}
-		}
+    @Override
+    public EKubeConfiguration getConfiguration() {
+        return Activator.getDefault().getConfiguration();
+    }
 
-		@Override
-		public void beginTask(String name, int totalWork) {
-			monitor.beginTask(name, totalWork);
-		}
+    @Override
+    public EKubeProgressHandler getProgressHandler() {
+        return progressHandler;
+    }
 
-		@Override
-		public void worked(int summary) {
-			monitor.worked(summary);
-		}
+    private class EclipseProgressHandler implements EKubeProgressHandler {
+        private IProgressMonitor monitor;
 
-		@Override
-		public void beginSubTask(String name) {
-			monitor.subTask(name);
-			
-		}
-		
-	}
+        public EclipseProgressHandler(IProgressMonitor monitor) {
+            if (monitor == null) {
+                this.monitor = new NullProgressMonitor();
+            } else {
+                this.monitor = monitor;
+            }
+        }
 
-	@Override
-	public SafeExecutor getExecutor() {
-		if (executor==null){
-			executor=new DefaultSafeExecutor();
-		}
-		return executor;
-	}
+        @Override
+        public void beginTask(String name, int totalWork) {
+            monitor.beginTask(name, totalWork);
+        }
 
+        @Override
+        public void worked(int summary) {
+            monitor.worked(summary);
+        }
+
+        @Override
+        public void beginSubTask(String name) {
+            monitor.subTask(name);
+
+        }
+
+    }
+
+    @Override
+    public SafeExecutor getExecutor() {
+        if (executor == null) {
+            executor = new DefaultSafeExecutor();
+        }
+        return executor;
+    }
 
 }

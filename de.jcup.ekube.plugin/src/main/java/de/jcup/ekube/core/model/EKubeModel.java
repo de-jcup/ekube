@@ -10,15 +10,17 @@ package de.jcup.ekube.core.model;
  */
 public class EKubeModel {
 
-	private CurrentContextContainer currentContextContainer;
-	
-	public EKubeModel() {
-		this.currentContextContainer = new CurrentContextContainer();
-		this.currentContextContainer.setName("<no context selected>"); // just initial name+label
-	}
-	
-	public CurrentContextContainer getCurrentContext() {
-		return currentContextContainer;
-	}
+    private CurrentContextContainer currentContextContainer;
+
+    public EKubeModel() {
+        this.currentContextContainer = new CurrentContextContainer();
+        this.currentContextContainer.setName("<no context selected>"); // just
+                                                                       // initial
+                                                                       // name+label
+    }
+
+    public CurrentContextContainer getCurrentContext() {
+        return currentContextContainer;
+    }
 
 }

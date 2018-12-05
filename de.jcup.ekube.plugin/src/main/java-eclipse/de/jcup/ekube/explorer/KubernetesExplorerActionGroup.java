@@ -37,6 +37,7 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.EKubeContextConfigurationEntry;
+import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
@@ -44,389 +45,397 @@ import de.jcup.ekube.core.model.EKubeElement;
 /* adopted from PackageExplorerActionGroup*/
 class KubernetesExplorerActionGroup extends CompositeActionGroup {
 
-	private static final String FRAME_ACTION_SEPARATOR_ID = "FRAME_ACTION_SEPARATOR_ID"; //$NON-NLS-1$
-	private static final String FRAME_ACTION_GROUP_ID = "FRAME_ACTION_GROUP_ID"; //$NON-NLS-1$
+    private static final String FRAME_ACTION_SEPARATOR_ID = "FRAME_ACTION_SEPARATOR_ID"; //$NON-NLS-1$
+    private static final String FRAME_ACTION_GROUP_ID = "FRAME_ACTION_GROUP_ID"; //$NON-NLS-1$
 
-	KubernetesExplorer explorer;
+    KubernetesExplorer explorer;
 
-	private FrameList frameList;
-	private GoIntoAction fZoomInAction;
-	private BackAction backAction;
-	private ForwardAction forwardAction;
-	private UpAction upAction;
-	private boolean fFrameActionsShown;
+    private FrameList frameList;
+    private GoIntoAction fZoomInAction;
+    private BackAction backAction;
+    private ForwardAction forwardAction;
+    private UpAction upAction;
+    private boolean fFrameActionsShown;
 
-	private Action switchContextAction;
-	private Action reloadKubeConfigAction;
-	private Action infoAction;
+    private Action switchContextAction;
+    private Action reloadKubeConfigAction;
+    private Action infoAction;
 
-	private Action expandAllAction;
-	private Action collapseAllAction;
+    private Action expandAllAction;
+    private Action collapseAllAction;
 
-	private Action showMetaInfoAsYamlAction;
+    private Action showMetaInfoAsYamlAction;
+    private ShowPodLogAction showLogOutputAction;
 
-	public KubernetesExplorerActionGroup(KubernetesExplorer part) {
-		super();
-		explorer = part;
-		fFrameActionsShown = false;
-		TreeViewer viewer = part.getTreeViewer();
-		showMetaInfoAsYamlAction = new ShowYamlInfoAction(this);
-		showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.SHOW_YAML.getLabel());
-		// IPropertyChangeListener workingSetListener= new
-		// IPropertyChangeListener() {
-		// @Override
-		// public void propertyChange(PropertyChangeEvent event) {
-		// doWorkingSetChanged(event);
-		// }
-		// };
+    public KubernetesExplorerActionGroup(KubernetesExplorer part) {
+        super();
+        explorer = part;
+        fFrameActionsShown = false;
+        TreeViewer viewer = part.getTreeViewer();
+        showMetaInfoAsYamlAction = new ShowYamlInfoAction(this);
+        showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.SHOW_YAML.getLabel()+" (double click)");
+        
+        showLogOutputAction = new ShowPodLogAction(this);
+        showLogOutputAction.setText(EKubeActionIdentifer.FETCH_LOGS.getLabel());
+        
+        // IPropertyChangeListener workingSetListener= new
+        // IPropertyChangeListener() {
+        // @Override
+        // public void propertyChange(PropertyChangeEvent event) {
+        // doWorkingSetChanged(event);
+        // }
+        // };
 
-		// IWorkbenchPartSite site = explorer.getSite();
-		// setGroups(new ActionGroup[] {
-		// new NewWizardsActionGroup(site),
-		// fNavigateActionGroup= new NavigateActionGroup(explorer),
-		// new CCPActionGroup(explorer),
-		// new GenerateBuildPathActionGroup(explorer),
-		// new GenerateActionGroup(explorer),
-		// fRefactorActionGroup= new RefactorActionGroup(explorer),
-		// new ImportActionGroup(explorer),
-		// new BuildActionGroup(explorer),
-		// new JavaSearchActionGroup(explorer),
-		// fProjectActionGroup= new ProjectActionGroup(explorer),
-		// fViewActionGroup= new ViewActionGroup(explorer.getRootMode(),
-		// workingSetListener, site),
-		// fCustomFiltersActionGroup= new CustomFiltersActionGroup(explorer,
-		// viewer),
-		// new LayoutActionGroup(explorer)
-		// });
+        // IWorkbenchPartSite site = explorer.getSite();
+        // setGroups(new ActionGroup[] {
+        // new NewWizardsActionGroup(site),
+        // fNavigateActionGroup= new NavigateActionGroup(explorer),
+        // new CCPActionGroup(explorer),
+        // new GenerateBuildPathActionGroup(explorer),
+        // new GenerateActionGroup(explorer),
+        // fRefactorActionGroup= new RefactorActionGroup(explorer),
+        // new ImportActionGroup(explorer),
+        // new BuildActionGroup(explorer),
+        // new JavaSearchActionGroup(explorer),
+        // fProjectActionGroup= new ProjectActionGroup(explorer),
+        // fViewActionGroup= new ViewActionGroup(explorer.getRootMode(),
+        // workingSetListener, site),
+        // fCustomFiltersActionGroup= new CustomFiltersActionGroup(explorer,
+        // viewer),
+        // new LayoutActionGroup(explorer)
+        // });
 
-		// fViewActionGroup.fillFilters(viewer);
+        // fViewActionGroup.fillFilters(viewer);
 
-		KubernetesFrameSource frameSource = new KubernetesFrameSource(explorer);
-		frameList = new FrameList(frameSource);
-		frameSource.connectTo(frameList);
-		fZoomInAction = new GoIntoAction(frameList);
-		explorer.getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				fZoomInAction.update();
-			}
-		});
+        KubernetesFrameSource frameSource = new KubernetesFrameSource(explorer);
+        frameList = new FrameList(frameSource);
+        frameSource.connectTo(frameList);
+        fZoomInAction = new GoIntoAction(frameList);
+        explorer.getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                fZoomInAction.update();
+            }
+        });
 
-		backAction = new BackAction(frameList);
-		forwardAction = new ForwardAction(frameList);
-		upAction = new UpAction(frameList);
-		frameList.addPropertyChangeListener(new IPropertyChangeListener() { // connect
-																			// after
-																			// the
-																			// actions
-																			// (order
-																			// of
-																			// property
-																			// listener)
-			@Override
-			public void propertyChange(PropertyChangeEvent event) {
-				explorer.updateTitle();
-				explorer.updateToolbar();
-			}
-		});
+        backAction = new BackAction(frameList);
+        forwardAction = new ForwardAction(frameList);
+        upAction = new UpAction(frameList);
+        frameList.addPropertyChangeListener(new IPropertyChangeListener() { // connect
+                                                                            // after
+                                                                            // the
+                                                                            // actions
+                                                                            // (order
+                                                                            // of
+                                                                            // property
+                                                                            // listener)
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                explorer.updateTitle();
+                explorer.updateToolbar();
+            }
+        });
 
-		createExpandAllAction(viewer);
-		createCollapseAllAction(viewer);
-		createSwitchContextAction(viewer);
-		createReloadAction();
-		createInfoAction();
+        createExpandAllAction(viewer);
+        createCollapseAllAction(viewer);
+        createSwitchContextAction(viewer);
+        createReloadAction();
+        createInfoAction();
 
-	}
+    }
 
-	protected void createExpandAllAction(TreeViewer viewer) {
-		expandAllAction = new Action() {
-			@Override
-			public void run() {
-				Object element = explorer.getFirstSelectedElement();
-				if (element == null) {
-					viewer.expandAll();
-				} else {
-					viewer.expandToLevel(element, TreeViewer.ALL_LEVELS);
-				}
-			}
-		};
-		expandAllAction.setText("Expand all");
-		expandAllAction.setToolTipText("Expand all tree elements");
-		expandAllAction
-				.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/expandall.png", Activator.PLUGIN_ID));
-	}
+    protected void createExpandAllAction(TreeViewer viewer) {
+        expandAllAction = new Action() {
+            @Override
+            public void run() {
+                Object element = explorer.getFirstSelectedElement();
+                if (element == null) {
+                    viewer.expandAll();
+                } else {
+                    viewer.expandToLevel(element, TreeViewer.ALL_LEVELS);
+                }
+            }
+        };
+        expandAllAction.setText("Expand all");
+        expandAllAction.setToolTipText("Expand all tree elements");
+        expandAllAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/expandall.png", Activator.PLUGIN_ID));
+    }
 
-	protected void createCollapseAllAction(TreeViewer viewer) {
-		collapseAllAction = new Action() {
-			@Override
-			public void run() {
-				Object element = explorer.getFirstSelectedElement();
-				if (element == null) {
-					viewer.collapseAll();
-				} else {
-					viewer.collapseToLevel(element, TreeViewer.ALL_LEVELS);
-				}
-			}
-		};
-		collapseAllAction.setText("Collpase all");
-		collapseAllAction.setToolTipText("Collapse all tree elements");
-		collapseAllAction
-				.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/collapseall.png", Activator.PLUGIN_ID));
-	}
+    protected void createCollapseAllAction(TreeViewer viewer) {
+        collapseAllAction = new Action() {
+            @Override
+            public void run() {
+                Object element = explorer.getFirstSelectedElement();
+                if (element == null) {
+                    viewer.collapseAll();
+                } else {
+                    viewer.collapseToLevel(element, TreeViewer.ALL_LEVELS);
+                }
+            }
+        };
+        collapseAllAction.setText("Collpase all");
+        collapseAllAction.setToolTipText("Collapse all tree elements");
+        collapseAllAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/collapseall.png", Activator.PLUGIN_ID));
+    }
 
-	protected void createSwitchContextAction(TreeViewer viewer) {
-		switchContextAction = new Action() {
-			public void run() {
-				explorer.loadconfiguration(true);
+    protected void createSwitchContextAction(TreeViewer viewer) {
+        switchContextAction = new Action() {
+            public void run() {
+                explorer.loadconfiguration(true);
 
-				EKubeConfiguration configuration = Activator.getDefault().getConfiguration();
-				List<EKubeContextConfigurationEntry> data = configuration.getConfigurationContextList();
-				if (data.isEmpty()) {
-					MessageDialog.openWarning(viewer.getControl().getShell(), "Not connected",
-							"No information about contexts to choose available.\n\nPlease connect to kubernetes before!");
-					return;
-				}
-				ElementListSelectionDialog dialog = new ElementListSelectionDialog(
-						Display.getCurrent().getActiveShell(), new EKubeSwitchContextConfigurationLabelProvider());
-				dialog.setElements(data.toArray());
-				dialog.setMultipleSelection(false);
-				dialog.setTitle("Which context do you want to use ?");
-				// user pressed cancel
-				if (dialog.open() != Window.OK) {
-					return;
-				}
-				Object[] result = dialog.getResult();
-				EKubeContextConfigurationEntry context = (EKubeContextConfigurationEntry) result[0];
-				configuration.setKubernetesContext(context.getName());
+                EKubeConfiguration configuration = Activator.getDefault().getConfiguration();
+                List<EKubeContextConfigurationEntry> data = configuration.getConfigurationContextList();
+                if (data.isEmpty()) {
+                    MessageDialog.openWarning(viewer.getControl().getShell(), "Not connected",
+                            "No information about contexts to choose available.\n\nPlease connect to kubernetes before!");
+                    return;
+                }
+                ElementListSelectionDialog dialog = new ElementListSelectionDialog(Display.getCurrent().getActiveShell(),
+                        new EKubeSwitchContextConfigurationLabelProvider());
+                dialog.setElements(data.toArray());
+                dialog.setMultipleSelection(false);
+                dialog.setTitle("Which context do you want to use ?");
+                // user pressed cancel
+                if (dialog.open() != Window.OK) {
+                    return;
+                }
+                Object[] result = dialog.getResult();
+                EKubeContextConfigurationEntry context = (EKubeContextConfigurationEntry) result[0];
+                configuration.setKubernetesContext(context.getName());
 
-				explorer.connect(configuration);
-			}
-		};
-		switchContextAction.setText("Switch context");
-		switchContextAction
-				.setToolTipText("Switch kubernetes current context for ekube.\nWill NOT change your kube config file!");
-		switchContextAction.setImageDescriptor(
-				EclipseUtil.createImageDescriptor("/icons/switch-context.png", Activator.PLUGIN_ID));
-	}
+                explorer.connect(configuration);
+            }
+        };
+        switchContextAction.setText("Switch context");
+        switchContextAction.setToolTipText("Switch kubernetes current context for ekube.\nWill NOT change your kube config file!");
+        switchContextAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/switch-context.png", Activator.PLUGIN_ID));
+    }
 
-	protected void createReloadAction() {
-		reloadKubeConfigAction = new Action() {
-			public void run() {
-				/* always load - no matter if already loaded or not */
-				explorer.loadconfiguration(false);
-			}
-		};
-		reloadKubeConfigAction.setText("Reload kube config");
-		reloadKubeConfigAction.setToolTipText("Reloads kube config file from configured location (see preferences)");
-		reloadKubeConfigAction.setImageDescriptor(
-				EclipseUtil.createImageDescriptor("/icons/reload-kube-config.gif", Activator.PLUGIN_ID));
-	}
+    protected void createReloadAction() {
+        reloadKubeConfigAction = new Action() {
+            public void run() {
+                /* always load - no matter if already loaded or not */
+                explorer.loadconfiguration(false);
+            }
+        };
+        reloadKubeConfigAction.setText("Reload kube config");
+        reloadKubeConfigAction.setToolTipText("Reloads kube config file from configured location (see preferences)");
+        reloadKubeConfigAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/reload-kube-config.gif", Activator.PLUGIN_ID));
+    }
 
-	protected void createInfoAction() {
-		infoAction = new Action() {
-			public void run() {
-				StringBuilder sb = new StringBuilder();
-				EKubeConfiguration config = Activator.getDefault().getConfiguration();
-				sb.append("Info:\n-current context:" + config.getKubernetesContext());
-				sb.append("\nContexts available:");
-				for (EKubeContextConfigurationEntry contextConfig : config.getConfigurationContextList()) {
-					sb.append("\n+").append(contextConfig.getName() + ", cluster=" + contextConfig.getCluster()
-							+ ", user:" + contextConfig.getUser());
-				}
-				explorer.showMessage(sb.toString());
-			}
-		};
-		infoAction.setText("Info");
-		infoAction.setToolTipText("Info about kubernetes configuration");
-		infoAction.setImageDescriptor(
-				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-	}
+    protected void createInfoAction() {
+        infoAction = new Action() {
+            public void run() {
+                StringBuilder sb = new StringBuilder();
+                EKubeConfiguration config = Activator.getDefault().getConfiguration();
+                sb.append("Info:\n-current context:" + config.getKubernetesContext());
+                sb.append("\nContexts available:");
+                for (EKubeContextConfigurationEntry contextConfig : config.getConfigurationContextList()) {
+                    sb.append("\n+")
+                            .append(contextConfig.getName() + ", cluster=" + contextConfig.getCluster() + ", user:" + contextConfig.getUser());
+                }
+                explorer.showMessage(sb.toString());
+            }
+        };
+        infoAction.setText("Info");
+        infoAction.setToolTipText("Info about kubernetes configuration");
+        infoAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+    }
 
+    public Action getShowMetaInfoAsYamlAction() {
+        return showMetaInfoAsYamlAction;
+    }
 
-	public Action getShowMetaInfoAsYamlAction() {
-		return showMetaInfoAsYamlAction;
-	}
+    @Override
+    public void dispose() {
+        super.dispose();
+    }
 
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
+    @Override
+    public void fillActionBars(IActionBars actionBars) {
+        super.fillActionBars(actionBars);
+        setGlobalActionHandlers(actionBars);
+        fillToolBar(actionBars.getToolBarManager());
+        fillLocalPullDown(actionBars.getMenuManager());
+    }
 
-	@Override
-	public void fillActionBars(IActionBars actionBars) {
-		super.fillActionBars(actionBars);
-		setGlobalActionHandlers(actionBars);
-		fillToolBar(actionBars.getToolBarManager());
-		fillLocalPullDown(actionBars.getMenuManager());
-	}
+    private void fillLocalPullDown(IMenuManager manager) {
+        manager.add(switchContextAction);
+        manager.add(reloadKubeConfigAction);
+        manager.add(new Separator());
+        manager.add(infoAction);
+        manager.add(new Separator());
+        manager.add(expandAllAction);
+        manager.add(collapseAllAction);
 
-	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(switchContextAction);
-		manager.add(reloadKubeConfigAction);
-		manager.add(new Separator());
-		manager.add(infoAction);
-		manager.add(new Separator());
-		manager.add(expandAllAction);
-		manager.add(collapseAllAction);
+    }
 
-	}
+    private void setGlobalActionHandlers(IActionBars actionBars) {
+        // Navigate Go Into and Go To actions.
+        actionBars.setGlobalActionHandler(IWorkbenchActionConstants.GO_INTO, fZoomInAction);
+        actionBars.setGlobalActionHandler(ActionFactory.BACK.getId(), backAction);
+        actionBars.setGlobalActionHandler(ActionFactory.FORWARD.getId(), forwardAction);
+        actionBars.setGlobalActionHandler(IWorkbenchActionConstants.UP, upAction);
+        // actionBars.setGlobalActionHandler(IWorkbenchActionConstants.GO_TO_RESOURCE,
+        // fGotoResourceAction);
 
-	private void setGlobalActionHandlers(IActionBars actionBars) {
-		// Navigate Go Into and Go To actions.
-		actionBars.setGlobalActionHandler(IWorkbenchActionConstants.GO_INTO, fZoomInAction);
-		actionBars.setGlobalActionHandler(ActionFactory.BACK.getId(), backAction);
-		actionBars.setGlobalActionHandler(ActionFactory.FORWARD.getId(), forwardAction);
-		actionBars.setGlobalActionHandler(IWorkbenchActionConstants.UP, upAction);
-		// actionBars.setGlobalActionHandler(IWorkbenchActionConstants.GO_TO_RESOURCE,
-		// fGotoResourceAction);
+        IHandlerService handlerService = explorer.getViewSite().getService(IHandlerService.class);
+        // handlerService.activateHandler(IWorkbenchCommandConstants.NAVIGATE_TOGGLE_LINK_WITH_EDITOR,
+        // new ActionHandler(fToggleLinkingAction));
+        handlerService.activateHandler(CollapseAllHandler.COMMAND_ID, new ActionHandler(collapseAllAction));
+    }
 
-		IHandlerService handlerService = explorer.getViewSite().getService(IHandlerService.class);
-		// handlerService.activateHandler(IWorkbenchCommandConstants.NAVIGATE_TOGGLE_LINK_WITH_EDITOR,
-		// new ActionHandler(fToggleLinkingAction));
-		handlerService.activateHandler(CollapseAllHandler.COMMAND_ID, new ActionHandler(collapseAllAction));
-	}
+    /* package */ void fillToolBar(IToolBarManager toolBar) {
+        if (EclipseDebugSettings.isShowingDebugActions()) {
+            Action refreshTreeUIAction = new Action("DEBUG: Refresh complete tree ui") {
 
-	/* package */ void fillToolBar(IToolBarManager toolBar) {
-		if (EclipseDebugSettings.isShowingDebugActions()){
-			Action refreshTreeUIAction = new Action("DEBUG: Refresh complete tree ui") {
-				
-				@Override
-				public void run() {
-					explorer.getTreeViewer().refresh();
-				}
-			};
-			refreshTreeUIAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
-			toolBar.add(refreshTreeUIAction);
-		}
-		toolBar.add(switchContextAction);
-		toolBar.add(reloadKubeConfigAction);
-		toolBar.add(infoAction);
-		toolBar.add(new Separator());
-		toolBar.add(expandAllAction);
-		toolBar.add(collapseAllAction);
-		toolBar.add(new Separator());
-		if (backAction.isEnabled() || upAction.isEnabled() || forwardAction.isEnabled()) {
-			toolBar.add(backAction);
-			toolBar.add(forwardAction);
-			toolBar.add(upAction);
-			toolBar.add(new Separator(FRAME_ACTION_SEPARATOR_ID));
-			fFrameActionsShown = true;
-		}
-		toolBar.add(new GroupMarker(FRAME_ACTION_GROUP_ID));
+                @Override
+                public void run() {
+                    explorer.getTreeViewer().refresh();
+                }
+            };
+            refreshTreeUIAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
+            toolBar.add(refreshTreeUIAction);
+        }
+        toolBar.add(switchContextAction);
+        toolBar.add(reloadKubeConfigAction);
+        toolBar.add(infoAction);
+        toolBar.add(new Separator());
+        toolBar.add(expandAllAction);
+        toolBar.add(collapseAllAction);
+        toolBar.add(new Separator());
+        if (backAction.isEnabled() || upAction.isEnabled() || forwardAction.isEnabled()) {
+            toolBar.add(backAction);
+            toolBar.add(forwardAction);
+            toolBar.add(upAction);
+            toolBar.add(new Separator(FRAME_ACTION_SEPARATOR_ID));
+            fFrameActionsShown = true;
+        }
+        toolBar.add(new GroupMarker(FRAME_ACTION_GROUP_ID));
 
-		// toolBar.add(fToggleLinkingAction);
-		toolBar.update(true);
-	}
+        // toolBar.add(fToggleLinkingAction);
+        toolBar.update(true);
+    }
 
-	public void updateToolBar(IToolBarManager toolBar) {
+    public void updateToolBar(IToolBarManager toolBar) {
 
-		boolean hasBeenFrameActionsShown = fFrameActionsShown;
-		fFrameActionsShown = backAction.isEnabled() || upAction.isEnabled() || forwardAction.isEnabled();
-		if (fFrameActionsShown != hasBeenFrameActionsShown) {
-			if (hasBeenFrameActionsShown) {
-				toolBar.remove(backAction.getId());
-				toolBar.remove(forwardAction.getId());
-				toolBar.remove(upAction.getId());
-				toolBar.remove(FRAME_ACTION_SEPARATOR_ID);
-			} else {
-				toolBar.prependToGroup(FRAME_ACTION_GROUP_ID, new Separator(FRAME_ACTION_SEPARATOR_ID));
-				toolBar.prependToGroup(FRAME_ACTION_GROUP_ID, upAction);
-				toolBar.prependToGroup(FRAME_ACTION_GROUP_ID, forwardAction);
-				toolBar.prependToGroup(FRAME_ACTION_GROUP_ID, backAction);
-			}
-			toolBar.update(true);
-		}
-	}
+        boolean hasBeenFrameActionsShown = fFrameActionsShown;
+        fFrameActionsShown = backAction.isEnabled() || upAction.isEnabled() || forwardAction.isEnabled();
+        if (fFrameActionsShown != hasBeenFrameActionsShown) {
+            if (hasBeenFrameActionsShown) {
+                toolBar.remove(backAction.getId());
+                toolBar.remove(forwardAction.getId());
+                toolBar.remove(upAction.getId());
+                toolBar.remove(FRAME_ACTION_SEPARATOR_ID);
+            } else {
+                toolBar.prependToGroup(FRAME_ACTION_GROUP_ID, new Separator(FRAME_ACTION_SEPARATOR_ID));
+                toolBar.prependToGroup(FRAME_ACTION_GROUP_ID, upAction);
+                toolBar.prependToGroup(FRAME_ACTION_GROUP_ID, forwardAction);
+                toolBar.prependToGroup(FRAME_ACTION_GROUP_ID, backAction);
+            }
+            toolBar.update(true);
+        }
+    }
 
-	@Override
-	public void fillContextMenu(IMenuManager manager) {
+    @Override
+    public void fillContextMenu(IMenuManager manager) {
 
-		IStructuredSelection selection = (IStructuredSelection) getContext().getSelection();
-		int size = selection.size();
-		Object element = selection.getFirstElement();
+        IStructuredSelection selection = (IStructuredSelection) getContext().getSelection();
+        int size = selection.size();
+        Object element = selection.getFirstElement();
 
-		manager.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
-	    
-		if (!(element instanceof EKubeElement)){
-			return;
-		}
-		EKubeElement eke = (EKubeElement) element;
-		Set<EKubeActionIdentifer<?>> actions = eke.getExecutableActionIdentifiers();
-		for (EKubeActionIdentifer<?> action: actions){
-			if (! action.isVisibleForUser()){
-				continue;
-			}
-			if (EKubeActionIdentifer.SHOW_YAML.equals(action)){
-				manager.add(showMetaInfoAsYamlAction);
-			}else {
-				Action uiAction = createActionForIdentifier(eke, action);
-				manager.add(uiAction);
-			}
-			
-		}
-		manager.add(switchContextAction);
-		manager.add(reloadKubeConfigAction);
-		manager.add(infoAction);
-		manager.add(new Separator());
-		manager.add(upAction);
-		manager.add(backAction);
-		manager.add(forwardAction);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        manager.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 
-		addGotoMenu(manager, element, size);
+        if (!(element instanceof EKubeElement)) {
+            return;
+        }
+        EKubeElement eke = (EKubeElement) element;
+        Set<EKubeActionIdentifer<?>> actions = eke.getExecutableActionIdentifiers();
+        for (EKubeActionIdentifer<?> action : actions) {
+            if (!action.isVisibleForUser()) {
+                continue;
+            }
+            if (EKubeActionIdentifer.SHOW_YAML.equals(action)) {
+                manager.add(showMetaInfoAsYamlAction);
+            }else if (EKubeActionIdentifer.FETCH_LOGS.equals(action)) {
+                manager.add(showLogOutputAction);
+            }  else {
+                Action uiAction = createActionForIdentifier(eke, action);
+                manager.add(uiAction);
+            }
 
-		manager.add(new Separator());
-		manager.add(expandAllAction);
-		manager.add(collapseAllAction);
+        }
+        manager.add(switchContextAction);
+        manager.add(reloadKubeConfigAction);
+        manager.add(infoAction);
+        manager.add(new Separator());
+        manager.add(upAction);
+        manager.add(backAction);
+        manager.add(forwardAction);
+        // Other plug-ins can contribute there actions here
+        manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
-		super.fillContextMenu(manager);
-	}
+        addGotoMenu(manager, element, size);
 
-	protected Action createActionForIdentifier(EKubeElement eke, EKubeActionIdentifer<?> action) {
-		Action uiAction = new Action() {
-			@Override
-			public void run() {
-				Object result = eke.execute(action);
-				if (action.isRefreshNecessary()){
-					explorer.refreshTreeElelement(eke);
-				}
-			}
-		};
-		uiAction.setText(action.getLabel());
-		return uiAction;
-	}
+        manager.add(new Separator());
+        manager.add(expandAllAction);
+        manager.add(collapseAllAction);
 
-	private void addGotoMenu(IMenuManager menu, Object element, int size) {
-		boolean enabled = size == 1 && explorer.getTreeViewer().isExpandable(element)
-				&& (isGoIntoTarget(element) || element instanceof EKubeContainer);
-		fZoomInAction.setEnabled(enabled);
-		if (enabled) {
-			menu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, fZoomInAction);
-		}
-	}
+        super.fillContextMenu(manager);
+    }
 
-	private boolean isGoIntoTarget(Object element) {
-		if (element instanceof EKubeContainer) {
-			return true;
-		}
-		return false;
-	}
+    protected Action createActionForIdentifier(EKubeElement eke, EKubeActionIdentifer<?> action) {
+        Action uiAction = new Action() {
+            @Override
+            public void run() {
+                Object result = eke.execute(action);
+                if (action.isRefreshNecessary()) {
+                    if (eke.getParent()==null  && ! (eke instanceof CurrentContextContainer)){
+                        /* in this case the element is removed from tree - so just do an refresh on ui*/
+                        explorer.getTreeViewer().refresh(true);
+                    }
+                    explorer.refreshTreeElelement(eke);
+                }
+                if (result instanceof String){
+                    
+                }
+            }
+        };
+        uiAction.setText(action.getLabel());
+        uiAction.setImageDescriptor(action.getImageDescriptor());
+        return uiAction;
+    }
 
-	public FrameAction getUpAction() {
-		return upAction;
-	}
+    private void addGotoMenu(IMenuManager menu, Object element, int size) {
+        boolean enabled = size == 1 && explorer.getTreeViewer().isExpandable(element)
+                && (isGoIntoTarget(element) || element instanceof EKubeContainer);
+        fZoomInAction.setEnabled(enabled);
+        if (enabled) {
+            menu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, fZoomInAction);
+        }
+    }
 
-	public FrameAction getBackAction() {
-		return backAction;
-	}
+    private boolean isGoIntoTarget(Object element) {
+        if (element instanceof EKubeContainer) {
+            return true;
+        }
+        return false;
+    }
 
-	public FrameAction getForwardAction() {
-		return forwardAction;
-	}
+    public FrameAction getUpAction() {
+        return upAction;
+    }
 
-	public FrameList getFrameList() {
-		return frameList;
-	}
+    public FrameAction getBackAction() {
+        return backAction;
+    }
+
+    public FrameAction getForwardAction() {
+        return forwardAction;
+    }
+
+    public FrameList getFrameList() {
+        return frameList;
+    }
 
 }

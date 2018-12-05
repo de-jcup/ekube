@@ -16,79 +16,87 @@ import de.jcup.ekube.Activator;
 
 public class EKubePreferences {
 
-	private static EKubePreferences INSTANCE = new EKubePreferences();
-	private IPreferenceStore store;
+    private static EKubePreferences INSTANCE = new EKubePreferences();
+    private IPreferenceStore store;
 
-	private EKubePreferences() {
-		store = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator.PLUGIN_ID);
-	}
+    private EKubePreferences() {
+        store = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator.PLUGIN_ID);
+    }
 
-	public String getStringPreference(EKubePreferenceConstants id) {
-		String data = getPreferenceStore().getString(id.getId());
-		if (data == null) {
-			data = "";
-		}
-		return data;
-	}
+    public String getStringPreference(EKubePreferenceConstants id) {
+        String data = getPreferenceStore().getString(id.getId());
+        if (data == null) {
+            data = "";
+        }
+        return data;
+    }
 
-	public boolean getBooleanPreference(EKubePreferenceConstants id) {
-		boolean data = getPreferenceStore().getBoolean(id.getId());
-		return data;
-	}
+    public boolean getBooleanPreference(EKubePreferenceConstants id) {
+        boolean data = getPreferenceStore().getBoolean(id.getId());
+        return data;
+    }
 
-	public void setBooleanPreference(EKubePreferenceConstants id, boolean value) {
-		getPreferenceStore().setValue(id.getId(), value);
-	}
+    public void setBooleanPreference(EKubePreferenceConstants id, boolean value) {
+        getPreferenceStore().setValue(id.getId(), value);
+    }
 
-	public IPreferenceStore getPreferenceStore() {
-		return store;
-	}
+    public IPreferenceStore getPreferenceStore() {
+        return store;
+    }
 
-	public boolean getDefaultBooleanPreference(EKubePreferenceConstants id) {
-		boolean data = getPreferenceStore().getDefaultBoolean(id.getId());
-		return data;
-	}
+    public boolean getDefaultBooleanPreference(EKubePreferenceConstants id) {
+        boolean data = getPreferenceStore().getDefaultBoolean(id.getId());
+        return data;
+    }
 
-	public RGB getColor(PreferenceIdentifiable identifiable) {
-		RGB color = PreferenceConverter.getColor(getPreferenceStore(), identifiable.getId());
-		return color;
-	}
+    public RGB getColor(PreferenceIdentifiable identifiable) {
+        RGB color = PreferenceConverter.getColor(getPreferenceStore(), identifiable.getId());
+        return color;
+    }
 
-	/**
-	 * Returns color as a web color in format "#RRGGBB"
-	 * 
-	 * @param identifiable
-	 * @return web color string
-	 */
-	public String getWebColor(PreferenceIdentifiable identifiable) {
-		RGB color = getColor(identifiable);
-		if (color == null) {
-			return null;
-		}
-		String webColor = ColorUtil.convertToHexColor(color);
-		return webColor;
-	}
-	
-	public void setDefaultColor(PreferenceIdentifiable identifiable, RGB color) {
-		PreferenceConverter.setDefault(getPreferenceStore(), identifiable.getId(), color);
-	}
+    /**
+     * Returns color as a web color in format "#RRGGBB"
+     * 
+     * @param identifiable
+     * @return web color string
+     */
+    public String getWebColor(PreferenceIdentifiable identifiable) {
+        RGB color = getColor(identifiable);
+        if (color == null) {
+            return null;
+        }
+        String webColor = ColorUtil.convertToHexColor(color);
+        return webColor;
+    }
 
-	public static EKubePreferences getInstance() {
-		return INSTANCE;
-	}
+    public void setDefaultColor(PreferenceIdentifiable identifiable, RGB color) {
+        PreferenceConverter.setDefault(getPreferenceStore(), identifiable.getId(), color);
+    }
 
-	public File getKubeConfigFile() {
-		String path = getPreferenceStore().getString(EKubePreferenceConstants.KUBE_CONFIGFILE_PATH.getId());
-		return new File(path);
-	}
+    public static EKubePreferences getInstance() {
+        return INSTANCE;
+    }
 
-	public List<String> getFilteredNamespacesAsList() {
-		String namespaces = getPreferenceStore().getString(EKubePreferenceConstants.FILTERED_NAMESPACES.getId());
-		return Arrays.asList(StringUtils.split(namespaces,","));
-	}
+    public File getKubeConfigFile() {
+        String path = getPreferenceStore().getString(EKubePreferenceConstants.KUBE_CONFIGFILE_PATH.getId());
+        return new File(path);
+    }
 
-	public boolean getFilterNamespacesEnabled() {
-		return getBooleanPreference(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED);
-	}
+    public List<String> getFilteredNamespacesAsList() {
+        String namespaces = getPreferenceStore().getString(EKubePreferenceConstants.FILTERED_NAMESPACES.getId());
+        return Arrays.asList(StringUtils.split(namespaces, ","));
+    }
+
+    public boolean getFilterNamespacesEnabled() {
+        return getBooleanPreference(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED);
+    }
+
+    public boolean getContextNamespaceOnly() {
+        return getBooleanPreference(EKubePreferenceConstants.CONTEXT_NAMESPACE_ONLY_ENABLED);
+    }
+    
+    public int getLogLinesToFetch(){
+        return getPreferenceStore().getInt(EKubePreferenceConstants.LOG_LINES_TO_FETCH.getId());
+    }
 
 }

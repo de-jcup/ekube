@@ -7,18 +7,15 @@ import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeElement;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-public abstract class AbstractFabric8ioElementAction<E extends EKubeElement,T,R> extends AbstractEKubeElementAction<E, T,R>{
+public abstract class AbstractFabric8ioElementAction<E extends EKubeElement, R> extends AbstractEKubeElementAction<E, R> {
 
-	protected KubernetesClient client;
-	protected Fabric8ioSupports support;
+    protected KubernetesClient client;
+    protected Fabric8ioSupports support;
 
-	public AbstractFabric8ioElementAction(EKubeContext context, KubernetesClient client, EKubeActionIdentifer<R> actionIdentifier, E ekubeElement,
-			T technicalObject) {
-		super(context, actionIdentifier, ekubeElement, technicalObject);
-		this.client=client;
-		this.support=new Fabric8ioSupports(context, client);
-	}
-	
-
+    public AbstractFabric8ioElementAction(EKubeContext context, KubernetesClient client, EKubeActionIdentifer<R> actionIdentifier, E ekubeElement) {
+        super(context, actionIdentifier, ekubeElement);
+        this.client = client;
+        this.support = new Fabric8ioSupports(context, client);
+    }
 
 }

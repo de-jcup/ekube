@@ -3,6 +3,11 @@ package de.jcup.ekube.core.fabric8io.exec;
 import java.util.List;
 
 import de.jcup.ekube.core.EKubeContext;
+import de.jcup.ekube.core.ExecutionParameters;
+import de.jcup.ekube.core.fabric8io.condition.ConditionInfo;
+import de.jcup.ekube.core.fabric8io.condition.ConditionInfoUtil;
+import de.jcup.ekube.core.fabric8io.condition.ConditionInfoUtil.ConditionInfoStatus;
+import de.jcup.ekube.core.fabric8io.condition.DeploymentConditionInfoBuilder;
 import de.jcup.ekube.core.fabric8io.elementaction.Fabric8ioGenericExecutionAction;
 import de.jcup.ekube.core.model.DeploymentConditionElement;
 import de.jcup.ekube.core.model.DeploymentContainer;
@@ -20,96 +25,91 @@ import io.fabric8.kubernetes.client.dsl.ScalableResource;
 
 public class DeploymentsSupport extends AbstractSupport {
 
-	public DeploymentsSupport(Fabric8ioSupportContext context) {
-		super(context);
-	}
+    public DeploymentsSupport(Fabric8ioSupportContext context) {
+        super(context);
+    }
 
-	private AddDeploymentsExcecutable addDeploymentsExcecutable = new AddDeploymentsExcecutable();
-	private UpdateDeploymentsExecutable updateStatus = new UpdateDeploymentsExecutable();
+    private AddDeploymentsExcecutable addDeploymentsExcecutable = new AddDeploymentsExcecutable();
+    private UpdateDeploymentsExecutable updateStatus = new UpdateDeploymentsExecutable();
+    private DeploymentConditionInfoBuilder conditionBuilder = new DeploymentConditionInfoBuilder();
+    public void addDeploymentFromNamespace(NamespaceContainer namespaceContainer) {
+        this.addDeploymentFromNamespace(getContext(), getClient(), namespaceContainer);
+    }
 
-	public void addDeploymentFromNamespace(NamespaceContainer namespaceContainer) {
-		this.addDeploymentFromNamespace(getContext(), getClient(), namespaceContainer);
-	}
+    public void addDeploymentFromNamespace(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer) {
+        context.getExecutor().execute(context, addDeploymentsExcecutable, namespaceContainer, client);
+    }
 
-	public void addDeploymentFromNamespace(EKubeContext context, KubernetesClient client,
-			NamespaceContainer namespaceContainer) {
-		context.getExecutor().execute(context, addDeploymentsExcecutable, namespaceContainer, client);
-	}
+    public void updateStatus(EKubeContext context, KubernetesClient client, Deployment deployment, DeploymentContainer nodeContainer) {
+        context.getExecutor().execute(context, updateStatus, nodeContainer, client, new ExecutionParameters().set(Deployment.class, deployment));
+    }
 
-	public void updateStatus(EKubeContext context, KubernetesClient client, Deployment node,
-			DeploymentContainer nodeContainer) {
-		context.getExecutor().execute(context, updateStatus, nodeContainer, client, node);
-	}
+    private class UpdateDeploymentsExecutable implements Fabric8ioSafeExecutable<DeploymentContainer, Void> {
+        @Override
+        public Void execute(EKubeContext context, KubernetesClient client, DeploymentContainer nodeContainer, ExecutionParameters parameters) {
+            StringBuilder sb = new StringBuilder();
+            DeploymentStatus status = parameters.get(Deployment.class).getStatus();
+            sb.append("Replicas:" + status.getReplicas());
+            if (status.getAvailableReplicas() != null) {
+                sb.append(",avail:" + status.getAvailableReplicas());
+            }
+            if (status.getUnavailableReplicas() != null) {
+                sb.append(",unavail:" + status.getUnavailableReplicas());
+            }
+            nodeContainer.setStatus(sb.toString());
+            return null;
+        }
 
-	private class UpdateDeploymentsExecutable implements Fabric8ioSafeExecutable<DeploymentContainer, Deployment,Void> {
-		@Override
-		public Void execute(EKubeContext context, KubernetesClient client, DeploymentContainer nodeContainer,
-				Deployment node) {
-			StringBuilder sb = new StringBuilder();
-			DeploymentStatus status = node.getStatus();
-			sb.append("Replicas:" + status.getReplicas());
-			if (status.getAvailableReplicas() != null) {
-				sb.append(",avail:" + status.getAvailableReplicas());
-			}
-			if (status.getUnavailableReplicas() != null) {
-				sb.append(",unavail:" + status.getUnavailableReplicas());
-			}
-			nodeContainer.setStatus(sb.toString());
-			return null;
-		}
+    }
 
-	}
+    private class AddDeploymentsExcecutable implements Fabric8ioSafeExecutableNoData<NamespaceContainer> {
 
-	private class AddDeploymentsExcecutable implements Fabric8ioSafeExecutableNoData<NamespaceContainer> {
+        @Override
+        public Void execute(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer, ExecutionParameters parameters) {
+            String namespace = namespaceContainer.getName();
+            MixedOperation<Deployment, DeploymentList, DoneableDeployment, ScalableResource<Deployment, DoneableDeployment>> deployments = client
+                    .apps().deployments();
+            DeploymentList deploymentList = deployments.inNamespace(namespace).list();
 
-		@Override
-		public Void execute(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer,
-				Object ignore) {
-			String namespace = namespaceContainer.getName();
-			MixedOperation<Deployment, DeploymentList, DoneableDeployment, ScalableResource<Deployment, DoneableDeployment>> deployments = client
-					.apps().deployments();
-			DeploymentList deploymentList = deployments.inNamespace(namespace).list();
+            DeploymentsContainer fetchDeploymentsContainer = namespaceContainer.fetchDeploymentsContainer();
 
-			DeploymentsContainer fetchDeploymentsContainer = namespaceContainer.fetchDeploymentsContainer();
-			
-			/* set this itself as action for rebuild */
-			Fabric8ioGenericExecutionAction<NamespaceContainer, Object, Void> x = new Fabric8ioGenericExecutionAction<>(addDeploymentsExcecutable, EKubeActionIdentifer.REFRESH_CHILDREN, context, client, namespaceContainer, ignore);
-			fetchDeploymentsContainer.register(x);
-			
-			
-			fetchDeploymentsContainer.startOrphanCheck();
-			for (Deployment deployment : deploymentList.getItems()) {
-				DeploymentContainer deploymentContainer = new DeploymentContainer(deployment.getMetadata().getUid());
-				if (namespaceContainer.isAlreadyFoundAndSoNoOrphan(deploymentContainer)) {
-					continue;
-				}
-				deploymentContainer.setName(deployment.getMetadata().getName());
-				fetchDeploymentsContainer.add(deploymentContainer);
-				updateStatus(context, client, deployment, deploymentContainer);
+            /* set this itself as action for rebuild */
+            Fabric8ioGenericExecutionAction<NamespaceContainer, Void> x = new Fabric8ioGenericExecutionAction<>(addDeploymentsExcecutable,
+                    EKubeActionIdentifer.REFRESH_CHILDREN, context, client, namespaceContainer);
 
-				/* add node conditions */
-				List<DeploymentCondition> conditions = deployment.getStatus().getConditions();
-				for (DeploymentCondition condition : conditions) {
-					DeploymentConditionElement element = new DeploymentConditionElement(
-							deployment.getMetadata().getUid() + "#" + condition.getType());
-					element.setName(condition.getType());
+            fetchDeploymentsContainer.setAction(x);
 
-					StringBuilder sb = new StringBuilder();
-					sb.append(condition.getStatus());
-					sb.append(" ");
-					sb.append(condition.getMessage());
-					sb.append(" ");
-					sb.append(condition.getLastUpdateTime());
-					element.setStatus(sb.toString());
+            fetchDeploymentsContainer.startOrphanCheck(parameters);
+            for (Deployment deployment : deploymentList.getItems()) {
+                DeploymentContainer newElement = new DeploymentContainer(deployment.getMetadata().getUid(), deployment);
+                if (!parameters.isHandling(newElement)) {
+                    continue;
+                }
+                DeploymentContainer deploymentContainer = fetchDeploymentsContainer.AddOrReuseExisting(newElement);
+                deploymentContainer.setName(deployment.getMetadata().getName());
+                updateStatus(context, client, deployment, deploymentContainer);
 
-					deploymentContainer.add(element);
-				}
+                /* add node conditions */
+                List<DeploymentCondition> conditions = deployment.getStatus().getConditions();
+                ConditionInfoStatus status = ConditionInfoUtil.createStatus();
+                for (DeploymentCondition condition : conditions) {
+                    DeploymentConditionElement element = new DeploymentConditionElement(deployment.getMetadata().getUid() + "#" + condition.getType(),
+                            condition);
+                    element.setName(condition.getType());
+                    ConditionInfo buildInfo = conditionBuilder.buildInfo(condition);
+                    element.setInfo(buildInfo);
+                    status.handle(buildInfo);
+                    
+                    deploymentContainer.add(element);
+                }
+                if (status.hasAtLeastOneFailed()){
+                    deploymentContainer.setErrorMessage(status.getErrorMessage());
+                }
+            }
+            fetchDeploymentsContainer.removeOrphans();
+            return null;
+        }
 
-			}
-			fetchDeploymentsContainer.removeOrphans();
-			return null;
-		}
-
-	}
+    }
 
 }

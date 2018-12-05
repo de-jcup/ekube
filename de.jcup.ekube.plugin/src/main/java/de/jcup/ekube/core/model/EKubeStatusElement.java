@@ -1,6 +1,6 @@
 package de.jcup.ekube.core.model;
 
-public interface EKubeStatusElement extends EKubeElement{
+public interface EKubeStatusElement extends EKubeElement {
 
-	public String getStatus();
+    public String getStatus();
 }

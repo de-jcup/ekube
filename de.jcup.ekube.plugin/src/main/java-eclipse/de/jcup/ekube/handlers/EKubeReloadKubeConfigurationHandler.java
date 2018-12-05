@@ -8,11 +8,11 @@ import de.jcup.ekube.KubeConfigLoader;
 
 public class EKubeReloadKubeConfigurationHandler extends AbstractHandler {
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		
-		KubeConfigLoader loader = new KubeConfigLoader();
-		loader.load();
-		return null;
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+
+        KubeConfigLoader loader = new KubeConfigLoader();
+        loader.load();
+        return null;
+    }
 }

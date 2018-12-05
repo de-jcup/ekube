@@ -6,37 +6,48 @@ import java.util.List;
 
 public class DefaultEKubeConfiguration extends AbstractEKubeConfiguration implements EKubeConfiguration {
 
-	private List<String> filteredNamespaces = new ArrayList<>();
+    private List<String> filteredNamespaces = new ArrayList<>();
 
-	private File kubeConfigFile;
+    private File kubeConfigFile;
 
-	private boolean namespaceFilteringEnabled;
+    private boolean namespaceFilteringEnabled;
 
-	public DefaultEKubeConfiguration() {
-		setDefaults();
-	}
+    private boolean contextNamespaceOnly;
 
-	private void setDefaults() {
-		kubeConfigFile = new File(System.getProperty("user.home") + "/.kube/config");
-		filteredNamespaces.add("kube-system");
-	}
+    public DefaultEKubeConfiguration() {
+        setDefaults();
+    }
 
-	@Override
-	public File getKubeConfigFile() {
-		return kubeConfigFile;
-	}
+    private void setDefaults() {
+        kubeConfigFile = new File(System.getProperty("user.home") + "/.kube/config");
+        filteredNamespaces.add("kube-system");
+    }
 
-	@Override
-	public List<String> getFilteredNamespaces() {
-		return filteredNamespaces;
-	}
+    @Override
+    public File getKubeConfigFile() {
+        return kubeConfigFile;
+    }
 
-	public void setNamespaceFilteringEnabled(boolean namespaceFilteringEnabled) {
-		this.namespaceFilteringEnabled = namespaceFilteringEnabled;
-	}
+    @Override
+    public List<String> getFilteredNamespaces() {
+        return filteredNamespaces;
+    }
 
-	@Override
-	public boolean isNamespaceFilteringEnabled() {
-		return namespaceFilteringEnabled;
-	}
+    public void setNamespaceFilteringEnabled(boolean namespaceFilteringEnabled) {
+        this.namespaceFilteringEnabled = namespaceFilteringEnabled;
+    }
+
+    @Override
+    public boolean isNamespaceFilteringEnabled() {
+        return namespaceFilteringEnabled;
+    }
+    
+    public void setContextNamespaceOnly(boolean contextNamespaceOnly) {
+        this.contextNamespaceOnly = contextNamespaceOnly;
+    }
+    
+    @Override
+    public boolean isContextNamespaceOnly() {
+        return contextNamespaceOnly;
+    }
 }
