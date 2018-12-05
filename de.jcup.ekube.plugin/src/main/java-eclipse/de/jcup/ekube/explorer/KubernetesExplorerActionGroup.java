@@ -41,6 +41,7 @@ import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
+import de.jcup.ekube.core.model.SecretElement;
 
 /* adopted from PackageExplorerActionGroup*/
 class KubernetesExplorerActionGroup extends CompositeActionGroup {
@@ -66,6 +67,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 
     private Action showMetaInfoAsYamlAction;
     private ShowPodLogAction showLogOutputAction;
+    private ShowSecretBase64DecodedAction showSecretdata;
 
     public KubernetesExplorerActionGroup(KubernetesExplorer part) {
         super();
@@ -75,38 +77,13 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
         showMetaInfoAsYamlAction = new ShowYamlInfoAction(this);
         showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.SHOW_YAML.getLabel()+" (double click)");
         
+        showSecretdata =new ShowSecretBase64DecodedAction(this);
+        showSecretdata.setText("Show secret data");
+        showSecretdata.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/model/secret.gif", Activator.PLUGIN_ID));
+        
         showLogOutputAction = new ShowPodLogAction(this);
         showLogOutputAction.setText(EKubeActionIdentifer.FETCH_LOGS.getLabel());
         
-        // IPropertyChangeListener workingSetListener= new
-        // IPropertyChangeListener() {
-        // @Override
-        // public void propertyChange(PropertyChangeEvent event) {
-        // doWorkingSetChanged(event);
-        // }
-        // };
-
-        // IWorkbenchPartSite site = explorer.getSite();
-        // setGroups(new ActionGroup[] {
-        // new NewWizardsActionGroup(site),
-        // fNavigateActionGroup= new NavigateActionGroup(explorer),
-        // new CCPActionGroup(explorer),
-        // new GenerateBuildPathActionGroup(explorer),
-        // new GenerateActionGroup(explorer),
-        // fRefactorActionGroup= new RefactorActionGroup(explorer),
-        // new ImportActionGroup(explorer),
-        // new BuildActionGroup(explorer),
-        // new JavaSearchActionGroup(explorer),
-        // fProjectActionGroup= new ProjectActionGroup(explorer),
-        // fViewActionGroup= new ViewActionGroup(explorer.getRootMode(),
-        // workingSetListener, site),
-        // fCustomFiltersActionGroup= new CustomFiltersActionGroup(explorer,
-        // viewer),
-        // new LayoutActionGroup(explorer)
-        // });
-
-        // fViewActionGroup.fillFilters(viewer);
-
         KubernetesFrameSource frameSource = new KubernetesFrameSource(explorer);
         frameList = new FrameList(frameSource);
         frameSource.connectTo(frameList);
@@ -350,6 +327,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
             return;
         }
         EKubeElement eke = (EKubeElement) element;
+        if (element instanceof SecretElement){
+            manager.add(showSecretdata);
+        }
         Set<EKubeActionIdentifer<?>> actions = eke.getExecutableActionIdentifiers();
         for (EKubeActionIdentifer<?> action : actions) {
             if (!action.isVisibleForUser()) {

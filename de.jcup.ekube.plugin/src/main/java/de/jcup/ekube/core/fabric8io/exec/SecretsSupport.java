@@ -1,9 +1,11 @@
 package de.jcup.ekube.core.fabric8io.exec;
 
 import java.util.List;
+import java.util.Map;
 
 import de.jcup.ekube.core.EKubeContext;
 import de.jcup.ekube.core.ExecutionParameters;
+import de.jcup.ekube.core.KeyValueMap;
 import de.jcup.ekube.core.fabric8io.elementaction.Fabric8ioGenericExecutionAction;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.NamespaceContainer;
@@ -20,8 +22,8 @@ public class SecretsSupport extends AbstractSupport {
     }
 
     private AddSecretsFromNamespaceExecutable addSecretsFromNamespaceExecutable = new AddSecretsFromNamespaceExecutable();
-    private UpdateConfigMapsExecutable updateConfigMapsExecutable = new UpdateConfigMapsExecutable();
-
+    private UpdateSecretsExecutable updateSecretsExecutable = new UpdateSecretsExecutable();
+    private FetchKeyValueExecutable fetchKeyValueExecutable = new FetchKeyValueExecutable();
     public void addSecretsFromNamespace(NamespaceContainer namespaceContainer) {
         this.addSecretsFromNamespace(getContext(), getClient(), namespaceContainer);
     }
@@ -31,11 +33,28 @@ public class SecretsSupport extends AbstractSupport {
     }
 
     public void updateStatus(EKubeContext context, KubernetesClient client, Secret technicalObject, SecretElement kubeElement) {
-        context.getExecutor().execute(context, updateConfigMapsExecutable, kubeElement, client,
+        context.getExecutor().execute(context, updateSecretsExecutable, kubeElement, client,
                 new ExecutionParameters().set(Secret.class, technicalObject));
     }
+    private class FetchKeyValueExecutable implements Fabric8ioSafeExecutable<SecretElement,KeyValueMap> {
 
-    private class UpdateConfigMapsExecutable implements Fabric8ioSafeExecutable<SecretElement, Void> {
+        @Override
+        public KeyValueMap execute(EKubeContext context, KubernetesClient client, SecretElement kubeElement, ExecutionParameters parameters) {
+            // https://kubernetes.io/docs/concepts/services-networking/service/
+            /* set this itself as action for refresh */
+            KeyValueMap keyValueMap = new KeyValueMap();
+            Object object = kubeElement.getTechnicalObject();
+            if (object instanceof Secret){
+                Secret secret = (Secret) object;
+                Map<String, String> data = secret.getData();
+                if (data!=null){
+                    keyValueMap.putAll(data);
+                }
+            }
+            return keyValueMap;
+        }
+    }
+    private class UpdateSecretsExecutable implements Fabric8ioSafeExecutable<SecretElement, Void> {
 
         @Override
         public Void execute(EKubeContext context, KubernetesClient client, SecretElement kubeElement, ExecutionParameters parameters) {
@@ -44,7 +63,7 @@ public class SecretsSupport extends AbstractSupport {
             kubeElement.setStatus("elements:" + kubeElement.getData().size());
 
             /* set this itself as action for refresh */
-            Fabric8ioGenericExecutionAction<SecretElement, Void> x = new Fabric8ioGenericExecutionAction<>(updateConfigMapsExecutable,
+            Fabric8ioGenericExecutionAction<SecretElement, Void> x = new Fabric8ioGenericExecutionAction<>(this,
                     EKubeActionIdentifer.REFRESH_STATUS, context, client, kubeElement);
             kubeElement.setAction(x);
 
@@ -76,6 +95,9 @@ public class SecretsSupport extends AbstractSupport {
                 secretElement.setName(secret.getMetadata().getName());
 
                 updateStatus(context, client, secret, secretElement);
+                Fabric8ioGenericExecutionAction<SecretElement, KeyValueMap> fetchKeyValueAction = new Fabric8ioGenericExecutionAction<>(fetchKeyValueExecutable,
+                        EKubeActionIdentifer.FETCH_KEY_VALUE, context, client, newElement);
+                newElement.setAction(fetchKeyValueAction);
 
             }
             fetchSecretsContainer.removeOrphans();
