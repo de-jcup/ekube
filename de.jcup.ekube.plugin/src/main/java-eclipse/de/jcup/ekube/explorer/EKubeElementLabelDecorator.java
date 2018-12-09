@@ -23,6 +23,7 @@ public class EKubeElementLabelDecorator extends LabelProvider implements ILightw
         EKubeElement ekubeElement = (EKubeElement) element;
         if (ekubeElement.isLocked()) {
             decoration.addOverlay(DESC_LOCK, IDecoration.BOTTOM_RIGHT);
+            return;
         }
         if (ekubeElement.hasError()){
             decoration.addOverlay(DESC_ERROR, IDecoration.BOTTOM_LEFT);
