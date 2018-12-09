@@ -37,7 +37,7 @@ final class ShowYamlInfoAction extends Action {
             if (info != null) {
                 try {
 
-                    File tmpfile = File.createTempFile("ekube_info_", ".yaml");
+                    File tmpfile = File.createTempFile("ekube_info_"+eelement.getName(), ".yaml");
                     tmpfile.deleteOnExit();
 
                     try (FileWriter fw = new FileWriter(tmpfile)) {
