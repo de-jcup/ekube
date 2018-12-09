@@ -1,5 +1,7 @@
 package de.jcup.ekube.core.fabric8io.condition;
 
+import de.jcup.ekube.core.model.AbstractEKubeElement;
+
 public class ConditionInfoUtil {
 
     public static String asNullSafeLowerCased(String text) {
@@ -43,6 +45,12 @@ public class ConditionInfoUtil {
 
         public String getErrorMessage() {
             return sb.toString();
+        }
+
+        public void handleErrors(AbstractEKubeElement element) {
+            if (hasAtLeastOneFailed()){
+                element.setErrorMessage(getErrorMessage());
+            }
         }
     }
 

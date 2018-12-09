@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import de.jcup.ekube.core.EKubeContext;
 import de.jcup.ekube.core.ExecutionParameters;
+import de.jcup.ekube.core.model.AbstractEKubeElement;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
@@ -22,6 +23,10 @@ public class Fabric8ioGeneralRefreshAction extends AbstractFabric8ioElementActio
          * this!
          */
         EKubeContainer parent = kubeElement.getParent();
+        if(kubeElement instanceof AbstractEKubeElement){
+            AbstractEKubeElement abstractElement = (AbstractEKubeElement) kubeElement;
+            abstractElement.setErrorMessage(null);
+        }
         if (parent==null){
             return null;
         }

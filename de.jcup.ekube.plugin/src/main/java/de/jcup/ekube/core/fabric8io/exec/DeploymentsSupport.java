@@ -102,9 +102,8 @@ public class DeploymentsSupport extends AbstractSupport {
                     
                     deploymentContainer.add(element);
                 }
-                if (status.hasAtLeastOneFailed()){
-                    deploymentContainer.setErrorMessage(status.getErrorMessage());
-                }
+                status.handleErrors(deploymentContainer);
+               
             }
             fetchDeploymentsContainer.removeOrphans();
             return null;

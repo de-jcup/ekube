@@ -157,9 +157,7 @@ public class PodSupport extends AbstractSupport {
                 element.setInfo(buildInfo);
                 podContainer.add(element);
             }
-            if (status.hasAtLeastOneFailed()){
-                podContainer.setErrorMessage(status.getErrorMessage());
-            }
+            status.handleErrors(podContainer);
             return null;
         }
 

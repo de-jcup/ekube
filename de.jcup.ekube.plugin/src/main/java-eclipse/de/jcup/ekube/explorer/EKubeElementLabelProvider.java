@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -45,14 +44,10 @@ class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabe
 
     public EKubeElementLabelProvider() {
     }
+    
+    private Styler contextStyler = StyledString.COUNTER_STYLER;
+    private Styler statusStyler = StyledString.COUNTER_STYLER;
 
-    private Styler contextStyler = new Styler() {
-
-        @Override
-        public void applyStyles(TextStyle textStyle) {
-            textStyle.foreground = Activator.getDefault().getColorManager().getColor(new RGB(250, 200, 0));
-        }
-    };
 
     @Override
     public StyledString getStyledText(Object e) {
@@ -83,7 +78,7 @@ class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabe
         }
         if (element instanceof EKubeStatusElement) {
             EKubeStatusElement cluster = (EKubeStatusElement) element;
-            styledString.append("  [" + cluster.getStatus() + "]", StyledString.COUNTER_STYLER);// contextStyler);
+            styledString.append("  [" + cluster.getStatus() + "]", statusStyler);// contextStyler);
         }
         return styledString;
     }

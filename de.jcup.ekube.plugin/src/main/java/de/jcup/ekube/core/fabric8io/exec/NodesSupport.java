@@ -117,9 +117,7 @@ public class NodesSupport extends AbstractSupport {
                 element.setName(condition.getType());
                 nodeContainer.add(element);
             }
-            if (status.hasAtLeastOneFailed()){
-                nodeContainer.setErrorMessage(status.getErrorMessage());
-            }
+            status.handleErrors(nodeContainer);
             return null;
         }
 
