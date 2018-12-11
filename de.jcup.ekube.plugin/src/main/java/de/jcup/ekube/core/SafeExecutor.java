@@ -8,6 +8,15 @@ public interface SafeExecutor {
         return execute(context, executable, element, client, new ExecutionParameters());
     }
 
+    /**
+     * Executes executable. 
+     * @param context
+     * @param executable
+     * @param element
+     * @param client
+     * @param parameters
+     * @return result or <code>null</code>
+     */
     <E extends EKubeElement, C, R> R execute(EKubeContext context, SafeExecutable<E, C, R> executable, E element, C client,
             ExecutionParameters parameters);
 

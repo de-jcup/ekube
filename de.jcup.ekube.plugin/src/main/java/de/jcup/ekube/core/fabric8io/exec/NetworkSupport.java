@@ -39,9 +39,9 @@ public class NetworkSupport extends AbstractSupport {
             NetworksContainer fetchNetworksContainer = namespaceContainer.fetchNetworksContainer();
 
             /* set this itself as action for rebuild */
-            Fabric8ioGenericExecutionAction<NamespaceContainer, Void> x = new Fabric8ioGenericExecutionAction<>(addNetworksFromNamespaceExecutable,
+            Fabric8ioGenericExecutionAction<NamespaceContainer, Void> addNetworksFromNamespaceAction = new Fabric8ioGenericExecutionAction<>(addNetworksFromNamespaceExecutable,
                     EKubeActionIdentifer.REFRESH_CHILDREN, context, client, namespaceContainer);
-            fetchNetworksContainer.setAction(x);
+            fetchNetworksContainer.setAction(addNetworksFromNamespaceAction);
 
             fetchNetworksContainer.startOrphanCheck(parameters);
             for (NetworkPolicy networkPolicy : items) {
@@ -51,6 +51,10 @@ public class NetworkSupport extends AbstractSupport {
                 }
                 NetworkPolicyElement networkPolicyElement = fetchNetworksContainer.AddOrReuseExisting(newElement);
                 networkPolicyElement.setName(networkPolicy.getMetadata().getName());
+                
+                /* this is not added by own action, which does automatically add default so add default by our own:*/
+                supportContext.defaults().appendDefaults(context, client, networkPolicyElement);
+                
             }
             fetchNetworksContainer.removeOrphans();
             return null;
