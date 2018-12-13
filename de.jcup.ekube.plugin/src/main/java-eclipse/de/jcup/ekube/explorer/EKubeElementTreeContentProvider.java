@@ -64,4 +64,8 @@ class EKubeElementTreeContentProvider implements ITreeContentProvider {
         return false;
     }
 
+    public EKubeModel getModel() {
+        return model;
+    }
+
 }

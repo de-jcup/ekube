@@ -49,7 +49,7 @@ public class NetworkSupport extends AbstractSupport {
                 if (!parameters.isHandling(newElement)) {
                     continue;
                 }
-                NetworkPolicyElement networkPolicyElement = fetchNetworksContainer.AddOrReuseExisting(newElement);
+                NetworkPolicyElement networkPolicyElement = fetchNetworksContainer.addOrReuseExisting(newElement);
                 networkPolicyElement.setName(networkPolicy.getMetadata().getName());
                 
                 /* this is not added by own action, which does automatically add default so add default by our own:*/

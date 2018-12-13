@@ -81,7 +81,7 @@ public class NodesSupport extends AbstractSupport {
                 if (!parameters.isHandling(newElement)) {
                     continue;
                 }
-                NodeContainer nodeContainer = nodesContainer.AddOrReuseExisting(newElement);
+                NodeContainer nodeContainer = nodesContainer.addOrReuseExisting(newElement);
                 nodeContainer.setName(node.getMetadata().getName());
                 updateStatus(context, client, node, nodeContainer);
 

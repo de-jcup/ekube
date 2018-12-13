@@ -18,7 +18,7 @@ public class NamespaceContainer extends AbstractEKubeContainer {
         return fetchAllChildrenOfType(NetworksContainer.class).iterator().next();
     }
 
-    public VolumesContainer fetchPerstitentVolumeClaimsContainer() {
+    public VolumesContainer fetchPersistentVolumeClaimsContainer() {
         /* always available, no check necessary */
         return fetchAllChildrenOfType(VolumesContainer.class).iterator().next();
     }

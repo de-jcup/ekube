@@ -8,7 +8,9 @@ public class NetworksContainer extends AbstractEKubeContainer implements Synthet
         label = "Network";
     }
 
-    public void add(NetworkPolicyElement networkPolicyElement) {
-        addChild(networkPolicyElement);
+    public NetworkPolicyElement addOrReuseExisting(NetworkPolicyElement networkPolicyElement) {
+        return super.internalAddOrReuseExisting(networkPolicyElement);
     }
+    
+    
 }

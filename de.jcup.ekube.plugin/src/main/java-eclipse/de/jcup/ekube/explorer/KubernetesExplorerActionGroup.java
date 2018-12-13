@@ -68,6 +68,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
     private Action showMetaInfoAsYamlAction;
     private ShowPodLogAction showLogOutputAction;
     private ShowSecretBase64DecodedAction showSecretdata;
+    private ShowPlantUMLAction showPlantUMLAction;
 
     public KubernetesExplorerActionGroup(KubernetesExplorer part) {
         super();
@@ -76,6 +77,10 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
         TreeViewer viewer = part.getTreeViewer();
         showMetaInfoAsYamlAction = new ShowYamlInfoAction(this);
         showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.SHOW_YAML.getLabel()+" (double click)");
+        
+        showPlantUMLAction = new ShowPlantUMLAction(this);
+        showPlantUMLAction.setText("Show plantuml");
+        showPlantUMLAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/show-plantuml.png", Activator.PLUGIN_ID));
         
         showSecretdata =new ShowSecretBase64DecodedAction(this);
         showSecretdata.setText("Show secret data");
@@ -263,17 +268,6 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
     }
 
     /* package */ void fillToolBar(IToolBarManager toolBar) {
-        if (EclipseDebugSettings.isShowingDebugActions()) {
-            Action refreshTreeUIAction = new Action("DEBUG: Refresh complete tree ui") {
-
-                @Override
-                public void run() {
-                    explorer.getTreeViewer().refresh();
-                }
-            };
-            refreshTreeUIAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
-            toolBar.add(refreshTreeUIAction);
-        }
         toolBar.add(switchContextAction);
         toolBar.add(reloadKubeConfigAction);
         toolBar.add(infoAction);
@@ -281,6 +275,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
         toolBar.add(expandAllAction);
         toolBar.add(collapseAllAction);
         toolBar.add(new Separator());
+        toolBar.add(showPlantUMLAction);
+        toolBar.add(new Separator());
+        
         if (backAction.isEnabled() || upAction.isEnabled() || forwardAction.isEnabled()) {
             toolBar.add(backAction);
             toolBar.add(forwardAction);
@@ -290,6 +287,17 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
         }
         toolBar.add(new GroupMarker(FRAME_ACTION_GROUP_ID));
 
+        if (EclipseDebugSettings.isShowingDebugActions()) {
+            Action refreshTreeUIAction = new Action("DEBUG: Refresh complete tree ui") {
+                
+                @Override
+                public void run() {
+                    explorer.getTreeViewer().refresh();
+                }
+            };
+            refreshTreeUIAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
+            toolBar.add(refreshTreeUIAction);
+        }
         // toolBar.add(fToggleLinkingAction);
         toolBar.update(true);
     }

@@ -70,7 +70,7 @@ public class VolumeSupport extends AbstractSupport {
         public Void execute(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer, ExecutionParameters parameters) {
             PersistentVolumeClaimList list = client.persistentVolumeClaims().inNamespace(namespaceContainer.getName()).list();
             List<PersistentVolumeClaim> items = list.getItems();
-            VolumesContainer fetchPersistentVolumeClaimsContainer = namespaceContainer.fetchPerstitentVolumeClaimsContainer();
+            VolumesContainer fetchPersistentVolumeClaimsContainer = namespaceContainer.fetchPersistentVolumeClaimsContainer();
 
             /* set this itself as action for rebuild */
             Fabric8ioGenericExecutionAction<NamespaceContainer, Void> x = new Fabric8ioGenericExecutionAction<>(addVolumesClaims,
@@ -84,7 +84,7 @@ public class VolumeSupport extends AbstractSupport {
                 if (! parameters.isHandling(newElement)){
                     continue;
                 }
-                PersistentVolumeClaimElement container = fetchPersistentVolumeClaimsContainer.AddOrReuseExisting(newElement);
+                PersistentVolumeClaimElement container = fetchPersistentVolumeClaimsContainer.addOrReuseExisting(newElement);
                 container.setName(volumeClaim.getMetadata().getName());
                 updateStatus(context, client, volumeClaim, container);
             }

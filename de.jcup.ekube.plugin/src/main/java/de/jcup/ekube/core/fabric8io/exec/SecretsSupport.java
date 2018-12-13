@@ -91,7 +91,7 @@ public class SecretsSupport extends AbstractSupport {
                 if (!parameters.isHandling(newElement)) {
                     continue;
                 }
-                SecretElement secretElement = fetchSecretsContainer.AddOrReuseExisting(newElement);
+                SecretElement secretElement = fetchSecretsContainer.addOrReuseExisting(newElement);
                 secretElement.setName(secret.getMetadata().getName());
 
                 updateStatus(context, client, secret, secretElement);

@@ -8,8 +8,9 @@ public class DeploymentsContainer extends AbstractEKubeContainer implements Synt
         label = "Deployments";
     }
 
-    public void add(DeploymentContainer deployment) {
-        addChild(deployment);
+    public DeploymentContainer AddOrReuseExisting(DeploymentContainer element){
+        return super.internalAddOrReuseExisting(element);
     }
+
     
 }

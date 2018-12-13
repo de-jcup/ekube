@@ -1,5 +1,7 @@
 package de.jcup.ekube.core.model;
 
+import java.util.List;
+
 public class PodsContainer extends AbstractEKubeContainer implements SyntheticKubeElement {
 
     public PodsContainer() {
@@ -8,7 +10,11 @@ public class PodsContainer extends AbstractEKubeContainer implements SyntheticKu
         label = "Pods";
     }
 
-    public void add(PodContainer pod) {
-        addChild(pod);
+    public PodContainer addOrReuseExisting(PodContainer pod) {
+        return super.internalAddOrReuseExisting(pod);
+    }
+
+    public List<PodContainer> getPods() {
+        return fetchAllChildrenOfType(PodContainer.class);
     }
 }

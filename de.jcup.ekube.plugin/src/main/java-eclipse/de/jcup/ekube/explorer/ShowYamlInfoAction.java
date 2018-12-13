@@ -13,6 +13,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import de.jcup.ekube.Activator;
+import de.jcup.ekube.ResourceUtil;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeElement;
 
@@ -55,10 +56,7 @@ final class ShowYamlInfoAction extends Action {
                          * loading temporary file from outside eclipse workspace
                          * :
                          */
-                        IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(tmpfile.getAbsolutePath()));
-
-                        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                        IDE.openEditorOnFileStore(page, fileStore);
+                        ResourceUtil.openInEditor(tmpfile);
                         return;
                     }
                 } catch (Exception e) {

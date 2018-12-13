@@ -8,8 +8,8 @@ public class ConfigMapsContainer extends AbstractEKubeContainer implements Synth
         label = "Config maps";
     }
 
-    public void add(ConfigMapElement configMap) {
-        addChild(configMap);
+    public ConfigMapElement AddOrReuseExisting(ConfigMapElement element){
+        return super.internalAddOrReuseExisting(element);
     }
 
 }

@@ -20,7 +20,6 @@ import de.jcup.ekube.Activator;
 import de.jcup.ekube.core.ExecutionParameters;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeElement;
-import de.jcup.ekube.preferences.EKubePreferenceConstants;
 import de.jcup.ekube.preferences.EKubePreferences;
 
 final class ShowPodLogAction extends Action {

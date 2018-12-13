@@ -8,7 +8,7 @@ public class SecretsContainer extends AbstractEKubeContainer implements Syntheti
         label = "Secrets";
     }
 
-    public void add(SecretElement secret) {
-        addChild(secret);
+    public SecretElement addOrReuseExisting(SecretElement newElement) {
+        return super.internalAddOrReuseExisting(newElement);
     }
 }

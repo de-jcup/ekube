@@ -105,7 +105,7 @@ public class ServiceSupport extends AbstractSupport {
                 if (!parameters.isHandling(newElement)) {
                     continue;
                 }
-                ServiceContainer serviceContainer = fetchServicesContainer.AddOrReuseExisting(newElement);
+                ServiceContainer serviceContainer = fetchServicesContainer.addOrReuseExisting(newElement);
                 serviceContainer.setName(service.getMetadata().getName());
 
                 updateStatus(context, client, serviceContainer, service);

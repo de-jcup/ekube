@@ -91,7 +91,7 @@ public class PodSupport extends AbstractSupport {
                 if (!parameters.isHandling(newElement)) {
                     continue;
                 }
-                PodContainer podContainer = podsContainer.AddOrReuseExisting(newElement);
+                PodContainer podContainer = podsContainer.addOrReuseExisting(newElement);
                 updateStatus(context, client, podContainer, new ExecutionParameters().set(Pod.class, pod));
 
                 podContainer.setName(pod.getMetadata().getName());

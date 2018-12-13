@@ -1,5 +1,7 @@
 package de.jcup.ekube.core.model;
 
+import java.util.List;
+
 public class VolumesContainer extends AbstractEKubeContainer implements SyntheticKubeElement {
 
     public VolumesContainer() {
@@ -8,7 +10,11 @@ public class VolumesContainer extends AbstractEKubeContainer implements Syntheti
         label = "Volumes";
     }
 
-    public void add(PersistentVolumeClaimElement persistentVolumeClaim) {
-        addChild(persistentVolumeClaim);
+    public PersistentVolumeClaimElement addOrReuseExisting(PersistentVolumeClaimElement pvc) {
+        return internalAddOrReuseExisting(pvc);
+    }
+    
+    public List<PersistentVolumeClaimElement> getVolumeClaims(){
+        return fetchAllChildrenOfType(PersistentVolumeClaimElement.class);
     }
 }

@@ -40,7 +40,7 @@ public abstract class AbstractEKubeContainer extends AbstractEKubeElement implem
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends EKubeElement> E AddOrReuseExisting(E newElement) {
+    <E extends EKubeElement> E internalAddOrReuseExisting(E newElement) {
         for (EKubeElement existing : children) {
             if (existing.equals(newElement)) {
                 orphans.remove(existing);
@@ -59,7 +59,7 @@ public abstract class AbstractEKubeContainer extends AbstractEKubeElement implem
 
     /**
      * Marks all children as being an orphan ! Use
-     * {@link #AddOrReuseExisting(EKubeElement)} to unmark them
+     * {@link #internalAddOrReuseExisting(EKubeElement)} to unmark them
      * 
      * @param parameters
      *            - when children ar set in parameters, only those children will

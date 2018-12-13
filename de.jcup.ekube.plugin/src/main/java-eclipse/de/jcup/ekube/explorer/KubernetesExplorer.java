@@ -202,7 +202,7 @@ public class KubernetesExplorer extends ViewPart {
             EKubeModel model = modelBuilder.build(context);
 
             monitor.done();
-
+            
             EclipseUtil.safeAsyncExec(() -> refreshTreeInSWTThread(model));
 
             return Status.OK_STATUS;
@@ -325,5 +325,12 @@ public class KubernetesExplorer extends ViewPart {
             viewer.expandToLevel(eelement, 1);
         }
 
+    }
+
+    /**
+     * @return model or <code>null</code>
+     */
+    public EKubeModel getModel() {
+        return contentPovider.getModel();
     }
 }

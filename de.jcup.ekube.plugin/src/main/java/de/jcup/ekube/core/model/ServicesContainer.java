@@ -1,5 +1,7 @@
 package de.jcup.ekube.core.model;
 
+import java.util.List;
+
 public class ServicesContainer extends AbstractEKubeContainer {
 
     public ServicesContainer() {
@@ -8,7 +10,11 @@ public class ServicesContainer extends AbstractEKubeContainer {
         label = "Services";
     }
 
-    public void add(ServiceContainer serviceContainer) {
-        addChild(serviceContainer);
+    public ServiceContainer addOrReuseExisting(ServiceContainer service) {
+        return internalAddOrReuseExisting(service);
+    }
+
+    public List<ServiceContainer> getServices() {
+        return fetchAllChildrenOfType(ServiceContainer.class);
     }
 }
