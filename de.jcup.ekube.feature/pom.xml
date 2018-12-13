@@ -9,7 +9,7 @@
 	</parent>
 	
 	<artifactId>de-jcup-ekube-feature</artifactId>
-	<version>0.2.2</version>
+	<version>0.4.0</version>
 	<packaging>eclipse-feature</packaging>
 
 </project>

@@ -8,7 +8,7 @@
     <version>1.0.0</version>
   </parent>
   <artifactId>de-jcup-ekube-plugin</artifactId>
-  <version>0.2.2</version>
+  <version>0.4.0</version>
   <packaging>eclipse-plugin</packaging>
   
 </project>
