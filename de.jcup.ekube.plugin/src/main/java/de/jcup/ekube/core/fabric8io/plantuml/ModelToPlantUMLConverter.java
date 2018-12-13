@@ -99,7 +99,7 @@ public class ModelToPlantUMLConverter {
             NodeSpec spec = f8node.getSpec();
             List<Taint> taints = spec != null ? spec.getTaints() : Collections.emptyList();
             for (Taint taint : taints) {
-                if (taint.getKey().equals("node-role.kubernetes.io/masterNode")) {
+                if (taint.getKey().equals("node-role.kubernetes.io/master")) {
                     ic.masterNode = f8node.getMetadata().getName();
                     return true;
                 }
