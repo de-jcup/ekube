@@ -56,9 +56,6 @@ class EKubeElementTreeContentProvider implements ITreeContentProvider {
     public boolean hasChildren(Object parent) {
         if (parent instanceof EKubeContainer) {
             EKubeContainer container = (EKubeContainer) parent;
-            if (container.isLocked()) {
-                return false;
-            }
             return container.hasChildren();
         }
         return false;
