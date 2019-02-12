@@ -45,9 +45,6 @@ class EKubeElementTreeContentProvider implements ITreeContentProvider {
     public Object[] getChildren(Object parent) {
         if (parent instanceof EKubeContainer) {
             EKubeContainer container = (EKubeContainer) parent;
-            if (container.isLocked()) {
-                return new Object[0];
-            }
             return container.getChildren().toArray();
         }
         return new Object[0];
