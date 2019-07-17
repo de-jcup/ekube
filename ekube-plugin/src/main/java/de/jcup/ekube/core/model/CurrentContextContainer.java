@@ -12,6 +12,7 @@ public class CurrentContextContainer extends AbstractContextContainer implements
         super(null);// no uid available - because synthetic element which is not
                     // existing in kubernetes
         addChild(new NodesContainer());
+        addChild(new PersistentVolumesContainer());
     }
 
     public void add(NamespaceContainer namespaceContainer) {
@@ -26,6 +27,11 @@ public class CurrentContextContainer extends AbstractContextContainer implements
         return fetchAllChildrenOfType(NodesContainer.class).iterator().next();
     }
 
+    public PersistentVolumesContainer fetchPersistentVolumesContainer() {
+        /* always available, no check necessary */
+        return fetchAllChildrenOfType(PersistentVolumesContainer.class).iterator().next();
+    }
+    
     public void setNamespace(String namespace) {
        this.namespace=namespace;
     }

@@ -38,7 +38,7 @@ import de.jcup.ekube.core.model.SecretElement;
 import de.jcup.ekube.core.model.SecretsContainer;
 import de.jcup.ekube.core.model.ServiceContainer;
 import de.jcup.ekube.core.model.ServicesContainer;
-import de.jcup.ekube.core.model.VolumesContainer;
+import de.jcup.ekube.core.model.PersistentVolumeClaimesContainer;
 
 class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabelProvider, IToolTipProvider {
 
@@ -97,7 +97,7 @@ class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabe
             element = "pods.png";
         } else if (obj instanceof PodContainer) {
             element = "pod.png";
-        } else if (obj instanceof VolumesContainer) {
+        } else if (obj instanceof PersistentVolumeClaimesContainer) {
             element = "volumes.png";
         } else if (obj instanceof PersistentVolumeClaimElement) {
             element = "persistentvolumeclaim.png";

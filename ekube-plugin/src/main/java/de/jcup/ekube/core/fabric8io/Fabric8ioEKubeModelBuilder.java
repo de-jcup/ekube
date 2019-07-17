@@ -70,6 +70,7 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 
         context.getProgressHandler().beginSubTask("Inspecting nodes");
         supports.nodes().addnodesFromNamespace(context, client, currentContext.getNodesContainer());
+        supports.volumes().addVolumes(context, client, currentContext);
         context.getProgressHandler().worked(totalWork++);
 
         for (NamespaceContainer namespaceContainer : namespaceContainers) {

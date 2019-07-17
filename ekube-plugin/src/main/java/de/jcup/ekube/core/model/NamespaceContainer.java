@@ -7,7 +7,7 @@ public class NamespaceContainer extends AbstractEKubeContainer {
         addChild(new ServicesContainer());
         addChild(new DeploymentsContainer());
         addChild(new PodsContainer());
-        addChild(new VolumesContainer());
+        addChild(new PersistentVolumeClaimesContainer());
         addChild(new NetworksContainer());
         addChild(new ConfigMapsContainer());
         addChild(new SecretsContainer());
@@ -17,10 +17,10 @@ public class NamespaceContainer extends AbstractEKubeContainer {
         /* always available, no check necessary */
         return fetchAllChildrenOfType(NetworksContainer.class).iterator().next();
     }
-
-    public VolumesContainer fetchPersistentVolumeClaimsContainer() {
+    
+    public PersistentVolumeClaimesContainer fetchPersistentVolumeClaimsContainer() {
         /* always available, no check necessary */
-        return fetchAllChildrenOfType(VolumesContainer.class).iterator().next();
+        return fetchAllChildrenOfType(PersistentVolumeClaimesContainer.class).iterator().next();
     }
 
     public ConfigMapsContainer fetchConfigMapsContainer() {
@@ -48,5 +48,7 @@ public class NamespaceContainer extends AbstractEKubeContainer {
         return fetchAllChildrenOfType(DeploymentsContainer.class).iterator().next();
 
     }
+
+   
 
 }
