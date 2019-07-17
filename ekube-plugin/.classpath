@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="libs/external/automaton-1.11-8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/commons-lang3-3.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/generex-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/jackson-annotations-2.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/jackson-core-2.7.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/jackson-databind-2.7.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/jackson-dataformat-yaml-2.7.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/jackson-module-jaxb-annotations-2.7.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/jul-to-slf4j-1.7.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/kubernetes-client-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/kubernetes-model-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/logging-interceptor-3.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/okhttp-3.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/okio-1.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/slf4j-api-1.7.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/snakeyaml-1.15.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/validation-api-1.1.0.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/zjsonpatch-0.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/de-jcup-eclipse-commons.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/java-eclipse"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

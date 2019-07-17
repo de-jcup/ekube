@@ -1,0 +1,68 @@
+allprojects{
+	/* turn off doclint java 8 */
+	if (JavaVersion.current().isJava8Compatible()) {
+	        tasks.withType(Javadoc) {
+	            options.addStringOption('Xdoclint:none', '-quiet')
+	        }
+	}
+	repositories {
+		mavenLocal()
+		mavenCentral()
+    }
+		
+}
+
+def doAutomateEclipseSetup = ['ekube-other'];
+
+subprojects {
+    apply plugin: 'java'
+	
+	if (doAutomateEclipseSetup.contains(project.name)){
+		apply plugin: 'eclipse'
+	}
+	sourceSets {
+			  	main {
+			   		java {
+			    		srcDir 'src/main/java'
+			    		}
+			   }	
+	}
+	apply plugin: "maven"
+		
+	group = "de.jcup.ekube" 
+	version = "0.5.0"
+		
+	/* Setup UTF-8 for compile AND test compilation*/
+	[ compileJava, compileTestJava ]*.options*.encoding = 'UTF-8'
+
+	sourceCompatibility = JavaVersion.VERSION_1_8
+		
+	 /* per default GRADLE stops the build if one single test fails ...*/
+    test { 
+        ignoreFailures = false 
+    }
+	
+	task sourcesJar(type: Jar, dependsOn:classes) {
+		classifier = 'sources'
+		from sourceSets.main.allSource
+	}
+
+	task javadocJar(type: Jar, dependsOn:javadoc) {
+		classifier = 'javadoc'
+		from javadoc.destinationDir
+	}
+
+	artifacts {
+		archives sourcesJar
+		archives javadocJar
+	}
+
+
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.10.2'
+}
+
+
+
