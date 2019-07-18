@@ -24,7 +24,6 @@ import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -48,6 +47,9 @@ import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
 import de.jcup.ekube.core.model.NamespaceContainer;
+import de.jcup.ekube.core.process.ShellExecutor;
+import de.jcup.ekube.preferences.EKubePreferenceConstants;
+import de.jcup.ekube.preferences.EKubePreferences;
 
 public class KubernetesExplorer extends ViewPart {
 
@@ -90,6 +92,19 @@ public class KubernetesExplorer extends ViewPart {
 
     @Override
     public void createPartControl(Composite parent) {
+        /* initialize with last set preferences - otherwise default would be used always until preference page applied...*/
+        EKubePreferences preferences = EKubePreferences.getInstance();
+        String launcherCommand = preferences.getStringPreference(EKubePreferenceConstants.SHELL_EXECUTOR_LAUNCH_COMMAND);
+        String interactiveShellCommand = preferences.getStringPreference(EKubePreferenceConstants.SHELL_EXECUTOR_INTERACTIVE_SHELL_COMMAND);
+        String interactiveLogViewerCommand = preferences.getStringPreference(EKubePreferenceConstants.SHELL_EXECUTOR_INTERACTIVE_LOGVIEWER_COMMAND);
+        String setTitleCommand = preferences.getStringPreference(EKubePreferenceConstants.SHELL_EXECUTOR_SET_TITLE_COMMAND);
+        
+        ShellExecutor executor = ShellExecutor.INSTANCE;
+        executor.setLauncherCommand(launcherCommand);
+        executor.setInteractiveShellCommand(interactiveShellCommand);
+        executor.setInteractiveLogViewerCommand(interactiveLogViewerCommand);
+        executor.setTitleCommand(setTitleCommand);
+        
         configLoader = new KubeConfigLoader();
 
         viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -317,12 +332,12 @@ public class KubernetesExplorer extends ViewPart {
         viewer.refresh(kubeElement);
     }
 
-    public void toggleExpandState(EKubeElement eelement) {
-        boolean isAlreadyExpanded = viewer.getExpandedState(eelement);
+    public void toggleExpandState(EKubeElement element) {
+        boolean isAlreadyExpanded = viewer.getExpandedState(element);
         if (isAlreadyExpanded) {
-            viewer.collapseToLevel(eelement, TreeViewer.ALL_LEVELS);
+            viewer.collapseToLevel(element, TreeViewer.ALL_LEVELS);
         } else {
-            viewer.expandToLevel(eelement, 1);
+            viewer.expandToLevel(element, 1);
         }
 
     }

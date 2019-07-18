@@ -1,5 +1,6 @@
 package de.jcup.ekube.core.fabric8io;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,9 @@ public class Fabric8ioConfigurationUpdater {
     public void update(EKubeContext ekubeContext) {
         EKubeConfiguration configuration = ekubeContext.getConfiguration();
         List<EKubeContextConfigurationEntry> list = new ArrayList<>();
+        File kubeConfigFile = configuration.getKubeConfigFile();
         try {
-            Config config = KubeConfigUtils.parseConfig(configuration.getKubeConfigFile());
+            Config config = KubeConfigUtils.parseConfig(kubeConfigFile);
             String currentContext = config.getCurrentContext();
             if (configuration.getKubernetesContext() == null) {
                 configuration.setKubernetesContext(currentContext);
@@ -57,7 +59,7 @@ public class Fabric8ioConfigurationUpdater {
             }
 
         } catch (IOException e) {
-            ekubeContext.getErrorHandler().logError("Was not able to fetch context definitions", e);
+            ekubeContext.getErrorHandler().logError("Was not able to fetch context definitions from config file:"+kubeConfigFile, e);
         }
         configuration.updateEntries(list);
     }

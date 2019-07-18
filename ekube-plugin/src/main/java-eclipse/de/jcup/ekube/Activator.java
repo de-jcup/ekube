@@ -10,7 +10,10 @@ import org.osgi.framework.BundleContext;
 import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.ErrorHandler;
+import de.jcup.ekube.core.process.ShellExecutor;
 import de.jcup.ekube.explorer.KubernetesExplorer;
+import de.jcup.ekube.preferences.EKubePreferenceConstants;
+import de.jcup.ekube.preferences.EKubePreferences;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -46,7 +49,7 @@ public class Activator extends AbstractUIPlugin implements PluginContextProvider
         colorManager = new ColorManager();
         errorHandler = new EclipseKubernetesErrorHandler();
         configuration = new EclipseEKubeConfiguration();
-
+        
         plugin = this;
     }
 
@@ -113,4 +116,5 @@ public class Activator extends AbstractUIPlugin implements PluginContextProvider
     public String getPluginID() {
         return PLUGIN_ID;
     }
+
 }

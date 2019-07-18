@@ -9,8 +9,14 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.ekube.Activator;
+import de.jcup.ekube.core.process.ShellExecutor;
 
 public class EKubePreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+
+    private StringFieldEditor shellExecutorLaunchCommand;
+    private StringFieldEditor shellExecutorInteractiveShellCommand;
+    private StringFieldEditor shellExecutorInteractiveLogviewerCommand;
+    private StringFieldEditor shellExecutorTitleCommand;
 
     public EKubePreferencePage() {
         super(GRID);
@@ -18,30 +24,73 @@ public class EKubePreferencePage extends FieldEditorPreferencePage implements IW
         setDescription("Preferences for kubernetes communication");
     }
 
+    @Override
+    public boolean performOk() {
+
+        boolean ok = super.performOk();
+        if (ok) {
+            String launcherCommand = shellExecutorLaunchCommand.getStringValue();
+            String interactiveShellCommand = shellExecutorInteractiveShellCommand.getStringValue();
+            String interactiveLogViewerCommand = shellExecutorInteractiveLogviewerCommand.getStringValue();
+            String setTitleCommand = shellExecutorTitleCommand.getStringValue();
+
+            ShellExecutor executor = ShellExecutor.INSTANCE;
+            executor.setLauncherCommand(launcherCommand);
+            executor.setInteractiveShellCommand(interactiveShellCommand);
+            executor.setInteractiveLogViewerCommand(interactiveLogViewerCommand);
+            executor.setTitleCommand(setTitleCommand);
+        }
+        return ok;
+    }
+
+    @Override
+    protected void performDefaults() {
+        super.performDefaults();
+    }
+    
     /**
-     * Creates the field editors. Field editors are abstractions of the common
-     * GUI blocks needed to manipulate various types of preferences. Each field
-     * editor knows how to save and restore itself.
+     * Creates the field editors. Field editors are abstractions of the common GUI
+     * blocks needed to manipulate various types of preferences. Each field editor
+     * knows how to save and restore itself.
      */
     public void createFieldEditors() {
         addField(new FileFieldEditor(EKubePreferenceConstants.KUBE_CONFIGFILE_PATH.getId(), "&KubeConfig:", getFieldEditorParent()));
-        addField(new BooleanFieldEditor(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED.getId(), "&Filter namespaces enabled",
-                getFieldEditorParent()));
+        addField(new BooleanFieldEditor(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED.getId(), "&Filter namespaces enabled", getFieldEditorParent()));
 
         // addField(new RadioGroupFieldEditor(EKubePreferenceConstants.P_CHOICE,
         // "An example of a multiple-choice preference",
         // 1, new String[][] { { "&Choice 1", "choice1" }, { "C&hoice 2",
         // "choice2" } }, getFieldEditorParent()));
-        StringFieldEditor filteredNamespacesEditor = new StringFieldEditor(EKubePreferenceConstants.FILTERED_NAMESPACES.getId(),
-                "Filtered namespaces", getFieldEditorParent());
+        StringFieldEditor filteredNamespacesEditor = new StringFieldEditor(EKubePreferenceConstants.FILTERED_NAMESPACES.getId(), "Filtered namespaces", getFieldEditorParent());
         addField(filteredNamespacesEditor);
-        addField(new BooleanFieldEditor(EKubePreferenceConstants.CONTEXT_NAMESPACE_ONLY_ENABLED.getId(), "&If defined use context namespace only",
-                getFieldEditorParent()));
-        
+        addField(new BooleanFieldEditor(EKubePreferenceConstants.CONTEXT_NAMESPACE_ONLY_ENABLED.getId(), "&If defined use context namespace only", getFieldEditorParent()));
+
         IntegerFieldEditor logLinesFieldEditor = new IntegerFieldEditor(EKubePreferenceConstants.LOG_LINES_TO_FETCH.getId(), "Fetch log lines", getFieldEditorParent());
         logLinesFieldEditor.setValidRange(10, 20000);
         addField(logLinesFieldEditor);
         
+        /* --------------- shell script execution (kubectl normally ) ---------------*/
+        
+        shellExecutorLaunchCommand = new StringFieldEditor(EKubePreferenceConstants.SHELL_EXECUTOR_LAUNCH_COMMAND.getId(), "Shell executor launch command", getFieldEditorParent());
+        shellExecutorLaunchCommand.getTextControl(getFieldEditorParent())
+                .setToolTipText("Used when kubectl is called. You can customize this. Use " + ShellExecutor.SHELL_CMD_VARIABLE + " as a place holder for executed shell command!");
+        addField(shellExecutorLaunchCommand);
+        
+        shellExecutorTitleCommand= new StringFieldEditor(EKubePreferenceConstants.SHELL_EXECUTOR_SET_TITLE_COMMAND.getId(), "Set title command", getFieldEditorParent());
+        shellExecutorTitleCommand.getTextControl(getFieldEditorParent())
+                .setToolTipText("You can customize the command. Use " + ShellExecutor.TITLE_VARIABLE+ " as a place holder for given title message");
+        addField(shellExecutorTitleCommand);
+        
+        shellExecutorInteractiveShellCommand = new StringFieldEditor(EKubePreferenceConstants.SHELL_EXECUTOR_INTERACTIVE_SHELL_COMMAND.getId(), "Interactive shell command", getFieldEditorParent());
+        shellExecutorInteractiveShellCommand.getTextControl(getFieldEditorParent())
+                .setToolTipText("You can customize the command. Use " + ShellExecutor.POD_ID_VARIABLE+ " as a place holder for given pod id. Use "+ShellExecutor.NAMESPACE_NAME_VARIABLE+" as place holder for namespace");
+        addField(shellExecutorInteractiveShellCommand);
+        
+        shellExecutorInteractiveLogviewerCommand = new StringFieldEditor(EKubePreferenceConstants.SHELL_EXECUTOR_INTERACTIVE_LOGVIEWER_COMMAND.getId(), "Interactive log viewer command", getFieldEditorParent());
+        shellExecutorInteractiveLogviewerCommand.getTextControl(getFieldEditorParent())
+                .setToolTipText("You can customize the command. Use " + ShellExecutor.POD_ID_VARIABLE+ " as a place holder for given pod id. Use "+ShellExecutor.NAMESPACE_NAME_VARIABLE+" as place holder for namespace");
+        addField(shellExecutorInteractiveLogviewerCommand);
+
     }
 
     public void init(IWorkbench workbench) {

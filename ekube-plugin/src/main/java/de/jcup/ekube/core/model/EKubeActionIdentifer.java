@@ -8,7 +8,7 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
 import de.jcup.ekube.Activator;
 import de.jcup.ekube.core.KeyValueMap;
 
-public class EKubeActionIdentifer<R> {
+public class EKubeActionIdentifer<R> implements Comparable<EKubeActionIdentifer<?>>{
 
     public static final EKubeActionIdentifer<Void> REFRESH = new EKubeActionIdentifer<>("Refresh", Void.class).imageDescriptor("/icons/refresh.png").markDirectlyExecutable()
             .markRefreshNecessary();
@@ -19,8 +19,8 @@ public class EKubeActionIdentifer<R> {
     public static final EKubeActionIdentifer<KeyValueMap> FETCH_KEY_VALUE = new EKubeActionIdentifer<>("Fetch KeyValue Map", KeyValueMap.class);
     
     public static final EKubeActionIdentifer<File> FETCH_LOGS = new EKubeActionIdentifer<>("Grab log output", File.class).markDirectlyExecutable();
-    public static final EKubeActionIdentifer<Void> INTERACTIVE_SHELL = new EKubeActionIdentifer<>("Start interactive shell (kubectl)", Void.class).markDirectlyExecutable();
-    public static final EKubeActionIdentifer<Void> INTERACTIVE_LOGVIEWER = new EKubeActionIdentifer<>("Show log tail (kubectl)", Void.class).markDirectlyExecutable();
+    public static final EKubeActionIdentifer<Void> INTERACTIVE_SHELL = new EKubeActionIdentifer<>("Start interactive shell (kubectl)", Void.class).markDirectlyExecutable().imageDescriptor("/icons/interactive-shell.png");
+    public static final EKubeActionIdentifer<Void> INTERACTIVE_LOGVIEWER = new EKubeActionIdentifer<>("Show log tail (kubectl)", Void.class).markDirectlyExecutable().imageDescriptor("/icons/interactive-log.png");
 
 
     private String label;
@@ -68,5 +68,21 @@ public class EKubeActionIdentifer<R> {
     @Override
     public String toString() {
         return "ActionIdentifier:" + label;
+    }
+
+    @Override
+    public int compareTo(EKubeActionIdentifer<?> o) {
+        if (o==null) {
+            return 1;
+        }
+        String label = o.getLabel();
+        if (label==null) {
+            return 1;
+        }
+        String myLabel = getLabel();
+        if (myLabel==null) {
+            return -1;
+        }
+        return myLabel.compareTo(label);
     }
 }

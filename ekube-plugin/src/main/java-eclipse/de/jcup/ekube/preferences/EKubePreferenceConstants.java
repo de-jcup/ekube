@@ -14,7 +14,14 @@ public enum EKubePreferenceConstants implements PreferenceIdentifiable {
     CONTEXT_NAMESPACE_ONLY_ENABLED("contextNamespaceOnly"),
     
     LOG_LINES_TO_FETCH("logLines"),
+    
+    SHELL_EXECUTOR_LAUNCH_COMMAND("shellExecutorLaunchCommand"), 
+    
+    SHELL_EXECUTOR_INTERACTIVE_SHELL_COMMAND("shellExecutorInteractiveShellCommand"),
+    
+    SHELL_EXECUTOR_INTERACTIVE_LOGVIEWER_COMMAND("shellExecutorInteractiveLogViewerCommand"),
 
+    SHELL_EXECUTOR_SET_TITLE_COMMAND("shellExecutorSetTitleCommand"),
     ;
 
     private String id;

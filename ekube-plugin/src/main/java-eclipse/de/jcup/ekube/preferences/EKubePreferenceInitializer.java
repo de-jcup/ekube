@@ -6,6 +6,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.jcup.ekube.Activator;
 import de.jcup.ekube.core.DefaultEKubeConfiguration;
+import de.jcup.ekube.core.process.ShellExecutor;
 
 /**
  * Class used to initialize default preference values.
@@ -20,6 +21,11 @@ public class EKubePreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED.getId(), true);
         store.setDefault(EKubePreferenceConstants.CONTEXT_NAMESPACE_ONLY_ENABLED.getId(), true);
         store.setDefault(EKubePreferenceConstants.LOG_LINES_TO_FETCH.getId(), 20);
+        store.setDefault(EKubePreferenceConstants.SHELL_EXECUTOR_LAUNCH_COMMAND.getId(), ShellExecutor.resolveOSDefaultLaunchCommand());
+        store.setDefault(EKubePreferenceConstants.SHELL_EXECUTOR_INTERACTIVE_SHELL_COMMAND.getId(), ShellExecutor.resolveDefaultInteractiveShellCommand());
+        store.setDefault(EKubePreferenceConstants.SHELL_EXECUTOR_INTERACTIVE_LOGVIEWER_COMMAND.getId(), ShellExecutor.resolveDefaultInteractiveLogViewerCommand());
+        store.setDefault(EKubePreferenceConstants.SHELL_EXECUTOR_SET_TITLE_COMMAND.getId(), ShellExecutor.resolveDefaultTitleCommand());
+        
     }
 
 }

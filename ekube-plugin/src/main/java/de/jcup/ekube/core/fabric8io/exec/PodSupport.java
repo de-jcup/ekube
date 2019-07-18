@@ -18,6 +18,7 @@ import de.jcup.ekube.core.model.PodContainer;
 import de.jcup.ekube.core.model.PodsContainer;
 import de.jcup.ekube.core.process.ShellExecutor;
 import io.fabric8.kubernetes.api.model.ContainerStatus;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodCondition;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -145,10 +146,11 @@ public class PodSupport extends AbstractSupport {
                 return null;
             }
             Pod pod = (Pod) obj;
-            String podName = pod.getMetadata().getName();
+            ObjectMeta metadata = pod.getMetadata();
+            String podName = metadata.getName();
+            String namespaceName = metadata.getNamespace();
             try{
-                ShellExecutor shellExecutor = new ShellExecutor();
-                shellExecutor.interactiveRunFirstContainerInPod(podName);
+                ShellExecutor.INSTANCE.interactiveRunFirstContainerInPod(podName,namespaceName);
             }catch(Exception e){
                 context.getErrorHandler().logError("Was not able to fetch logs from pod:"+podName, e);
             }
@@ -167,10 +169,11 @@ public class PodSupport extends AbstractSupport {
                 return null;
             }
             Pod pod = (Pod) obj;
-            String podName = pod.getMetadata().getName();
+            ObjectMeta metadata = pod.getMetadata();
+            String podName = metadata.getName();
+            String namespace = metadata.getNamespace();
             try{
-                ShellExecutor shellExecutor = new ShellExecutor();
-                shellExecutor.interactiveLogViewerInPod(podName);
+                ShellExecutor.INSTANCE.interactiveLogViewerInPod(podName, namespace);
             }catch(Exception e){
                 context.getErrorHandler().logError("Was not able to fetch logs from pod:"+podName, e);
             }

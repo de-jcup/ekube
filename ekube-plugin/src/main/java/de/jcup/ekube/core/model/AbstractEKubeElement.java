@@ -1,9 +1,9 @@
 package de.jcup.ekube.core.model;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import de.jcup.ekube.core.ExecutionParameters;
 
@@ -12,7 +12,7 @@ public abstract class AbstractEKubeElement implements EKubeElement {
     protected String label;
     protected String name;
 
-    private Map<EKubeActionIdentifer<?>, EKubeElementAction<?>> actions = new HashMap<>();
+    private Map<EKubeActionIdentifer<?>, EKubeElementAction<?>> actions = new TreeMap<>();
     EKubeContainer parent;
     private boolean locked;
     private String errorMessage;
