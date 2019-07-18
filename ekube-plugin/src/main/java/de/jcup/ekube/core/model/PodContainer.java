@@ -15,8 +15,6 @@
  */
  package de.jcup.ekube.core.model;
 
-import io.fabric8.kubernetes.api.model.PodCondition;
-
 public class PodContainer extends AbstractEKubeContainer implements EKubeStatusElement {
 
     public PodContainer(String uid, Object technicalObject) {

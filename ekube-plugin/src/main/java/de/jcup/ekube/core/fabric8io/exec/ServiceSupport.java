@@ -24,7 +24,6 @@ import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.NamespaceContainer;
 import de.jcup.ekube.core.model.ServiceContainer;
 import de.jcup.ekube.core.model.ServicesContainer;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.api.model.ServicePort;

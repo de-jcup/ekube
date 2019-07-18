@@ -19,13 +19,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Date;
 
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
 
 import de.jcup.ekube.Activator;
 import de.jcup.ekube.ResourceUtil;

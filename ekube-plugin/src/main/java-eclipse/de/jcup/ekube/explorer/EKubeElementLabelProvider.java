@@ -46,6 +46,7 @@ import de.jcup.ekube.core.model.NodeConditionElement;
 import de.jcup.ekube.core.model.NodeContainer;
 import de.jcup.ekube.core.model.NodesContainer;
 import de.jcup.ekube.core.model.PersistentVolumeClaimElement;
+import de.jcup.ekube.core.model.PersistentVolumeClaimesContainer;
 import de.jcup.ekube.core.model.PodConditionElement;
 import de.jcup.ekube.core.model.PodContainer;
 import de.jcup.ekube.core.model.PodsContainer;
@@ -53,7 +54,6 @@ import de.jcup.ekube.core.model.SecretElement;
 import de.jcup.ekube.core.model.SecretsContainer;
 import de.jcup.ekube.core.model.ServiceContainer;
 import de.jcup.ekube.core.model.ServicesContainer;
-import de.jcup.ekube.core.model.PersistentVolumeClaimesContainer;
 
 class EKubeElementLabelProvider extends CellLabelProvider implements IStyledLabelProvider, IToolTipProvider {
 
