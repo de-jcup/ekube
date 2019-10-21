@@ -1,5 +1,6 @@
 # Compiled class file
 *.class
+.gradle/
 
 # Log file
 *.log
@@ -24,3 +25,4 @@ hs_err_pid*
 
 # Maven output
 target
+build
