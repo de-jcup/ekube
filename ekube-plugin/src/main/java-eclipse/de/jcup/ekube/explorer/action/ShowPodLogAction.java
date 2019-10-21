@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.ekube.explorer;
+ package de.jcup.ekube.explorer.action;
 
 import java.io.File;
 

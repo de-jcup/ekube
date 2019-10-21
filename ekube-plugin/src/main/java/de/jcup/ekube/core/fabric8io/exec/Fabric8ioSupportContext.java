@@ -18,6 +18,11 @@
 import de.jcup.ekube.core.EKubeContext;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
+/**
+ * A context which provides different support objects and access to to ekube context and client
+ * @author albert
+ *
+ */
 public interface Fabric8ioSupportContext {
 
     public EKubeContext getContext();

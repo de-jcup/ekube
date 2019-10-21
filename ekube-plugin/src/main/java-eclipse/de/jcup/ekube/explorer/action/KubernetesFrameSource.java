@@ -13,10 +13,12 @@
  * and limitations under the License.
  *
  */
- package de.jcup.ekube.explorer;
+ package de.jcup.ekube.explorer.action;
 
 import org.eclipse.ui.views.framelist.TreeFrame;
 import org.eclipse.ui.views.framelist.TreeViewerFrameSource;
+
+import de.jcup.ekube.explorer.KubernetesExplorer;
 
 class KubernetesFrameSource extends TreeViewerFrameSource {
     private KubernetesExplorer kubernetesExplorer;

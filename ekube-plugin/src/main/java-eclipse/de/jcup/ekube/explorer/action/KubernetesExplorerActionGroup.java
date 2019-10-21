@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.ekube.explorer;
+package de.jcup.ekube.explorer.action;
 
 import java.util.List;
 import java.util.Set;
@@ -57,9 +57,13 @@ import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.SecretElement;
+import de.jcup.ekube.explorer.CompositeActionGroup;
+import de.jcup.ekube.explorer.EKubeSwitchContextConfigurationLabelProvider;
+import de.jcup.ekube.explorer.EclipseDebugSettings;
+import de.jcup.ekube.explorer.KubernetesExplorer;
 
 /* adopted from PackageExplorerActionGroup*/
-class KubernetesExplorerActionGroup extends CompositeActionGroup {
+public class KubernetesExplorerActionGroup extends CompositeActionGroup {
 
     private static final String FRAME_ACTION_SEPARATOR_ID = "FRAME_ACTION_SEPARATOR_ID"; //$NON-NLS-1$
     private static final String FRAME_ACTION_GROUP_ID = "FRAME_ACTION_GROUP_ID"; //$NON-NLS-1$
@@ -91,19 +95,19 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
         fFrameActionsShown = false;
         TreeViewer viewer = part.getTreeViewer();
         showMetaInfoAsYamlAction = new ShowYamlInfoAction(this);
-        showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.SHOW_YAML.getLabel()+" (double click)");
-        
+        showMetaInfoAsYamlAction.setText(EKubeActionIdentifer.SHOW_YAML.getLabel() + " (double click)");
+
         showPlantUMLAction = new ShowPlantUMLAction(this);
         showPlantUMLAction.setText("Show plantuml");
         showPlantUMLAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/show-plantuml.png", Activator.PLUGIN_ID));
-        
-        showSecretdata =new ShowSecretBase64DecodedAction(this);
+
+        showSecretdata = new ShowSecretBase64DecodedAction(this);
         showSecretdata.setText("Show secret data");
         showSecretdata.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/model/secret.gif", Activator.PLUGIN_ID));
-        
+
         showLogOutputAction = new ShowPodLogAction(this);
         showLogOutputAction.setText(EKubeActionIdentifer.FETCH_LOGS.getLabel());
-        
+
         KubernetesFrameSource frameSource = new KubernetesFrameSource(explorer);
         frameList = new FrameList(frameSource);
         frameSource.connectTo(frameList);
@@ -183,12 +187,10 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
                 EKubeConfiguration configuration = Activator.getDefault().getConfiguration();
                 List<EKubeContextConfigurationEntry> data = configuration.getConfigurationContextList();
                 if (data.isEmpty()) {
-                    MessageDialog.openWarning(viewer.getControl().getShell(), "Not connected",
-                            "No information about contexts to choose available.\n\nPlease connect to kubernetes before!");
+                    MessageDialog.openWarning(viewer.getControl().getShell(), "Not connected", "No information about contexts to choose available.\n\nPlease connect to kubernetes before!");
                     return;
                 }
-                ElementListSelectionDialog dialog = new ElementListSelectionDialog(Display.getCurrent().getActiveShell(),
-                        new EKubeSwitchContextConfigurationLabelProvider());
+                ElementListSelectionDialog dialog = new ElementListSelectionDialog(Display.getCurrent().getActiveShell(), new EKubeSwitchContextConfigurationLabelProvider());
                 dialog.setElements(data.toArray());
                 dialog.setMultipleSelection(false);
                 dialog.setTitle("Which context do you want to use ?");
@@ -228,8 +230,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
                 sb.append("Info:\n-current context:" + config.getKubernetesContext());
                 sb.append("\nContexts available:");
                 for (EKubeContextConfigurationEntry contextConfig : config.getConfigurationContextList()) {
-                    sb.append("\n+")
-                            .append(contextConfig.getName() + ", cluster=" + contextConfig.getCluster() + ", user:" + contextConfig.getUser());
+                    sb.append("\n+").append(contextConfig.getName() + ", cluster=" + contextConfig.getCluster() + ", user:" + contextConfig.getUser());
                 }
                 explorer.showMessage(sb.toString());
             }
@@ -292,7 +293,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
         toolBar.add(new Separator());
         toolBar.add(showPlantUMLAction);
         toolBar.add(new Separator());
-        
+
         if (backAction.isEnabled() || upAction.isEnabled() || forwardAction.isEnabled()) {
             toolBar.add(backAction);
             toolBar.add(forwardAction);
@@ -304,7 +305,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
 
         if (EclipseDebugSettings.isShowingDebugActions()) {
             Action refreshTreeUIAction = new Action("DEBUG: Refresh complete tree ui") {
-                
+
                 @Override
                 public void run() {
                     explorer.getTreeViewer().refresh();
@@ -350,7 +351,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
             return;
         }
         EKubeElement eke = (EKubeElement) element;
-        if (element instanceof SecretElement){
+        if (element instanceof SecretElement) {
             manager.add(showSecretdata);
         }
         Set<EKubeActionIdentifer<?>> actions = eke.getExecutableActionIdentifiers();
@@ -360,9 +361,9 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
             }
             if (EKubeActionIdentifer.SHOW_YAML.equals(action)) {
                 manager.add(showMetaInfoAsYamlAction);
-            }else if (EKubeActionIdentifer.FETCH_LOGS.equals(action)) {
+            } else if (EKubeActionIdentifer.FETCH_LOGS.equals(action)) {
                 manager.add(showLogOutputAction);
-            }  else {
+            } else {
                 Action uiAction = createActionForIdentifier(eke, action);
                 manager.add(uiAction);
             }
@@ -387,20 +388,22 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
         super.fillContextMenu(manager);
     }
 
-    protected Action createActionForIdentifier(EKubeElement eke, EKubeActionIdentifer<?> action) {
+    public Action createActionForIdentifier(EKubeElement eke, EKubeActionIdentifer<?> action) {
         Action uiAction = new Action() {
             @Override
             public void run() {
                 Object result = eke.execute(action);
                 if (action.isRefreshNecessary()) {
-                    if (eke.getParent()==null  && ! (eke instanceof CurrentContextContainer)){
-                        /* in this case the element is removed from tree - so just do an refresh on ui*/
+                    if (eke.getParent() == null && !(eke instanceof CurrentContextContainer)) {
+                        /*
+                         * in this case the element is removed from tree - so just do an refresh on ui
+                         */
                         explorer.getTreeViewer().refresh(true);
                     }
                     explorer.refreshTreeElelement(eke);
                 }
-                if (result instanceof String){
-                    
+                if (result instanceof String) {
+
                 }
             }
         };
@@ -410,8 +413,7 @@ class KubernetesExplorerActionGroup extends CompositeActionGroup {
     }
 
     private void addGotoMenu(IMenuManager menu, Object element, int size) {
-        boolean enabled = size == 1 && explorer.getTreeViewer().isExpandable(element)
-                && (isGoIntoTarget(element) || element instanceof EKubeContainer);
+        boolean enabled = size == 1 && explorer.getTreeViewer().isExpandable(element) && (isGoIntoTarget(element) || element instanceof EKubeContainer);
         fZoomInAction.setEnabled(enabled);
         if (enabled) {
             menu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, fZoomInAction);

@@ -63,6 +63,7 @@ import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
 import de.jcup.ekube.core.model.NamespaceContainer;
 import de.jcup.ekube.core.process.ShellExecutor;
+import de.jcup.ekube.explorer.action.KubernetesExplorerActionGroup;
 import de.jcup.ekube.preferences.EKubePreferenceConstants;
 import de.jcup.ekube.preferences.EKubePreferences;
 
@@ -84,7 +85,7 @@ public class KubernetesExplorer extends ViewPart {
     private KubeConfigLoader configLoader;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
 
-    SimpleDateFormat getDateFormat() {
+    public SimpleDateFormat getDateFormat() {
         return dateFormat;
     }
 
@@ -208,7 +209,7 @@ public class KubernetesExplorer extends ViewPart {
         });
     }
 
-    void showMessage(String message) {
+    public void showMessage(String message) {
         MessageDialog.openInformation(viewer.getControl().getShell(), "Kubernetes Explorer", message);
     }
 
@@ -291,7 +292,7 @@ public class KubernetesExplorer extends ViewPart {
         }
     }
 
-    void updateToolbar() {
+    public void updateToolbar() {
         IActionBars actionBars = getViewSite().getActionBars();
         actionSet.updateToolBar(actionBars.getToolBarManager());
     }
@@ -300,7 +301,7 @@ public class KubernetesExplorer extends ViewPart {
      * Updates the title text and title tool tip. Called whenever the input of
      * the viewer changes.
      */
-    void updateTitle() {
+    public void updateTitle() {
         Object input = viewer.getInput();
         String inputText = createTitleName(input);
         if (inputText == null) {
@@ -333,7 +334,7 @@ public class KubernetesExplorer extends ViewPart {
         }
     }
 
-    void loadconfiguration(boolean lazy) {
+    public void loadconfiguration(boolean lazy) {
         if (!configLoader.isLoaded() || !lazy) {
             configLoader.load();
         }

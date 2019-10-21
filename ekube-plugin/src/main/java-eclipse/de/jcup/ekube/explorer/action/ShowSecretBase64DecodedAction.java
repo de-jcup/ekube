@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.ekube.explorer;
+ package de.jcup.ekube.explorer.action;
 
 import org.eclipse.jface.action.Action;
 
@@ -22,6 +22,7 @@ import de.jcup.ekube.core.KeyValueMap;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.SecretElement;
+import de.jcup.ekube.explorer.ShowBase64EncodedSecretDataDialog;
 
 final class ShowSecretBase64DecodedAction extends Action {
     private final KubernetesExplorerActionGroup kubernetesExplorerActionGroup;
