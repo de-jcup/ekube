@@ -16,6 +16,7 @@
  package de.jcup.ekube.core.fabric8io.exec;
 
 import de.jcup.ekube.core.EKubeContext;
+import de.jcup.ekube.core.fabric8io.exec.pod.PodSupport;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
