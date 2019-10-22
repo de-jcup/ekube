@@ -16,7 +16,13 @@
  package de.jcup.ekube.core.fabric8io.exec;
 
 import de.jcup.ekube.core.EKubeContext;
+import de.jcup.ekube.core.fabric8io.exec.configmap.ConfigMapSupport;
+import de.jcup.ekube.core.fabric8io.exec.deployment.DeploymentsSupport;
+import de.jcup.ekube.core.fabric8io.exec.node.NodesSupport;
 import de.jcup.ekube.core.fabric8io.exec.pod.PodSupport;
+import de.jcup.ekube.core.fabric8io.exec.secret.SecretsSupport;
+import de.jcup.ekube.core.fabric8io.exec.service.ServiceSupport;
+import de.jcup.ekube.core.fabric8io.exec.volume.VolumeSupport;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
