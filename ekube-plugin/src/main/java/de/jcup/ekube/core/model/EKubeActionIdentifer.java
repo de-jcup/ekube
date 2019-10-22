@@ -30,6 +30,7 @@ public class EKubeActionIdentifer<R> implements Comparable<EKubeActionIdentifer<
     public static final EKubeActionIdentifer<Void> REFRESH_STATUS = new EKubeActionIdentifer<>("Refresh status", Void.class);
     public static final EKubeActionIdentifer<Void> REFRESH_CHILDREN = new EKubeActionIdentifer<>("Refresh children", Void.class);
 
+    public static final EKubeActionIdentifer<String> DELETE = new EKubeActionIdentifer<>("Delete", String.class).markRefreshNecessary();
     public static final EKubeActionIdentifer<String> SHOW_YAML = new EKubeActionIdentifer<>("Show Yaml", String.class).markDirectlyExecutable();
     public static final EKubeActionIdentifer<KeyValueMap> FETCH_KEY_VALUE = new EKubeActionIdentifer<>("Fetch KeyValue Map", KeyValueMap.class);
     

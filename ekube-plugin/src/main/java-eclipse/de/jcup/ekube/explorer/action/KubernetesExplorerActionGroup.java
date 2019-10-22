@@ -85,6 +85,7 @@ public class KubernetesExplorerActionGroup extends CompositeActionGroup {
     private Action collapseAllAction;
 
     private Action showMetaInfoAsYamlAction;
+    private CommonDeleteAction commonDeleteAction;
     private ShowPodLogAction showLogOutputAction;
     private ShowSecretBase64DecodedAction showSecretdata;
     private ShowPlantUMLAction showPlantUMLAction;
@@ -108,6 +109,10 @@ public class KubernetesExplorerActionGroup extends CompositeActionGroup {
         showLogOutputAction = new ShowPodLogAction(this);
         showLogOutputAction.setText(EKubeActionIdentifer.FETCH_LOGS.getLabel());
 
+        commonDeleteAction = new CommonDeleteAction(this);
+        commonDeleteAction.setText(EKubeActionIdentifer.DELETE.getLabel());
+        commonDeleteAction.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/delete.png", Activator.PLUGIN_ID));
+        
         KubernetesFrameSource frameSource = new KubernetesFrameSource(explorer);
         frameList = new FrameList(frameSource);
         frameSource.connectTo(frameList);
@@ -353,6 +358,9 @@ public class KubernetesExplorerActionGroup extends CompositeActionGroup {
         EKubeElement eke = (EKubeElement) element;
         if (element instanceof SecretElement) {
             manager.add(showSecretdata);
+        }
+        if (commonDeleteAction.canDelete(eke)) {
+            manager.add(commonDeleteAction);
         }
         Set<EKubeActionIdentifer<?>> actions = eke.getExecutableActionIdentifiers();
         for (EKubeActionIdentifer<?> action : actions) {

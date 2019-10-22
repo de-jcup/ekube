@@ -16,6 +16,7 @@
  package de.jcup.ekube.core.fabric8io.exec;
 
 import de.jcup.ekube.core.EKubeContext;
+import de.jcup.ekube.core.fabric8io.elementaction.Fabric8ioGeneralDeleteAction;
 import de.jcup.ekube.core.fabric8io.elementaction.Fabric8ioGeneralGetStringInfoAction;
 import de.jcup.ekube.core.fabric8io.elementaction.Fabric8ioGeneralRefreshAction;
 import de.jcup.ekube.core.model.AbstractEKubeElement;
@@ -39,6 +40,9 @@ public class DefaultSupport extends AbstractSupport {
             HasMetadata hasMetadata = (HasMetadata) technicalObject;
             abstractElement.register(new Fabric8ioGeneralGetStringInfoAction(context, client, element));
             abstractElement.setTechnicalObject(hasMetadata);
+        }
+        if (Fabric8ioGeneralDeleteAction.canDelete(technicalObject)) {
+            abstractElement.register(new Fabric8ioGeneralDeleteAction(context, client, element));
         }
 
         abstractElement.register(new Fabric8ioGeneralRefreshAction(context, client, element));
