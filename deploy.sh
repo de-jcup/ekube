@@ -16,4 +16,13 @@ if [ -z "$BINTRAY_API_KEY" ]; then
 	echo "bintray api key not set"
 	show_help_and_exit;
 fi
+
+# call jar signing before pushing to bintray...
+export KEYSTORE_PWD
+export KEYSTORE_LOCATION
+
+set -e
+
+./signJars
+
 ./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup ekube update-site 0.7.0 ./ekube-updatesite
