@@ -35,7 +35,7 @@ import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.api.model.apps.DoneableDeployment;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
-import io.fabric8.kubernetes.client.dsl.ScalableResource;
+import io.fabric8.kubernetes.client.dsl.RollableScalableResource;
 
 class AddDeploymentsExcecutable implements Fabric8ioSafeExecutableNoData<NamespaceContainer> {
 
@@ -54,7 +54,7 @@ class AddDeploymentsExcecutable implements Fabric8ioSafeExecutableNoData<Namespa
     @Override
     public Void execute(EKubeContext context, KubernetesClient client, NamespaceContainer namespaceContainer, ExecutionParameters parameters) {
         String namespace = namespaceContainer.getName();
-        MixedOperation<Deployment, DeploymentList, DoneableDeployment, ScalableResource<Deployment, DoneableDeployment>> deployments = client
+        MixedOperation<Deployment, DeploymentList, DoneableDeployment, RollableScalableResource<Deployment, DoneableDeployment>> deployments = client
                 .apps().deployments();
         DeploymentList deploymentList = deployments.inNamespace(namespace).list();
 

@@ -1,0 +1,5 @@
+task cleanLibraries (type: Delete) {
+    delete fileTree('libs/external') {
+        include '**/*.jar'
+    }
+}

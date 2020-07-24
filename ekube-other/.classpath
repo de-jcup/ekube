@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="output" path="bin/default"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-client/4.1.0/27511919b22d8f5edcdc84680002a8e8f5f06d40/kubernetes-client-4.1.0-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-client/4.1.0/85d9024a79e1de8b3c520f58972aa5acfb42055e/kubernetes-client-4.1.0.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-client/4.10.3/1e4a95bbbd0f2a84935eb1d187a8fd144f64b706/kubernetes-client-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-client/4.10.3/7000f01dc1ef12dff25c0f9979becce540f74b26/kubernetes-client-4.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
@@ -12,32 +12,122 @@
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model/4.1.0/d0747c87bf9f240e8dbb86d29103bae99adc664/kubernetes-model-4.1.0-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model/4.1.0/5fa863ad9517124f3ca882ba1c682d87c827c163/kubernetes-model-4.1.0.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-rbac/4.10.3/714f364b371f0131fe6054cfd8d07f937cad0e36/kubernetes-model-rbac-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-rbac/4.10.3/a0d8a77633a34e5b7d342d044242581116fbac31/kubernetes-model-rbac-4.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.9.1/ac8b447cea008461c601875c377c6b430081bda8/logging-interceptor-3.9.1-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.9.1/36e71ab9e903fc4d1b4a58d80572a91d9fd60caf/logging-interceptor-3.9.1.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-admissionregistration/4.10.3/314598740486897e63cbb8a2077e4f8605bdf26/kubernetes-model-admissionregistration-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-admissionregistration/4.10.3/92aa117119fbe0559f0b5ebb548c3a8ad2e77902/kubernetes-model-admissionregistration-4.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.9.1/7539531ecf9b6e082fcab195f0835d4f69ead95e/okhttp-3.9.1-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.9.1/84b4b7d1c4a238e7899972b7446c250691e65f1f/okhttp-3.9.1.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-apps/4.10.3/5178c58190c70a1514dd42bacaed7c5f8e0ed730/kubernetes-model-apps-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-apps/4.10.3/7ead298312bc14a73d48c102d65c01b827f1e01f/kubernetes-model-apps-4.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/org.slf4j/jul-to-slf4j/1.7.13/82c0b8827ff637d6d15abf9bcc4a26c55a6cb4ce/jul-to-slf4j-1.7.13-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/org.slf4j/jul-to-slf4j/1.7.13/43759e986de5fec7045e35e9533e5ad2f6cd1b05/jul-to-slf4j-1.7.13.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-autoscaling/4.10.3/3c137830c8902a288f46592cc084aecfa0bdbba4/kubernetes-model-autoscaling-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-autoscaling/4.10.3/8f7176dcd771a711595b36d2c7f6c29125422fd/kubernetes-model-autoscaling-4.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.13/96e785df399a4e1a6c030877097807b7e18520cc/slf4j-api-1.7.13-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.13/7fcf30c25b8f4a9379b9dad0d3f487b25272c026/slf4j-api-1.7.13.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-apiextensions/4.10.3/4781861a86564984d77576ac1eb1e42c166af84a/kubernetes-model-apiextensions-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-apiextensions/4.10.3/f59b61eec3666fbca6577f3db953e6a15fc2c4a8/kubernetes-model-apiextensions-4.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.7.7/d5c330e7a19fcf6b75f8cc8df04f7355ace470b1/jackson-dataformat-yaml-2.7.7-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.7.7/82cad686d626685c052481655a04216682752fda/jackson-dataformat-yaml-2.7.7.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-batch/4.10.3/571e7392fc69e70d6bcbbc4542cac0f4c6bf0572/kubernetes-model-batch-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-batch/4.10.3/89382157261fbf748fc2c8a3b961fde12ae5077e/kubernetes-model-batch-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-certificates/4.10.3/7c3132348a4d5119bdbfe09c3bc03423b134ff98/kubernetes-model-certificates-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-certificates/4.10.3/4591fc267e8475386f5ef74e0878751dbda1e064/kubernetes-model-certificates-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-coordination/4.10.3/c4f59f7020631987327f1f122e0a67d48d047a02/kubernetes-model-coordination-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-coordination/4.10.3/6ac4d6b2e06102f5bc06baa9439bfe969915e1d1/kubernetes-model-coordination-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-discovery/4.10.3/990a3bfbb7754d27a4854d29dfc8ec4581199547/kubernetes-model-discovery-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-discovery/4.10.3/442295684873890f67be8a04687ea3c9db4b5e07/kubernetes-model-discovery-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-events/4.10.3/87effdecd3377de6b0fada7e7ebbf12ccdc5fbfa/kubernetes-model-events-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-events/4.10.3/80b8ab35905af4b6275aca895191ad14af98109d/kubernetes-model-events-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-extensions/4.10.3/42a0f5ce588d951bb878f886e0189c45fc455a29/kubernetes-model-extensions-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-extensions/4.10.3/31c055f04039f64e6915815e5821f3fb339fbedc/kubernetes-model-extensions-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-networking/4.10.3/e831a5271ba60240edd33eaa897bcc890ba65a8a/kubernetes-model-networking-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-networking/4.10.3/ec16136e628435a4d72adcc2883be27224750750/kubernetes-model-networking-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-metrics/4.10.3/609e1a5246e39a9cb9fb8a93eb0a6ade6cbc5eff/kubernetes-model-metrics-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-metrics/4.10.3/288c7ef09755201ab46e0c35ef8d0342178863fd/kubernetes-model-metrics-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-policy/4.10.3/a766df08f7c05bf709b52aeb0ab5b38d9d1b57d1/kubernetes-model-policy-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-policy/4.10.3/96c6927bb400212fb55ce3869ad014b629018f62/kubernetes-model-policy-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-scheduling/4.10.3/da8ae48756028d0ce97a48abaa0063a74e8a47ad/kubernetes-model-scheduling-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-scheduling/4.10.3/8a23b73bc2a92690aff91959709c90065a868c2/kubernetes-model-scheduling-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-settings/4.10.3/5176d8d65e9c939bc8a674448abb45f0423f61f9/kubernetes-model-settings-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-settings/4.10.3/3729088030327b772abbc987382385979737fbdd/kubernetes-model-settings-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-storageclass/4.10.3/805f79a19859cdb9a4120cb04eafc284f27bb94d/kubernetes-model-storageclass-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-storageclass/4.10.3/846f5abc9af8c1674870984d9c933ee057589087/kubernetes-model-storageclass-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/openshift-model/4.10.3/542f75663128d142bf2e4b5df2be8a8dec1b0413/openshift-model-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/openshift-model/4.10.3/182b41135b66fe48b08ee93f1fe801d097f18600/openshift-model-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-core/4.10.3/db2950970a54598cdb3a47ad17abf067d2a73684/kubernetes-model-core-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-core/4.10.3/9f62304f580db3639cf389e0acfd34cbd185181/kubernetes-model-core-4.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.12.12/eac9ad9f5c8eb1a75ac7aa2a0b935ab1e1f3ecc5/logging-interceptor-3.12.12-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.12.12/d952189f6abb148ff72aab246aa8c28cf99b469f/logging-interceptor-3.12.12.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.12.12/2424f05075bc08b19d8aa06b7d88250e2e068ce3/okhttp-3.12.12-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.12.12/d3e1ce1d2b3119adf270b2d00d947beb03fe3321/okhttp-3.12.12.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.30/71a1fdefa224da50f1db6306ce609981e20186c9/slf4j-api-1.7.30-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.30/b5a4b6d16ab13e34a88fae84c35cd5d68cac922c/slf4j-api-1.7.30.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.10.3/b2e42beb7eac6d1b6576721e1b7a57f9ada82618/jackson-dataformat-yaml-2.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.10.3/4dc1a172812d9da27c1afd6a08f4f12aad7b14dd/jackson-dataformat-yaml-2.10.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.10.3/476b2ac925d7c71dc62bd2a0088f91576e269aeb/jackson-datatype-jsr310-2.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.10.3/df773a823e37013779fa247cd13686ff5ee573e3/jackson-datatype-jsr310-2.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
@@ -47,47 +137,57 @@
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.7.5/c4914375894d8d799f408454400f9f79f8e34945/jackson-module-jaxb-annotations-2.7.5-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.7.5/76970966f107ce710f7dcf36be510b4b9607d634/jackson-module-jaxb-annotations-2.7.5.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-common/4.10.3/b204f4886c569cb0789feebd26d651722b2681d6/kubernetes-model-common-4.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/io.fabric8/kubernetes-model-common/4.10.3/57e09b193b72c046bad0eb9670f0d36cae872882/kubernetes-model-common-4.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.7.7/3b16c5af94889cbae8eb2b56a58623f9bba4ac47/jackson-databind-2.7.7-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.7.7/f595bc5c04adf4db9d49909216128904a315f198/jackson-databind-2.7.7.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.10.3/27bba3f2fc3657b5698c4b84f78096dc5600f298/jackson-module-jaxb-annotations-2.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.10.3/bd367b54bd7f8997a2d81c21791bf69c6ba65af0/jackson-module-jaxb-annotations-2.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.7.7/e96836df2577ab647ed0a946cc1deaebf809db41/jackson-core-2.7.7-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.7.7/1b45281e277d07ef8c02e9726daef1175442759a/jackson-core-2.7.7.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.10.3/db734f2f42a95d2668b9f9de58d25cfc064e6e4a/jackson-databind-2.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.10.3/aae92628b5447fa25af79871ca98668da6edd439/jackson-databind-2.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.github.mifmif/generex/1.0.1/9555c4c21c9718131a808c0faf56a181b0012d19/generex-1.0.1-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.github.mifmif/generex/1.0.1/d8b3573e6d59f0a61dfc37f85dd568ad3bf49e83/generex-1.0.1.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.10.3/5b24f64c1a3351a550651b072887ac56a0af120c/jackson-core-2.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.10.3/f7ee7b55c7d292ac72fbaa7648c089f069c938d2/jackson-core-2.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/javax.validation/validation-api/1.1.0.Final/7d49b53caed9bd81d172807c3e096d24f3c57090/validation-api-1.1.0.Final-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/javax.validation/validation-api/1.1.0.Final/8613ae82954779d518631e05daa73a6a954817d5/validation-api-1.1.0.Final.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.github.mifmif/generex/1.0.2/d1f52c4efe0b20154faf35f8df5c08a234dc41db/generex-1.0.2-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.github.mifmif/generex/1.0.2/b378f873b4e8d7616c3d920e2132cb1c87679600/generex-1.0.2.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.squareup.okio/okio/1.13.0/f4c91e12121af963e3ef76e81c82aa75ba6e8533/okio-1.13.0-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.squareup.okio/okio/1.13.0/a9283170b7305c8d92d25aff02a6ab7e45d06cbe/okio-1.13.0.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.squareup.okio/okio/1.15.0/5667938926bdda03add0eac8c522164ce4180e5e/okio-1.15.0-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.squareup.okio/okio/1.15.0/bc28b5a964c8f5721eb58ee3f3c47a9bcbf4f4d8/okio-1.15.0.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/org.yaml/snakeyaml/1.15/7dc55271cad1cf73bb495e372164269e75d9345a/snakeyaml-1.15-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/org.yaml/snakeyaml/1.15/3b132bea69e8ee099f416044970997bde80f4ea6/snakeyaml-1.15.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/org.yaml/snakeyaml/1.24/a394a18181ce1d4d429be7ec38fc9497dc1a1f88/snakeyaml-1.24-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/org.yaml/snakeyaml/1.24/13a9c0d6776483c3876e3ff9384f9bb55b17001b/snakeyaml-1.24.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.7.0/d0d412f71000701f765e1e280764e92337c659f5/jackson-annotations-2.7.0-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.7.0/19f42c154ffc689f40a77613bc32caeb17d744e3/jackson-annotations-2.7.0.jar">
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.10.3/a52bf9c42cb6a029577d0d701785a07554675713/jackson-annotations-2.10.3-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.10.3/f63b3b1da563767d04d2e4d3fc1ae0cdeffebe7/jackson-annotations-2.10.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/dk.brics.automaton/automaton/1.11-8/6bc89a2a9c9c5524aa275b572c0fd3699ff7a5be/automaton-1.11-8-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/dk.brics.automaton/automaton/1.11-8/6ebfa65eb431ff4b715a23be7a750cbc4cc96d0f/automaton-1.11-8.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/8f7b9baa75556d2c03371c7e4b45b484683c7d28/jakarta.xml.bind-api-2.3.2-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/8d49996a4338670764d7ca4b85a1c4ccf7fe665d/jakarta.xml.bind-api-2.3.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/albert/caches/modules-2/files-2.1/jakarta.activation/jakarta.activation-api/1.2.1/6fe481428613e57af220e17b9ebf3475fb27efb8/jakarta.activation-api-1.2.1-sources.jar" kind="lib" path="/home/albert/caches/modules-2/files-2.1/jakarta.activation/jakarta.activation-api/1.2.1/562a587face36ec7eff2db7f2fc95425c6602bc1/jakarta.activation-api-1.2.1.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
