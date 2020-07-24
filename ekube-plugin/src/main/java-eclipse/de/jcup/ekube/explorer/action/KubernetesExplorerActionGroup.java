@@ -86,7 +86,7 @@ public class KubernetesExplorerActionGroup extends CompositeActionGroup {
 
     private Action showMetaInfoAsYamlAction;
     private CommonDeleteAction commonDeleteAction;
-    private ShowPodLogAction showLogOutputAction;
+//    private ShowPodLogAction showLogOutputAction;
     private ShowSecretBase64DecodedAction showSecretdata;
     private ShowPlantUMLAction showPlantUMLAction;
 
@@ -106,8 +106,8 @@ public class KubernetesExplorerActionGroup extends CompositeActionGroup {
         showSecretdata.setText("Show secret data");
         showSecretdata.setImageDescriptor(EclipseUtil.createImageDescriptor("/icons/model/secret.gif", Activator.PLUGIN_ID));
 
-        showLogOutputAction = new ShowPodLogAction(this);
-        showLogOutputAction.setText(EKubeActionIdentifer.FETCH_LOGS.getLabel());
+//        showLogOutputAction = new ShowPodLogAction(this);
+//        showLogOutputAction.setText(EKubeActionIdentifer.FETCH_LOGS.getLabel());
 
         commonDeleteAction = new CommonDeleteAction(this);
         commonDeleteAction.setText(EKubeActionIdentifer.DELETE.getLabel());
@@ -370,7 +370,7 @@ public class KubernetesExplorerActionGroup extends CompositeActionGroup {
             if (EKubeActionIdentifer.SHOW_YAML.equals(action)) {
                 manager.add(showMetaInfoAsYamlAction);
             } else if (EKubeActionIdentifer.FETCH_LOGS.equals(action)) {
-                manager.add(showLogOutputAction);
+//                we do not use it currently because of leaks etc., see https://github.com/de-jcup/ekube/issues/53, : manager.add(showLogOutputAction);
             } else {
                 Action uiAction = createActionForIdentifier(eke, action);
                 manager.add(uiAction);

@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.ekube.explorer.action;
+package de.jcup.ekube.explorer.action;
 
 import java.io.File;
 
@@ -37,6 +37,9 @@ import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.preferences.EKubePreferences;
 
+@Deprecated // reason:we got leaks here - as long as there is no real good concept to avoid
+            // watchlog leaks and how to surveillance the logs , editors etc. we only
+            // provide the kubectl log approach - it's better, works and is without leaks
 final class ShowPodLogAction extends Action {
     /**
      * 
@@ -66,7 +69,7 @@ final class ShowPodLogAction extends Action {
                         IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(info.getAbsolutePath()));
 
                         EclipseUtil.safeAsyncExec(new Runnable() {
-                            
+
                             @Override
                             public void run() {
                                 IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -75,10 +78,10 @@ final class ShowPodLogAction extends Action {
                                 } catch (PartInitException e) {
                                     Activator.getDefault().getErrorHandler().logError("Was not able to open log", e);
                                 }
-                                
+
                             }
                         });
-                        
+
                         return Status.OK_STATUS;
                     } catch (Exception e) {
                         Activator.getDefault().getErrorHandler().logError("Was not able to get log", e);
