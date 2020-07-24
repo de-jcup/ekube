@@ -32,7 +32,7 @@ public class ShellExecutor {
     private static final String DEFAULT_LAUNCHER_WINDOWS = " cmd.exe /C start cmd.exe /C \"bash --login -c '" + SHELL_CMD_VARIABLE + "'";
 
     private static final String DEFAULT_KUBECTL_INTERACTIVE_SHELL_CMD = "kubectl exec --context " + CONTEXT_NAME_VARIABLE + " --namespace " + NAMESPACE_NAME_VARIABLE + " -it " + POD_ID_VARIABLE
-            + " -- " + "/bin/bash";
+            + " -- " + "/bin/sh";
     private static final String DEFAULT_KUBECTL_LOGVIEW_CMD = "kubectl logs --context " + CONTEXT_NAME_VARIABLE + " --namespace " + NAMESPACE_NAME_VARIABLE + " -f --tail=20 " + POD_ID_VARIABLE;
 
     private static final String DEFAULT_TITLE_COMMAND = "printf \\\"\\\\e]2;" + TITLE_VARIABLE + "\\\\a\"";
