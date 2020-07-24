@@ -5,10 +5,9 @@ LIGHT_GREEN='\033[1;32m'
 BROWN='\033[0;33m'
 NC='\033[0m' # No Color
 
-cd .. -> /dev/null
 echo 
 echo "Start applying missing copyright information"
-echo 
+echo "start from $pwd"
 find -iname \*.java | while read file ; do
 if ! grep -q Copyright $file
   then
