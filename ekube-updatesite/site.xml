@@ -3,4 +3,5 @@
    <feature url="features/de.jcup.ekube_0.4.0.jar" id="de.jcup.ekube" version="0.4.0"/>
    <feature url="features/de.jcup.ekube_0.5.0.jar" id="de.jcup.ekube" version="0.5.0"/>
    <feature url="features/de.jcup.ekube_0.6.0.jar" id="de.jcup.ekube" version="0.6.0"/>
+   <feature url="features/de.jcup.ekube_0.7.0.jar" id="de.jcup.ekube" version="0.7.0"/>
 </site>

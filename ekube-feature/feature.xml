@@ -2,7 +2,7 @@
 <feature
       id="de.jcup.ekube"
       label="EKube"
-      version="0.6.0"
+      version="0.7.0"
       provider-name="Albert Tregnaghi">
 
    <description url="http://www.example.com/description">
@@ -228,6 +228,10 @@ and limitations under the License.
    See the License for the specific language governing permissions and
    limitations under the License.
    </license>
+
+   <url>
+      <update label="EKube update site" url="https://dl.bintray.com/de-jcup/ekube"/>
+   </url>
 
    <plugin
          id="de.jcup.ekube"
