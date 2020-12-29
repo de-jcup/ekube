@@ -40,6 +40,7 @@ public class EKubePreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault(EKubePreferenceConstants.SHELL_EXECUTOR_INTERACTIVE_SHELL_COMMAND.getId(), ShellExecutor.resolveDefaultInteractiveShellCommand());
         store.setDefault(EKubePreferenceConstants.SHELL_EXECUTOR_INTERACTIVE_LOGVIEWER_COMMAND.getId(), ShellExecutor.resolveDefaultInteractiveLogViewerCommand());
         store.setDefault(EKubePreferenceConstants.SHELL_EXECUTOR_SET_TITLE_COMMAND.getId(), ShellExecutor.resolveDefaultTitleCommand());
+        store.setDefault(EKubePreferenceConstants.ENABLE_EXPERIMENTAL_FEATURES.getId(), false);
         
     }
 

@@ -34,13 +34,20 @@ import de.jcup.ekube.core.model.CurrentContextContainer;
 import de.jcup.ekube.core.model.EKubeElement;
 import de.jcup.ekube.core.model.EKubeModel;
 import de.jcup.ekube.core.model.EKubeModelBuilder;
+import de.jcup.ekube.core.model.IngressContainer;
+import de.jcup.ekube.core.model.IngressesContainer;
 import de.jcup.ekube.core.model.NamespaceContainer;
+import de.jcup.ekube.preferences.EKubePreferences;
 import io.fabric8.kubernetes.api.model.DoneableNamespace;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceList;
+import io.fabric8.kubernetes.api.model.extensions.DoneableIngress;
+import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.fabric8.kubernetes.api.model.extensions.IngressList;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 
@@ -152,6 +159,32 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 
             addDefaultActionsToNamespaceAndPredefinedChildren(context, client, supports, namespace, namespaceContainer);
             currentContextContainer.add(namespaceContainer);
+        }
+        
+        if (EKubePreferences.getInstance().areExperimentalFeaturesEnabled()) {
+            enableIngressExperimentalFeature(context, client, supports, currentContextContainer);
+        }
+        
+        
+        
+    }
+
+    private void enableIngressExperimentalFeature(EKubeContext context, KubernetesClient client, Fabric8ioSupports supports, CurrentContextContainer currentContextContainer) {
+        try {
+            MixedOperation<Ingress, IngressList, DoneableIngress, Resource<Ingress, DoneableIngress>> ingresses = client.extensions().ingresses();
+            IngressList ingressList = ingresses.list();
+            IngressesContainer ingressesContainer = new IngressesContainer();
+            for (Ingress ingress: ingressList.getItems()) {
+                IngressContainer ingressC = new IngressContainer(ingress.getMetadata().getUid(), ingress);
+                ingressesContainer.addOrReuseExisting(ingressC);
+                supports.defaults().appendDefaults(context, client, ingressC);
+                ingressC.setStatus(ingress.getStatus().toString());
+            }
+            currentContextContainer.add(ingressesContainer);
+            
+            
+        }catch(Exception e) {
+            context.getErrorHandler().logError("Was not able to fetch ingress list", e);
         }
     }
 

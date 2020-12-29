@@ -37,6 +37,8 @@ public enum EKubePreferenceConstants implements PreferenceIdentifiable {
     SHELL_EXECUTOR_INTERACTIVE_LOGVIEWER_COMMAND("shellExecutorInteractiveLogViewerCommandV2"),
 
     SHELL_EXECUTOR_SET_TITLE_COMMAND("shellExecutorSetTitleCommand"),
+    
+    ENABLE_EXPERIMENTAL_FEATURES("enableExperimentalFeatures")
     ;
 
     private String id;

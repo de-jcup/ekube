@@ -105,6 +105,9 @@ public class EKubePreferencePage extends FieldEditorPreferencePage implements IW
         shellExecutorInteractiveLogviewerCommand.getTextControl(getFieldEditorParent())
                 .setToolTipText("You can customize the command. Use " + ShellExecutor.POD_ID_VARIABLE+ " as a place holder for given pod id. Use "+ShellExecutor.NAMESPACE_NAME_VARIABLE+" as place holder for namespace");
         addField(shellExecutorInteractiveLogviewerCommand);
+        
+        BooleanFieldEditor enableExperimentalFeaturesEditor = new BooleanFieldEditor(EKubePreferenceConstants.ENABLE_EXPERIMENTAL_FEATURES.getId(), "Enable experimental features", getFieldEditorParent());
+        addField(enableExperimentalFeaturesEditor);
 
     }
 

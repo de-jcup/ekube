@@ -110,6 +110,10 @@ public class EKubePreferences {
         return getBooleanPreference(EKubePreferenceConstants.CONTEXT_NAMESPACE_ONLY_ENABLED);
     }
     
+    public boolean areExperimentalFeaturesEnabled() {
+        return getBooleanPreference(EKubePreferenceConstants.ENABLE_EXPERIMENTAL_FEATURES);
+    }
+    
     public int getLogLinesToFetch(){
         return getPreferenceStore().getInt(EKubePreferenceConstants.LOG_LINES_TO_FETCH.getId());
     }

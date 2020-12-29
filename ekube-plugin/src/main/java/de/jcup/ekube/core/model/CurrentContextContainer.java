@@ -33,6 +33,10 @@ public class CurrentContextContainer extends AbstractContextContainer implements
     public void add(NamespaceContainer namespaceContainer) {
         addChild(namespaceContainer);
     }
+    
+    public void add(IngressesContainer ingressesContainer) {
+        addChild(ingressesContainer);
+    }
 
     public List<NamespaceContainer> getNamespaces() {
         return fetchAllChildrenOfType(NamespaceContainer.class);
