@@ -25,4 +25,4 @@ set -e
 
 ./signJars
 
-./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup ekube update-site 0.7.0 ./ekube-updatesite
+./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup ekube update-site 0.8.0 ./ekube-updatesite
