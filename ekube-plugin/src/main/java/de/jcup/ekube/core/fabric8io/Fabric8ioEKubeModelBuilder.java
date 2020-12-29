@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.ekube.core.fabric8io;
+package de.jcup.ekube.core.fabric8io;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -74,8 +74,8 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
         executor.add(listener);
 
         /*
-         * build child content by using current context... if need more we must
-         * change the context and rebuild!
+         * build child content by using current context... if need more we must change
+         * the context and rebuild!
          */
         addNamespacesToCurrentContext(context, model, client, supports);
 
@@ -120,8 +120,28 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
     protected void addNamespacesToCurrentContext(EKubeContext context, EKubeModel model, KubernetesClient client, Fabric8ioSupports supports) {
         CurrentContextContainer currentContextContainer = model.getCurrentContext();
         NonNamespaceOperation<Namespace, NamespaceList, DoneableNamespace, Resource<Namespace, DoneableNamespace>> namespaces = client.namespaces();
-        NamespaceList namespacesList = namespaces.list();
-        for (Namespace namespace : namespacesList.getItems()) {
+
+        List<Namespace> namespaceItems = new ArrayList<Namespace>();
+        String configuredNamespaceName = client.getNamespace();
+        
+        if (configuredNamespaceName != null) {
+            /* when kubernetes config file contains already a namespace for selected context, we can use this one */ 
+            try {
+                Resource<Namespace, DoneableNamespace> namespaceResource = namespaces.withName(configuredNamespaceName);
+                Namespace namespace = namespaceResource.get();
+                namespaceItems.add(namespace);
+            } catch (Exception e) {
+                context.getErrorHandler().logError("Was not able to fetch configured namespace:" + configuredNamespaceName+". Will try to list all instead", e);
+            }
+        }
+        
+        if (namespaceItems.isEmpty()) {
+            /* this happens when wrong namespeace configured, or no namespace at all - in this case we add all namespaces*/
+            NamespaceList namespacesList = namespaces.list();
+            namespaceItems.addAll(namespacesList.getItems());
+        }
+
+        for (Namespace namespace : namespaceItems) {
             String namespaceName = namespace.getMetadata().getName();
             if (isNamespaceFiltered(context, currentContextContainer, namespaceName)) {
                 continue;
@@ -139,8 +159,8 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
      * add default actions to namespace and also to the (predefined) children -
      * necessary, because no actions will be added otherwise
      */
-    protected List<EKubeElement> addDefaultActionsToNamespaceAndPredefinedChildren(EKubeContext context, KubernetesClient client,
-            Fabric8ioSupports supports, Namespace namespace, NamespaceContainer namespaceContainer) {
+    protected List<EKubeElement> addDefaultActionsToNamespaceAndPredefinedChildren(EKubeContext context, KubernetesClient client, Fabric8ioSupports supports, Namespace namespace,
+            NamespaceContainer namespaceContainer) {
         List<EKubeElement> defaultsMissing = new ArrayList<>();
         defaultsMissing.add(namespaceContainer);
         defaultsMissing.addAll(namespaceContainer.getChildren());
@@ -152,15 +172,16 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
 
     protected boolean isNamespaceFiltered(EKubeContext context, CurrentContextContainer currentContextContainer, String namespaceName) {
         String contextNamespace = currentContextContainer.getNamespace();
-        if (contextNamespace !=null  && context.getConfiguration().isContextNamespaceOnly()){
-            return ! StringUtils.equals(namespaceName, contextNamespace);
+        if (contextNamespace != null && context.getConfiguration().isContextNamespaceOnly()) {
+            return !StringUtils.equals(namespaceName, contextNamespace);
         }
         return context.getConfiguration().isNamespaceFiltered(namespaceName);
     }
 
     /**
-     * Special executor which does add default actions after execution - will always rea-add default actions on execution time.
-     * Interesting for new added parts on refresh actions
+     * Special executor which does add default actions after execution - will always
+     * rea-add default actions on execution time. Interesting for new added parts on
+     * refresh actions
      * 
      * @author Albert Tregnaghi
      *
@@ -173,8 +194,7 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
         }
 
         @Override
-        public <E extends EKubeElement, C, D, R> void afterExecute(EKubeContext context, SafeExecutable<E, C, R> executable, E element, C client,
-                ExecutionParameters parameters) {
+        public <E extends EKubeElement, C, D, R> void afterExecute(EKubeContext context, SafeExecutable<E, C, R> executable, E element, C client, ExecutionParameters parameters) {
             supports.defaults().appendDefaults(supports.getContext(), supports.getClient(), (AbstractEKubeElement) element);
 
         }
