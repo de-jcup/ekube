@@ -19,8 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.jcup.ekube.core.EKubeConfiguration;
 import de.jcup.ekube.core.EKubeContext;
 import de.jcup.ekube.core.EKubeContextConfigurationEntry;
@@ -204,10 +202,6 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
     }
 
     protected boolean isNamespaceFiltered(EKubeContext context, CurrentContextContainer currentContextContainer, String namespaceName) {
-        String contextNamespace = currentContextContainer.getNamespace();
-        if (contextNamespace != null && context.getConfiguration().isContextNamespaceOnly()) {
-            return !StringUtils.equals(namespaceName, contextNamespace);
-        }
         return context.getConfiguration().isNamespaceFiltered(namespaceName);
     }
 

@@ -26,8 +26,6 @@ public enum EKubePreferenceConstants implements PreferenceIdentifiable {
 
     FILTERED_NAMESPACES("filteredNameSpaces"), 
     
-    CONTEXT_NAMESPACE_ONLY_ENABLED("contextNamespaceOnly"),
-    
     LOG_LINES_TO_FETCH("logLines"),
     
     SHELL_EXECUTOR_LAUNCH_COMMAND("shellExecutorLaunchCommand"), 

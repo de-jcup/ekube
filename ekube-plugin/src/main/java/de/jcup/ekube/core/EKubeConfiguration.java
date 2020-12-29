@@ -52,6 +52,5 @@ public interface EKubeConfiguration {
 
     boolean isNamespaceFilteringEnabled();
 
-    boolean isContextNamespaceOnly();
 
 }

@@ -106,10 +106,6 @@ public class EKubePreferences {
         return getBooleanPreference(EKubePreferenceConstants.FILTER_NAMESPACES_ENABLED);
     }
 
-    public boolean getContextNamespaceOnly() {
-        return getBooleanPreference(EKubePreferenceConstants.CONTEXT_NAMESPACE_ONLY_ENABLED);
-    }
-    
     public boolean areExperimentalFeaturesEnabled() {
         return getBooleanPreference(EKubePreferenceConstants.ENABLE_EXPERIMENTAL_FEATURES);
     }

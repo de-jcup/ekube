@@ -38,9 +38,4 @@ public class EclipseEKubeConfiguration extends AbstractEKubeConfiguration {
         return EKubePreferences.getInstance().getFilterNamespacesEnabled();
     }
 
-    @Override
-    public boolean isContextNamespaceOnly() {
-        return EKubePreferences.getInstance().getContextNamespaceOnly();
-    }
-
 }

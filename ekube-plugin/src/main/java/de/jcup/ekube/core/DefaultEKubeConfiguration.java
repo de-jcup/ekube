@@ -27,8 +27,6 @@ public class DefaultEKubeConfiguration extends AbstractEKubeConfiguration implem
 
     private boolean namespaceFilteringEnabled;
 
-    private boolean contextNamespaceOnly;
-
     public DefaultEKubeConfiguration() {
         setDefaults();
     }
@@ -57,12 +55,4 @@ public class DefaultEKubeConfiguration extends AbstractEKubeConfiguration implem
         return namespaceFilteringEnabled;
     }
     
-    public void setContextNamespaceOnly(boolean contextNamespaceOnly) {
-        this.contextNamespaceOnly = contextNamespaceOnly;
-    }
-    
-    @Override
-    public boolean isContextNamespaceOnly() {
-        return contextNamespaceOnly;
-    }
 }

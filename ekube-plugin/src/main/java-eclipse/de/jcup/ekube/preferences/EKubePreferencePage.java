@@ -78,7 +78,6 @@ public class EKubePreferencePage extends FieldEditorPreferencePage implements IW
         // "choice2" } }, getFieldEditorParent()));
         StringFieldEditor filteredNamespacesEditor = new StringFieldEditor(EKubePreferenceConstants.FILTERED_NAMESPACES.getId(), "Filtered namespaces", getFieldEditorParent());
         addField(filteredNamespacesEditor);
-        addField(new BooleanFieldEditor(EKubePreferenceConstants.CONTEXT_NAMESPACE_ONLY_ENABLED.getId(), "&If defined use context namespace only", getFieldEditorParent()));
 
         IntegerFieldEditor logLinesFieldEditor = new IntegerFieldEditor(EKubePreferenceConstants.LOG_LINES_TO_FETCH.getId(), "Fetch log lines", getFieldEditorParent());
         logLinesFieldEditor.setValidRange(10, 20000);
