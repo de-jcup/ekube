@@ -3,6 +3,12 @@ dependencies{
         compile 'io.fabric8:kubernetes-client:4.10.3'
         compile 'org.apache.commons:commons-lang3:3.8.1'
 
+        // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
+        compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.68'
+
+        // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on
+        compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.68'
+
         testCompile 'junit:junit:4.12'
         testCompile 'org.mockito:mockito-all:1.8.5'
         

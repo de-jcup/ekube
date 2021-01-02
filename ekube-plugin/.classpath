@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/external/bcpkix-jdk15on-1.68.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/external/bcprov-jdk15on-1.68.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/external/automaton-1.11-8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/external/commons-lang3-3.8.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/external/generex-1.0.2.jar"/>
