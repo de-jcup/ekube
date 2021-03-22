@@ -13,23 +13,23 @@
  * and limitations under the License.
  *
  */
- package de.jcup.ekube.explorer.action;
+package de.jcup.ekube.explorer.action;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Date;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 
 import de.jcup.ekube.Activator;
 import de.jcup.ekube.ResourceUtil;
+import de.jcup.ekube.core.EKubeFiles;
+import de.jcup.ekube.core.FileUtil;
 import de.jcup.ekube.core.model.EKubeActionIdentifer;
 import de.jcup.ekube.core.model.EKubeElement;
 
 final class ShowYamlInfoAction extends Action {
-    /**
-     * 
-     */
+
     private final KubernetesExplorerActionGroup kubernetesExplorerActionGroup;
 
     /**
@@ -46,28 +46,27 @@ final class ShowYamlInfoAction extends Action {
             String info = eelement.execute(EKubeActionIdentifer.SHOW_YAML);
             if (info != null) {
                 try {
+                    boolean needsToWrite = true;
+                    File tmpfile = fetchTmpEditorFile(eelement);
 
-                    File tmpfile = File.createTempFile("ekube_info_"+eelement.getName(), ".yaml");
-                    tmpfile.deleteOnExit();
-
-                    try (FileWriter fw = new FileWriter(tmpfile)) {
-                        StringBuilder yaml = new StringBuilder();
-                        yaml.append("# ---------------------------------------------------------------------------\n");
-                        yaml.append("# EKube info about : ").append(eelement.getClass().getSimpleName()).append(" '").append(eelement.getLabel())
-                                .append("'\n");
-                        yaml.append("# Timestamp        : ").append(this.kubernetesExplorerActionGroup.explorer.getDateFormat().format(new Date()))
-                                .append("\n");
-                        yaml.append("# ---------------------------------------------------------------------------\n");
-                        yaml.append(info);
-                        fw.write(yaml.toString());
-                        fw.close();
-                        /*
-                         * loading temporary file from outside eclipse workspace
-                         * :
-                         */
-                        ResourceUtil.openInEditor(tmpfile);
-                        return;
+                    String yaml = createYAML(eelement, info);
+                    if (tmpfile.exists()) {
+                        String origin = FileUtil.readTextFile(tmpfile);
+                        if (origin.trim().equals(yaml.trim())) {
+                            needsToWrite=false;
+                        }
                     }
+                    if (needsToWrite) {
+                        try (FileWriter fw = new FileWriter(tmpfile)) {
+                            /* @formatter:off */
+                            fw.write(yaml);
+                            fw.close();
+                        }
+                        
+                    }
+                    
+                    ResourceUtil.openInEditor(tmpfile);
+                    
                 } catch (Exception e) {
                     Activator.getDefault().getErrorHandler().logError("Was not able to get yaml", e);
                     StringBuilder sb = new StringBuilder();
@@ -84,5 +83,32 @@ final class ShowYamlInfoAction extends Action {
             }
         }
 
+    }
+
+    private String createYAML(EKubeElement eelement, String info) {
+        String name = eelement.getName();
+        String label = eelement.getLabel();
+
+        String yaml = "";
+        /* @formatter:on */
+        yaml +="# ---------------------------------------------------------------------------\n";
+        yaml +="# - UUID     : "+ eelement.getUid()+"\n";
+        yaml +="# ---------------------------------------------------------------------------\n";
+        yaml +="#   Type     : "+ eelement.getClass().getSimpleName()+"\n";
+        yaml +="#   Name     : "+ name+"\n";
+        if (! Objects.equals(label,name)){
+            yaml +="#   Label    : "+ label+"\n";
+        }
+        yaml +="#\n";
+        yaml +="# ---------------------------------------------------------------------------\n";
+        yaml +=info;
+        return yaml;
+    }
+
+    private File fetchTmpEditorFile(EKubeElement eelement) {
+        EKubeFiles.getEKubeTempFolder().mkdirs();
+        File tmpfile = new File(EKubeFiles.getEKubeTempFolder(),eelement.getUid()+".yaml");
+        tmpfile.deleteOnExit();
+        return tmpfile;
     }
 }

@@ -15,8 +15,10 @@
  */
  package de.jcup.ekube.core;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -25,6 +27,20 @@ public class FileUtil {
     public static void writeTextFile(String content, File file) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             bw.write(content);
+        }
+    }
+    
+    public static String readTextFile(File file) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+           String line = null;
+           while ((line = br.readLine())!=null) {
+               if (sb.length()>0) {
+                   sb.append("\n");
+               }
+               sb.append(line);
+           }
+           return sb.toString();
         }
     }
 

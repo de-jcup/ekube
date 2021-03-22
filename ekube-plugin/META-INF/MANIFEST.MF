@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface,
  org.junit,
  org.eclipse.core.filesystem,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.ui.workbench.texteditor
 Automatic-Module-Name: de.jcup.ekube
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

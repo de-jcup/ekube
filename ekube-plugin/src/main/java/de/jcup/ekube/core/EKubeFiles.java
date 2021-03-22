@@ -10,13 +10,13 @@ public class EKubeFiles {
     }
     
     public static File getEKubeHome() {
-        File userHomeFile = new File(getUserHome(), "./ekube");
+        File userHomeFile = new File(getUserHome(), ".ekube");
         return userHomeFile;
     }
     
     
     public static File getEKubeTempFolder() {
-        File userHomeFile = new File(getEKubeHome(), "./ekube");
+        File userHomeFile = new File(getEKubeHome(), "tmp");
         return userHomeFile;
     }
 
