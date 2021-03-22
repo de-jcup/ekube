@@ -32,7 +32,7 @@ public class DefaultEKubeConfiguration extends AbstractEKubeConfiguration implem
     }
 
     private void setDefaults() {
-        kubeConfigFile = new File(System.getProperty("user.home") + "/.kube/config");
+        kubeConfigFile = EKubeFiles.getDefaultKubeConfigFile();
         filteredNamespaces.add("kube-system");
     }
 

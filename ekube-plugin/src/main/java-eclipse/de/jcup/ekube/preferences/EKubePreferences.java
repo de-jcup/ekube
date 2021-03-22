@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.ekube.preferences;
+package de.jcup.ekube.preferences;
 
 import java.io.File;
 import java.util.Arrays;
@@ -28,6 +28,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import de.jcup.eclipse.commons.ui.ColorUtil;
 import de.jcup.ekube.Activator;
+import de.jcup.ekube.core.EKubeFiles;
 
 public class EKubePreferences {
 
@@ -94,6 +95,9 @@ public class EKubePreferences {
 
     public File getKubeConfigFile() {
         String path = getPreferenceStore().getString(EKubePreferenceConstants.KUBE_CONFIGFILE_PATH.getId());
+        if (path==null || path.trim().equals("")){
+            return EKubeFiles.getDefaultKubeConfigFile();
+        }
         return new File(path);
     }
 
@@ -109,8 +113,8 @@ public class EKubePreferences {
     public boolean areExperimentalFeaturesEnabled() {
         return getBooleanPreference(EKubePreferenceConstants.ENABLE_EXPERIMENTAL_FEATURES);
     }
-    
-    public int getLogLinesToFetch(){
+
+    public int getLogLinesToFetch() {
         return getPreferenceStore().getInt(EKubePreferenceConstants.LOG_LINES_TO_FETCH.getId());
     }
 
