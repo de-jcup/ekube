@@ -1,6 +1,6 @@
 dependencies{
             
-        compile 'io.fabric8:kubernetes-client:4.10.3'
+        compile 'io.fabric8:kubernetes-client:5.2.1'
         compile 'org.apache.commons:commons-lang3:3.8.1'
 
         // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
@@ -23,6 +23,8 @@ task cleanLibraries (type: Delete) {
 /** copies library dependencies to plugin project, so plugin project eclipse setup 
  *  is not changed by gradle , but the dependencies are just copied while doing a cleanEclipse eclipse ...  */
 task provideLibraries(type: Copy, dependsOn: cleanLibraries){
+    group = 'ekube'
+
     from configurations.compile
     into "${rootProject.projectDir}/ekube-plugin/libs/external"
 }

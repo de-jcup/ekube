@@ -129,6 +129,7 @@ public class Fabric8ioEKubeModelBuilder implements EKubeModelBuilder {
         List<Namespace> namespaceItems = new ArrayList<Namespace>();
         String configuredNamespaceName = client.getNamespace();
         
+        
         if (configuredNamespaceName != null) {
             /* when kubernetes config file contains already a namespace for selected context, we can use this one */ 
             try {
