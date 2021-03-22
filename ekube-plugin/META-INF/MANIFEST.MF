@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: EKube Plugin
+Bundle-Name: EKube
 Bundle-SymbolicName: de.jcup.ekube;singleton:=true
-Bundle-Version: 0.9.0
+Bundle-Version: 0.10.0
 Bundle-Activator: de.jcup.ekube.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.ui,
